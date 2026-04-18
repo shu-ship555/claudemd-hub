@@ -1,15 +1,36 @@
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase-server'
 import DashboardClient from './dashboard-client'
 
 export default async function DashboardPage() {
-  const supabase = await createClient()
+  const cookieStore = await cookies()
+  const accessToken = cookieStore.get('sb-access-token')?.value
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  if (!accessToken) {
+    redirect('/auth/login')
+  }
+
+  // Verify token and get user
+  let user: any = null
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/user`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        },
+      }
+    )
+
+    if (response.ok) {
+      user = await response.json()
+    }
+  } catch (error) {
+    console.error('Failed to get user:', error)
+  }
 
   if (!user) {
     redirect('/auth/login')

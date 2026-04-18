@@ -17,23 +17,40 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
     setIsLoading(true)
 
     try {
       const supabase = createClient()
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) throw error
+      if (!data.session) throw new Error('No session returned')
 
+      // Sync session with server
+      const syncResponse = await fetch('/api/auth/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accessToken: data.session.access_token,
+          refreshToken: data.session.refresh_token,
+        }),
+      })
+
+      if (!syncResponse.ok) {
+        throw new Error('Failed to sync session')
+      }
+
+      router.refresh()
       router.push('/dashboard')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      const errorMessage = err instanceof Error ? err.message : 'Login failed'
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
