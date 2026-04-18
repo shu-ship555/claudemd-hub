@@ -1,8 +1,10 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import DashboardClient from './dashboard-client'
+import UploadDialog from './upload-dialog'
+import ConfigList from './config-list'
+import { getConfigFiles } from './actions'
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -36,6 +38,13 @@ export default async function DashboardPage() {
     redirect('/auth/login')
   }
 
+  let configs: any[] = []
+  try {
+    configs = await getConfigFiles()
+  } catch (error) {
+    console.error('Failed to fetch configs:', error)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
@@ -53,20 +62,17 @@ export default async function DashboardPage() {
       <main className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid gap-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Configuration Files</CardTitle>
-              <CardDescription>
-                Manage and sync your Claude Code configuration files
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between gap-4">
+              <div>
+                <CardTitle>Configuration Files</CardTitle>
+                <CardDescription>
+                  Manage and sync your Claude Code configuration files
+                </CardDescription>
+              </div>
+              <UploadDialog />
             </CardHeader>
             <CardContent>
-              <div className="text-muted-foreground">
-                No configuration files yet. Create or upload your first config file.
-              </div>
-              <div className="mt-6 flex gap-3">
-                <Button>Upload Config</Button>
-                <Button variant="outline">Create New</Button>
-              </div>
+              <ConfigList configs={configs} />
             </CardContent>
           </Card>
 

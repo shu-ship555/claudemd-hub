@@ -7,7 +7,8 @@
       "Bash(npx shadcn@latest add button card input label alert tabs dialog form)",
       "Bash(npm run *)",
       "Bash(curl -s http://localhost:3000)",
-      "Bash(pkill -f \"npm run dev\")"
+      "Bash(pkill -f \"npm run dev\")",
+      "Bash(vercel --prod --yes)"
     ]
   }
 }
