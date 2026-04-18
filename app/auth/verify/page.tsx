@@ -11,7 +11,7 @@ export default function VerifyPage() {
         <CardHeader>
           <CardTitle>Check Your Email</CardTitle>
           <CardDescription>
-            We've sent you a confirmation link
+            We&apos;ve sent you a confirmation link
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -23,7 +23,7 @@ export default function VerifyPage() {
 
           <div className="text-sm text-muted-foreground space-y-2">
             <p>
-              Didn't receive the email? Check your spam folder or try signing up again.
+              Didn&apos;t receive the email? Check your spam folder or try signing up again.
             </p>
           </div>
 

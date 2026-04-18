@@ -97,6 +97,11 @@ Claude Codeの設定ファイル管理サービスを完成させる
 
 - [x] Phase 1.1: 本番DB設定完了 ✅ 2026-04-18
 - [x] Phase 2.1: Config CRUD機能完成 ✅ 2026-04-18
+- [x] DESIGN.md ジェネレーター実装完了 ✅ 2026-04-18
+  - [x] lib/design-template.ts: 10セクション定義
+  - [x] lib/generate-design.ts: Markdown生成ロジック
+  - [x] app/dashboard/generator/page.tsx: UI実装
+  - [x] app/dashboard/page.tsx: リンク追加
 - [ ] Phase 3.1: UIブラッシュアップ完了
 - [ ] Phase 3.2: ローカライズ + 言語切り替え完了
 - [ ] Phase 3.3: ダークモード対応完了

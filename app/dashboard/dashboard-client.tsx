@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
 
-export default function DashboardClient({ userEmail }: { userEmail: string }) {
+export default function DashboardClient() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
