@@ -10,7 +10,8 @@
       "Bash(pkill -f \"npm run dev\")",
       "Bash(vercel --prod --yes)",
       "Bash(npx shadcn@latest add alert --yes)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npx shadcn@latest add badge --yes)"
     ]
   }
 }

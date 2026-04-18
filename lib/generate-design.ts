@@ -307,8 +307,6 @@ function renderLayout(cfg: SectionCfg): string {
     bullets.push(`- Spacing: ${range} (${base} base)`)
   } else if (range) {
     bullets.push(`- Spacing: ${range}`)
-  } else if (base) {
-    bullets.push(`- Spacing: ${base} base`)
   }
 
   const radii: Array<[string, unknown]> = [

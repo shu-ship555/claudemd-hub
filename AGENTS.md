@@ -3,6 +3,9 @@
 - `DESIGN.md` に定義されているカラーパレット、タイポグラフィ、スペーシングの規則を逸脱しないでください。
 - 新しいコンポーネントを作成する場合は、`DESIGN.md` の設計思想に基づいたスタイルを提案してください。
 
+## Framework Libralu
+- shadcnui
+
 ## Code Quality & Engineering Principles
 - **KISS (Keep It Simple, Stupid)**: 常に最もシンプルな解決策を選択してください。不必要な複雑さは避け、誰が見ても理解しやすいコードを記述してください。
 - **YAGNI (You Ain't Gonna Need It)**: 「将来必要になるかもしれない」という予測に基づいた実装は行わないでください。現時点で必要な機能のみを実装し、過度な抽象化や汎用化は避けてください。

@@ -1,89 +1,96 @@
-# Design System Inspired by Airtable
+# Design System: Airtable Inspired (Japanese Optimized)
 
-## 1. Visual Theme & Atmosphere
+## 1. ビジュアルテーマ & 雰囲気
+Airtableの「洗練されたシンプルさ」を継承。クリーンな白いキャンバスに、深いネイビー（`#181d26`）のテキストと、アクセントとしてのAirtable Blue（`#1b61c9`）が知的な印象を与えます。日本語環境では、システムの標準フォントを活かしつつ、スイス・スタイルの精密なタイポグラフィを再現します。
 
-Airtable's website is a clean, enterprise-friendly platform that communicates "sophisticated simplicity" through a white canvas with deep navy text (`#181d26`) and Airtable Blue (`#1b61c9`) as the primary interactive accent. The Haas font family (display + text variants) creates a Swiss-precision typography system with positive letter-spacing throughout.
+**主な特徴:**
+- ホワイトキャンバスとディープネイビー（`#181d26`）のコントラスト
+- プライマリCTAとリンクにはAirtable Blue（`#1b61c9`）を使用
+- 日本語フォントはモダンなサンセリフ（Gothic）を採用し、可読性を確保
+- カードやボタンの角丸は、親しみやすさと信頼感を両立する12px〜32px
+- ブルーを微かに含んだ多層シャドウによる奥行き感
 
-**Key Characteristics:**
-- White canvas with deep navy text (`#181d26`)
-- Airtable Blue (`#1b61c9`) as primary CTA and link color
-- Haas + Haas Groot Disp dual font system
-- Positive letter-spacing on body text (0.08px–0.28px)
-- 12px radius buttons, 16px–32px for cards
-- Multi-layer blue-tinted shadow: `rgba(45,127,249,0.28) 0px 1px 3px`
-- Semantic theme tokens: `--theme_*` CSS variable naming
+## 2. カラーパレット & ロール
 
-## 2. Color Palette & Roles
+### Primary (メイン)
+- **Deep Navy** (`#181d26`): 本文・ヘッドライン（視認性の高い紺黒）
+- **Airtable Blue** (`#1b61c9`): 主要ボタン (CTA)、リンク、アクティブ状態
+- **White** (`#ffffff`): 背景、ベースサーフェス
+- **Spotlight** (`rgba(249,252,255,0.97)`): ホバー時の強調や特殊な背景
 
-### Primary
-- **Deep Navy** (`#181d26`): Primary text
-- **Airtable Blue** (`#1b61c9`): CTA buttons, links
-- **White** (`#ffffff`): Primary surface
-- **Spotlight** (`rgba(249,252,255,0.97)`): `--theme_button-text-spotlight`
+### Semantic (意味的定義)
+- **Success Green** (`#006400`): 成功、完了、ポジティブな通知
+- **Weak Text** (`rgba(4,14,32,0.69)`): 補足説明、キャプション（日本語での読みやすさを考慮した不透明度）
+- **Secondary Active** (`rgba(7,12,20,0.82)`): 二次的な操作要素のアクティブ状態
 
-### Semantic
-- **Success Green** (`#006400`): `--theme_success-text`
-- **Weak Text** (`rgba(4,14,32,0.69)`): `--theme_text-weak`
-- **Secondary Active** (`rgba(7,12,20,0.82)`): `--theme_button-text-secondary-active`
+### Neutral (ニュートラル)
+- **Dark Gray** (`#333333`): サブテキスト
+- **Border** (`#e0e2e6`): カード、入力フォームの境界線
+- **Light Surface** (`#f8fafc`): コンテンツの背景（セクションの区切り）
 
-### Neutral
-- **Dark Gray** (`#333333`): Secondary text
-- **Mid Blue** (`#254fad`): Link/accent blue variant
-- **Border** (`#e0e2e6`): Card borders
-- **Light Surface** (`#f8fafc`): Subtle surface
+### Shadows (影)
+- **Blue-tinted**: `rgba(0,0,0,0.32) 0px 0px 1px, rgba(0,0,0,0.08) 0px 0px 2px, rgba(45,127,249,0.28) 0px 1px 3px`
+- **Soft Ambient**: `rgba(15,48,106,0.05) 0px 0px 20px`
 
-### Shadows
-- **Blue-tinted** (`rgba(0,0,0,0.32) 0px 0px 1px, rgba(0,0,0,0.08) 0px 0px 2px, rgba(45,127,249,0.28) 0px 1px 3px, rgba(0,0,0,0.06) 0px 0px 0px 0.5px inset`)
-- **Soft** (`rgba(15,48,106,0.05) 0px 0px 20px`)
+## 3. タイポグラフィ ルール (日本語最適化)
 
-## 3. Typography Rules
+日本語の読みやすさを考慮し、英字版より行間（Line Height）を広めに設定しています。
 
-### Font Families
-- **Primary**: `Haas`, fallbacks: `-apple-system, system-ui, Segoe UI, Roboto`
-- **Display**: `Haas Groot Disp`, fallback: `Haas`
+### フォントファミリー
+- `sans-serif`, `"Hiragino Sans"`, `"Hiragino Kaku Gothic ProN"`, `"ヒラギノ角ゴ ProN W3"`, `"Meiryo"`, `"noto sans jp"`, `system-ui`
 
-### Hierarchy
+### ヒエラルキー
 
-| Role            | Font            | Size | Weight  | Line Height | Letter Spacing |
-| --------------- | --------------- | ---- | ------- | ----------- | -------------- |
-| Display Hero    | Haas            | 48px | 400     | 1.15        | normal         |
-| Display Bold    | Haas Groot Disp | 48px | 900     | 1.50        | normal         |
-| Section Heading | Haas            | 40px | 400     | 1.25        | normal         |
-| Sub-heading     | Haas            | 32px | 400–500 | 1.15–1.25   | normal         |
-| Card Title      | Haas            | 24px | 400     | 1.20–1.30   | 0.12px         |
-| Feature         | Haas            | 20px | 400     | 1.25–1.50   | 0.1px          |
-| Body            | Haas            | 18px | 400     | 1.35        | 0.18px         |
-| Body Medium     | Haas            | 16px | 500     | 1.30        | 0.08–0.16px    |
-| Button          | Haas            | 16px | 500     | 1.25–1.30   | 0.08px         |
-| Caption         | Haas            | 14px | 400–500 | 1.25–1.35   | 0.07–0.28px    |
+| ロール | サイズ | 太さ (Weight) | 行間 | 字送り (Tracking) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Display Hero** | 48px | 700 (Bold) | 1.3 | 0.02em |
+| **Section Heading** | 32px | 700 | 1.4 | 0.02em |
+| **Sub-heading** | 24px | 600 | 1.5 | 0.01em |
+| **Card Title** | 20px | 600 | 1.5 | 0.01em |
+| **Body (標準)** | 16px | 400 | 1.7 | 0.04em |
+| **Body Small** | 14px | 400 | 1.6 | 0.04em |
+| **Button Text** | 16px | 600 | 1.0 | 0.05em |
+| **Caption** | 12px | 400 | 1.5 | 0.05em |
 
-## 4. Component Stylings
+## 4. コンポーネント スタイル
 
-### Buttons
-- **Primary Blue**: `#1b61c9`, white text, 16px 24px padding, 12px radius
-- **White**: white bg, `#181d26` text, 12px radius, 1px border white
-- **Cookie Consent**: `#1b61c9` bg, 2px radius (sharp)
+### ボタン (Buttons)
+- **Primary Blue**: 背景 `#1b61c9` / 文字 ホワイト
+    - Padding: `12px 24px` / Radius: `12px`
+- **Secondary White**: 背景 ホワイト / 文字 `#181d26` / 境界線 `#e0e2e6`
+    - Padding: `12px 24px` / Radius: `12px`
 
-### Cards: `1px solid #e0e2e6`, 16px–24px radius
-### Inputs: Standard Haas styling
+### カード (Cards)
+- Border: `1px solid #e0e2e6`
+- Radius: `16px` 〜 `24px`
+- Shadow: `Blue-tinted` を適用して浮遊感を演出
 
-## 5. Layout
-- Spacing: 1–48px (8px base)
-- Radius: 2px (small), 12px (buttons), 16px (cards), 24px (sections), 32px (large), 50% (circles)
+### 入力フォーム (Inputs)
+- Border: `1px solid #e0e2e6`
+- Focus: `2px solid #1b61c9`
+- Radius: `8px`
 
-## 6. Depth
-- Blue-tinted multi-layer shadow system
-- Soft ambient: `rgba(15,48,106,0.05) 0px 0px 20px`
+## 5. レイアウト & スペーシング
+- **ベースグリッド**: 8px (全ての余白を8の倍数で構築)
+- **Radius (角丸)**:
+    - Small: 4px (チップ、ラベル)
+    - Medium: 12px (ボタン、入力フォーム)
+    - Large: 24px (カード、モーダル)
+    - Section: 32px (大きなセクションの区切り)
 
-## 7. Do's and Don'ts
-### Do: Use Airtable Blue for CTAs, Haas with positive tracking, 12px radius buttons
-### Don't: Skip positive letter-spacing, use heavy shadows
+## 6. Do's and Don'ts
+- **Do**:
+    - CTAには必ず Airtable Blue を使用する。
+    - 日本語の文章には十分な行間（1.7前後）を確保する。
+    - 重要な要素には12pxの角丸を適用し、モダンな印象を与える。
+- **Don't**:
+    - 日本語の文字間を詰めすぎない（ベタ打ちは避ける）。
+    - 真っ黒（`#000000`）を使用せず、Deep Navy（`#181d26`）を使用する。
+    - 重すぎるドロップシャドウ（不透明度の高い黒）を使わない。
 
-## 8. Responsive Behavior
-Breakpoints: 425–1664px (23 breakpoints)
-
-## 9. Agent Prompt Guide
-- Text: Deep Navy (`#181d26`)
-- CTA: Airtable Blue (`#1b61c9`)
-- Background: White (`#ffffff`)
-- Border: `#e0e2e6`
+## 7. 実装ガイド (Agent Prompt)
+- テキスト色: `#181d26`
+- アクセント色: `#1b61c9`
+- 背景色: `#ffffff`
+- 境界線: `#e0e2e6`
+- フォント: 日本語標準ゴシック体、行間広め

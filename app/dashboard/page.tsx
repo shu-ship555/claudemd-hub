@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
 import { designTemplate, DesignConfig, FieldValue } from '@/lib/design-template'
 import { generateDesignMarkdown } from '@/lib/generate-design'
 import { createConfigFile } from './actions'
@@ -137,8 +138,11 @@ export default function DashboardPage() {
                   key={section.id}
                   className="space-y-4 p-4 border border-border rounded-lg"
                 >
-                  <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold">{section.label}</Label>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-0.5">
+                      <Label className="text-base font-semibold">{section.label}</Label>
+                      <p className="text-xs text-muted-foreground">{section.description}</p>
+                    </div>
                     <Switch
                       checked={config[section.id]?.enabled || false}
                       onCheckedChange={() => handleToggleSection(section.id)}
@@ -146,7 +150,7 @@ export default function DashboardPage() {
                   </div>
 
                   {config[section.id]?.enabled && (
-                    <div className="space-y-4 ml-2">
+                    <div className="space-y-4 ml-2 pt-2 border-t border-border">
                       {section.fields.map((field) => {
                         // Check if this field should be displayed based on dependsOn
                         let shouldDisplay = true
@@ -163,8 +167,16 @@ export default function DashboardPage() {
                         if (!shouldDisplay) return null
 
                         return (
-                        <div key={field.id} className="space-y-2">
-                          <label className="text-sm font-medium">{field.label}</label>
+                        <div key={field.id} className="space-y-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <label className="text-sm font-medium">{field.label}</label>
+                            {field.requirement === 'required' && (
+                              <Badge variant="destructive">必須</Badge>
+                            )}
+                            {field.requirement === 'optional' && (
+                              <Badge variant="outline">任意</Badge>
+                            )}
+                          </div>
 
                           {field.type === 'select' && (
                             <select
@@ -237,6 +249,17 @@ export default function DashboardPage() {
                               value={(config[section.id][field.id] as number) || ''}
                               onChange={(e) =>
                                 handleFieldChange(section.id, field.id, parseInt(e.target.value) || 0)
+                              }
+                            />
+                          )}
+
+                          {field.type === 'textarea' && (
+                            <Textarea
+                              placeholder={field.placeholder}
+                              value={(config[section.id][field.id] as string) || ''}
+                              rows={field.rows}
+                              onChange={(e) =>
+                                handleFieldChange(section.id, field.id, e.target.value)
                               }
                             />
                           )}

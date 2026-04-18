@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
 import { DesignField } from '@/lib/design-template'
 
 interface FieldRendererProps {
@@ -60,6 +61,15 @@ export function FieldRenderer({ sectionId, field, value, onChange }: FieldRender
             {field.label}
           </label>
         </div>
+      )}
+
+      {field.type === 'textarea' && (
+        <Textarea
+          placeholder={field.placeholder}
+          value={(value as string) || ''}
+          rows={field.rows}
+          onChange={(e) => onChange(e.target.value)}
+        />
       )}
 
       {field.type === 'multiselect' && (

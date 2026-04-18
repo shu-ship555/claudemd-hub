@@ -11,6 +11,10 @@ function buildInitialConfig(): DesignConfig {
     for (const field of section.fields) {
       if (field.type === 'multiselect') {
         initial[section.id][field.id] = field.default || []
+      } else if (field.type === 'number') {
+        initial[section.id][field.id] = ''
+      } else if (field.type === 'checkbox') {
+        initial[section.id][field.id] = false
       } else {
         initial[section.id][field.id] = field.default || ''
       }
