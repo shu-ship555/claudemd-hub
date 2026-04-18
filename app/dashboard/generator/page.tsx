@@ -11,6 +11,8 @@ import { Input } from '@/components/ui/input'
 import { designTemplate, DesignConfig, DesignField, FieldValue, MultiSelectField } from '@/lib/design-template'
 import { generateDesignMarkdown } from '@/lib/generate-design'
 import { createConfigFile } from '../actions'
+import { buildInitialConfig } from '@/lib/hooks/use-design-config'
+import { downloadTextFile } from '@/lib/download'
 
 function shouldShowField(field: DesignField, config: DesignConfig, sectionId: string): boolean {
   if (!field.dependsOn) return true
@@ -102,20 +104,9 @@ function normalizeConfig(config: DesignConfig): DesignConfig {
 }
 
 export default function GeneratorPage() {
-  const [config, setConfig] = useState<DesignConfig>(() => {
-    const initial: DesignConfig = {}
-    for (const section of designTemplate) {
-      initial[section.id] = { enabled: section.enabled }
-      for (const field of section.fields) {
-        if (field.type === 'multiselect') {
-          initial[section.id][field.id] = field.default || []
-        } else {
-          initial[section.id][field.id] = field.default || ''
-        }
-      }
-    }
-    return normalizeConfig(initial)
-  })
+  const [config, setConfig] = useState<DesignConfig>(() =>
+    normalizeConfig(buildInitialConfig()),
+  )
 
   const [preview, setPreview] = useState(generateDesignMarkdown(config))
   const [isSaving, setIsSaving] = useState(false)
@@ -151,15 +142,7 @@ export default function GeneratorPage() {
     setPreview(generateDesignMarkdown(newConfig))
   }
 
-  const handleDownload = () => {
-    const element = document.createElement('a')
-    const file = new Blob([preview], { type: 'text/markdown' })
-    element.href = URL.createObjectURL(file)
-    element.download = fileName
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
-  }
+  const handleDownload = () => downloadTextFile(fileName, preview)
 
   const handleSave = async () => {
     if (!fileName.trim()) {

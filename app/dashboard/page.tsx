@@ -1,80 +1,70 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
+import { ChevronUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { designTemplate, DesignConfig, FieldValue } from '@/lib/design-template'
-import { generateDesignMarkdown } from '@/lib/generate-design'
+import { designTemplate, FieldValue } from '@/lib/design-template'
 import { createConfigFile } from './actions'
 import { DashboardHeader } from '@/components/dashboard-header'
+import { useDesignConfig } from '@/lib/hooks/use-design-config'
+import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
+import { downloadTextFile } from '@/lib/download'
+import { FieldRenderer } from '@/components/design-form/field-renderer'
+import { COLOR_FORMATS, getColorFormat, getRawColor, assembleColor } from '@/lib/color-utils'
 
-function buildInitialConfig(): DesignConfig {
-  const initial: DesignConfig = {}
-  for (const section of designTemplate) {
-    initial[section.id] = { enabled: section.enabled }
-    for (const field of section.fields) {
-      if (field.type === 'multiselect') {
-        initial[section.id][field.id] = field.default || []
-      } else {
-        initial[section.id][field.id] = field.default || ''
-      }
-    }
-  }
-  return initial
-}
+const HIDDEN_SECTIONS = new Set(['components', 'depth', 'agentGuide'])
 
 export default function DashboardPage() {
-  const [config, setConfig] = useState<DesignConfig>(() => buildInitialConfig())
-  const [preview, setPreview] = useState(() =>
-    generateDesignMarkdown(buildInitialConfig()),
-  )
+  const { config, preview, toggleSection, updateField, batchUpdate } = useDesignConfig()
+  const [detailedSections, setDetailedSections] = useState<Set<string>>(new Set())
+  const [colorFormat, setColorFormat] = useState('HEX')
+  const [customModes, setCustomModes] = useState<Set<string>>(new Set())
   const [isSaving, setIsSaving] = useState(false)
   const [fileName, setFileName] = useState('DESIGN.md')
-  const formScrollRef = useRef<HTMLDivElement>(null)
-  const previewScrollRef = useRef<HTMLTextAreaElement>(null)
-  const isSyncingRef = useRef(false)
+  const { refA: formScrollRef, refB: previewScrollRef, handleAScroll, handleBScroll } =
+    useScrollSync<HTMLDivElement, HTMLTextAreaElement>()
 
-  const handleToggleSection = (sectionId: string) => {
-    const newConfig = {
-      ...config,
-      [sectionId]: {
-        ...config[sectionId],
-        enabled: !config[sectionId].enabled,
-      },
-    }
-    setConfig(newConfig)
-    setPreview(generateDesignMarkdown(newConfig))
+  const visibleMixedSections = designTemplate
+    .filter((s) => !HIDDEN_SECTIONS.has(s.id))
+    .filter((s) => s.fields.some((f) => f.requirement === 'required') && s.fields.some((f) => f.requirement === 'optional'))
+
+  const isAllDetailed =
+    visibleMixedSections.length > 0 && visibleMixedSections.every((s) => detailedSections.has(s.id))
+
+  const handleGlobalModeChange = (checked: boolean) => {
+    setDetailedSections(checked ? new Set(visibleMixedSections.map((s) => s.id)) : new Set())
   }
 
-  const handleFieldChange = (
-    sectionId: string,
-    fieldId: string,
-    value: FieldValue,
-  ) => {
-    const newConfig = {
-      ...config,
-      [sectionId]: {
-        ...config[sectionId],
-        [fieldId]: value,
-      },
-    }
-    setConfig(newConfig)
-    setPreview(generateDesignMarkdown(newConfig))
+  const handleSectionDetailToggle = (sectionId: string) => {
+    setDetailedSections((prev) => {
+      const next = new Set(prev)
+      if (next.has(sectionId)) next.delete(sectionId)
+      else next.add(sectionId)
+      return next
+    })
   }
 
-  const handleDownload = () => {
-    const element = document.createElement('a')
-    const file = new Blob([preview], { type: 'text/markdown' })
-    element.href = URL.createObjectURL(file)
-    element.download = fileName
-    document.body.appendChild(element)
-    element.click()
-    document.body.removeChild(element)
+  const handleColorFormatChange = (newFormat: string) => {
+    setColorFormat(newFormat)
+    batchUpdate((prev) => {
+      const next = { ...prev }
+      for (const section of designTemplate) {
+        for (const field of section.fields) {
+          if (field.type !== 'color') continue
+          const fullValue = (prev[section.id]?.[field.id] as string) || ''
+          if (!fullValue) continue
+          const raw = getRawColor(fullValue, getColorFormat(fullValue))
+          if (!raw) continue
+          next[section.id] = { ...next[section.id], [field.id]: assembleColor(newFormat, raw) }
+        }
+      }
+      return next
+    })
   }
 
   const handleSave = async () => {
@@ -82,7 +72,6 @@ export default function DashboardPage() {
       alert('ファイル名を入力してください')
       return
     }
-
     setIsSaving(true)
     try {
       await createConfigFile(fileName, preview)
@@ -96,30 +85,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleFormScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (isSyncingRef.current) return
-    const target = e.currentTarget
-    const scrollPercentage = target.scrollTop / (target.scrollHeight - target.clientHeight)
-
-    if (previewScrollRef.current) {
-      isSyncingRef.current = true
-      previewScrollRef.current.scrollTop = scrollPercentage * (previewScrollRef.current.scrollHeight - previewScrollRef.current.clientHeight)
-      isSyncingRef.current = false
-    }
-  }
-
-  const handlePreviewScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
-    if (isSyncingRef.current) return
-    const target = e.currentTarget
-    const scrollPercentage = target.scrollTop / (target.scrollHeight - target.clientHeight)
-
-    if (formScrollRef.current) {
-      isSyncingRef.current = true
-      formScrollRef.current.scrollTop = scrollPercentage * (formScrollRef.current.scrollHeight - formScrollRef.current.clientHeight)
-      isSyncingRef.current = false
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader title="DESIGN.md Generator" subtitle="カスタム設計ガイドラインを生成して保存します" />
@@ -130,10 +95,36 @@ export default function DashboardPage() {
           <div
             ref={formScrollRef}
             className="space-y-6 max-h-[calc(100vh-200px)] overflow-y-auto"
-            onScroll={handleFormScroll}
+            onScroll={handleAScroll}
           >
+            <div className="flex items-center justify-between pr-4 pb-2">
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium">全セクション</span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm ${!isAllDetailed ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>簡易</span>
+                  <Switch
+                    checked={isAllDetailed}
+                    onCheckedChange={handleGlobalModeChange}
+                  />
+                  <span className={`text-sm ${isAllDetailed ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>詳細</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">カラー形式</span>
+                <select
+                  value={colorFormat}
+                  onChange={(e) => handleColorFormatChange(e.target.value)}
+                  className="rounded-md border border-input bg-background px-2 py-1.5 text-sm"
+                >
+                  {COLOR_FORMATS.map((f) => (
+                    <option key={f} value={f}>{f}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <div className="space-y-6 pr-4">
-              {designTemplate.map((section) => (
+              {designTemplate.filter((s) => !HIDDEN_SECTIONS.has(s.id)).map((section) => (
                 <div
                   key={section.id}
                   className="space-y-4 p-4 border border-border rounded-lg"
@@ -145,146 +136,90 @@ export default function DashboardPage() {
                     </div>
                     <Switch
                       checked={config[section.id]?.enabled || false}
-                      onCheckedChange={() => handleToggleSection(section.id)}
+                      onCheckedChange={() => toggleSection(section.id)}
                     />
                   </div>
 
-                  {config[section.id]?.enabled && (
-                    <div className="space-y-4 ml-2 pt-2 border-t border-border">
-                      {section.fields.map((field) => {
-                        // Check if this field should be displayed based on dependsOn
-                        let shouldDisplay = true
-                        if (field.dependsOn) {
-                          const depValue = config[section.id][field.dependsOn.fieldId]
-                          const depValues: FieldValue[] = Array.isArray(depValue)
-                            ? depValue
-                            : [depValue]
-                          shouldDisplay = field.dependsOn.values.some((v) =>
-                            depValues.includes(v),
-                          )
-                        }
-
-                        if (!shouldDisplay) return null
-
-                        return (
-                        <div key={field.id} className="space-y-1.5">
-                          <div className="flex items-center gap-1.5">
-                            <label className="text-sm font-medium">{field.label}</label>
-                            {field.requirement === 'required' && (
-                              <Badge variant="destructive">必須</Badge>
-                            )}
-                            {field.requirement === 'optional' && (
-                              <Badge variant="outline">任意</Badge>
-                            )}
+                  {config[section.id]?.enabled && (() => {
+                    const sectionHasRequired = section.fields.some((f) => f.requirement === 'required')
+                    const sectionHasOptional = section.fields.some((f) => f.requirement === 'optional')
+                    const isDetailed = detailedSections.has(section.id)
+                    return (
+                      <div className="space-y-4 ml-2 pt-2 border-t border-border">
+                        {sectionHasRequired && sectionHasOptional && (
+                          <div className="flex justify-end">
+                            <div className="inline-flex text-xs border border-border rounded-md overflow-hidden">
+                              <button
+                                type="button"
+                                onClick={() => isDetailed && handleSectionDetailToggle(section.id)}
+                                className={`px-2.5 py-1 transition-colors ${!isDetailed ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'}`}
+                              >
+                                簡易
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => !isDetailed && handleSectionDetailToggle(section.id)}
+                                className={`px-2.5 py-1 transition-colors ${isDetailed ? 'bg-muted text-foreground font-medium' : 'text-muted-foreground hover:text-foreground'}`}
+                              >
+                                詳細
+                              </button>
+                            </div>
                           </div>
+                        )}
+                        {section.fields.map((field) => {
+                          if (!isDetailed && field.requirement === 'optional' && sectionHasRequired) return null
 
-                          {field.type === 'select' && (
-                            <select
-                              value={
-                                (config[section.id][field.id] as string) ||
-                                field.default ||
-                                ''
-                              }
-                              onChange={(e) =>
-                                handleFieldChange(section.id, field.id, e.target.value)
-                              }
-                              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                            >
-                              {field.options.map((opt) => (
-                                <option key={opt} value={opt}>
-                                  {opt}
-                                </option>
-                              ))}
-                            </select>
-                          )}
+                          if (field.dependsOn) {
+                            const depValue = config[section.id][field.dependsOn.fieldId]
+                            const depValues: FieldValue[] = Array.isArray(depValue) ? depValue : [depValue]
+                            if (!field.dependsOn.values.some((v) => depValues.includes(v))) return null
+                          }
 
-                          {field.type === 'text' && (
-                            <Input
-                              placeholder={field.placeholder}
-                              value={(config[section.id][field.id] as string) || ''}
-                              onChange={(e) =>
-                                handleFieldChange(section.id, field.id, e.target.value)
-                              }
-                            />
-                          )}
-
-                          {field.type === 'multiselect' && (
-                            <div className="space-y-2">
-                              {field.options.map((opt) => {
-                                const current =
-                                  (config[section.id][field.id] as string[]) || []
-                                return (
-                                  <div
-                                    key={opt}
-                                    className="flex items-center gap-2"
-                                  >
-                                    <Checkbox
-                                      id={`${section.id}-${field.id}-${opt}`}
-                                      checked={current.includes(opt)}
-                                      onCheckedChange={(checked) => {
-                                        const updated = checked
-                                          ? [...current, opt]
-                                          : current.filter((item) => item !== opt)
-                                        handleFieldChange(section.id, field.id, updated)
-                                      }}
-                                    />
-                                    <label
-                                      htmlFor={`${section.id}-${field.id}-${opt}`}
-                                      className="text-sm cursor-pointer"
-                                    >
-                                      {opt}
-                                    </label>
-                                  </div>
-                                )
-                              })}
-                            </div>
-                          )}
-
-                          {field.type === 'number' && (
-                            <Input
-                              type="number"
-                              min={field.min}
-                              max={field.max}
-                              step={field.step || 1}
-                              value={(config[section.id][field.id] as number) || ''}
-                              onChange={(e) =>
-                                handleFieldChange(section.id, field.id, parseInt(e.target.value) || 0)
-                              }
-                            />
-                          )}
-
-                          {field.type === 'textarea' && (
-                            <Textarea
-                              placeholder={field.placeholder}
-                              value={(config[section.id][field.id] as string) || ''}
-                              rows={field.rows}
-                              onChange={(e) =>
-                                handleFieldChange(section.id, field.id, e.target.value)
-                              }
-                            />
-                          )}
-
-                          {field.type === 'checkbox' && (
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id={`${section.id}-${field.id}`}
-                                checked={
-                                  (config[section.id][field.id] as boolean) || false
-                                }
-                                onCheckedChange={(checked) =>
-                                  handleFieldChange(section.id, field.id, checked === true)
-                                }
+                          const customKey = `${section.id}:${field.id}`
+                          return (
+                            <div key={field.id} className="space-y-1.5">
+                              <div className="flex items-center gap-1.5">
+                                <label className="text-sm font-medium">{field.label}</label>
+                                {field.requirement === 'required' && (
+                                  <Badge variant="destructive">必須</Badge>
+                                )}
+                                {field.requirement === 'optional' && (
+                                  <Badge variant="outline">任意</Badge>
+                                )}
+                              </div>
+                              <FieldRenderer
+                                sectionId={section.id}
+                                field={field}
+                                value={config[section.id][field.id] as FieldValue}
+                                onChange={(val) => updateField(section.id, field.id, val)}
+                                colorFormat={colorFormat}
+                                isCustomMode={customModes.has(customKey)}
+                                onCustomModeChange={(isCustom) => {
+                                  setCustomModes((prev) => {
+                                    const next = new Set(prev)
+                                    if (isCustom) next.add(customKey)
+                                    else next.delete(customKey)
+                                    return next
+                                  })
+                                  if (isCustom) updateField(section.id, field.id, '')
+                                }}
                               />
-                              <label htmlFor={`${section.id}-${field.id}`} className="text-sm cursor-pointer">
-                                {field.label}
-                              </label>
                             </div>
-                          )}
-                        </div>
-                        )
-                      })}
-                    </div>
-                  )}
+                          )
+                        })}
+                        {isDetailed && (
+                          <button
+                            type="button"
+                            onClick={() => handleSectionDetailToggle(section.id)}
+                            className="w-full flex items-center justify-center gap-1 pt-2 text-xs text-muted-foreground hover:text-foreground transition-colors border-t border-border"
+                          >
+                            <ChevronUp className="h-3 w-3" />
+                            閉じる
+                          </button>
+                        )}
+                      </div>
+                    )
+                  })()}
                 </div>
               ))}
             </div>
@@ -311,14 +246,14 @@ export default function DashboardPage() {
                   value={preview}
                   readOnly
                   className="h-96 font-mono text-xs"
-                  onScroll={handlePreviewScroll}
+                  onScroll={handleBScroll}
                 />
               </div>
 
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={handleDownload}
+                  onClick={() => downloadTextFile(fileName, preview)}
                   disabled={isSaving}
                   className="flex-1"
                 >

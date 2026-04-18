@@ -155,12 +155,13 @@ function renderShadowGroup(heading: string, items: Array<[string, unknown]>): st
 function renderColorPalette(cfg: SectionCfg): string {
   let text = ''
   text += renderColorGroup('Primary', [
-    ['Primary text', cfg.primaryTextColor],
     ['CTA buttons, links', cfg.primaryCtaColor],
+    ['Primary text', cfg.primaryTextColor],
     ['Primary surface', cfg.primarySurfaceColor],
     ['Spotlight', cfg.spotlightColor],
   ])
   text += renderColorGroup('Semantic', [
+    ['Semantic / Accent', cfg.semanticColor],
     ['Success', cfg.successColor],
     ['Error', cfg.errorColor],
     ['Warning', cfg.warningColor],
@@ -355,16 +356,15 @@ function renderGuidelines(cfg: SectionCfg): string {
 
 function renderResponsive(cfg: SectionCfg): string {
   let text = ''
-  const min = typeof cfg.minBreakpoint === 'number' ? cfg.minBreakpoint : null
-  const max = typeof cfg.maxBreakpoint === 'number' ? cfg.maxBreakpoint : null
-  const count =
-    typeof cfg.breakpointCount === 'number' && cfg.breakpointCount > 0 ? cfg.breakpointCount : null
+  const selected = Array.isArray(cfg.breakpoints) ? (cfg.breakpoints as string[]) : []
+  const customList = str(cfg.customBreakpoints)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean)
+  const allBps = [...selected, ...customList]
 
-  if (min !== null && max !== null) {
-    const countText = count !== null ? ` (${count} breakpoints)` : ''
-    text += `Breakpoints: ${min}–${max}px${countText}\n\n`
-  } else if (min !== null || max !== null) {
-    text += `Breakpoint: ${min ?? max}px\n\n`
+  if (allBps.length > 0) {
+    text += `Breakpoints: ${allBps.join(', ')}\n\n`
   }
 
   if (hasValue(cfg.responsiveNotes)) {

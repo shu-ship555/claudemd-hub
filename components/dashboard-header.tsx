@@ -28,26 +28,26 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
   }, [])
 
   return (
-    <header className="border-b border-border sticky top-0 z-50 bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <header className="sticky top-0 z-50 h-12 bg-black/80 backdrop-blur-[20px] backdrop-saturate-180">
+      <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold">{title}</h1>
+          <h1 className="text-sm font-semibold text-white leading-tight">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-muted-foreground">{subtitle || userEmail}</p>
+            <p className="text-xs text-white/60">{subtitle}</p>
           )}
           {!subtitle && userEmail && (
-            <p className="text-sm text-muted-foreground">{userEmail}</p>
+            <p className="text-xs text-white/60">{userEmail}</p>
           )}
         </div>
-        <div className="flex items-center gap-4">
-          <a href="/dashboard" className="text-sm hover:text-foreground transition-colors">
+        <nav className="flex items-center gap-4">
+          <a href="/dashboard" className="text-xs text-white/80 hover:text-white transition-colors">
             ジェネレーター
           </a>
-          <a href="/dashboard/files" className="text-sm hover:text-foreground transition-colors">
+          <a href="/dashboard/files" className="text-xs text-white/80 hover:text-white transition-colors">
             設定ファイル管理
           </a>
           <DashboardClient />
-        </div>
+        </nav>
       </div>
     </header>
   )

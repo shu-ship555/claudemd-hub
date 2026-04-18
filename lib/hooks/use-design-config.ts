@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback } from 'react'
 import { designTemplate, DesignConfig, FieldValue } from '@/lib/design-template'
 import { generateDesignMarkdown } from '@/lib/generate-design'
 
-function buildInitialConfig(): DesignConfig {
+export function buildInitialConfig(): DesignConfig {
   const initial: DesignConfig = {}
   for (const section of designTemplate) {
     initial[section.id] = { enabled: section.enabled }
@@ -60,8 +60,16 @@ export function useDesignConfig() {
     [],
   )
 
+  const batchUpdate = useCallback((updater: (prev: DesignConfig) => DesignConfig) => {
+    setConfig((prev) => {
+      const next = updater(prev)
+      setPreview(generateDesignMarkdown(next))
+      return next
+    })
+  }, [])
+
   return useMemo(
-    () => ({ config, preview, toggleSection, updateField }),
-    [config, preview, toggleSection, updateField],
+    () => ({ config, preview, toggleSection, updateField, batchUpdate }),
+    [config, preview, toggleSection, updateField, batchUpdate],
   )
 }

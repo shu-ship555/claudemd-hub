@@ -3,103 +3,165 @@
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
-import { DesignField } from '@/lib/design-template'
+import { DesignField, FieldValue } from '@/lib/design-template'
+import { assembleColor, COLOR_PLACEHOLDERS, getRawColor } from '@/lib/color-utils'
 
 interface FieldRendererProps {
   sectionId: string
   field: DesignField
-  value: unknown
-  onChange: (value: unknown) => void
+  value: FieldValue
+  onChange: (value: FieldValue) => void
+  colorFormat?: string
+  isCustomMode?: boolean
+  onCustomModeChange?: (isCustom: boolean) => void
 }
 
-export function FieldRenderer({ sectionId, field, value, onChange }: FieldRendererProps) {
-  return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{field.label}</label>
+const SELECT_CLASS = 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
 
-      {field.type === 'select' && (
+export function FieldRenderer({
+  sectionId,
+  field,
+  value,
+  onChange,
+  colorFormat = 'HEX',
+  isCustomMode = false,
+  onCustomModeChange,
+}: FieldRendererProps) {
+  if (field.type === 'select') {
+    if (!field.allowCustom) {
+      return (
         <select
           value={(value as string) || field.default || ''}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className={SELECT_CLASS}
         >
           {field.options.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
-      )}
+      )
+    }
 
-      {field.type === 'text' && (
-        <Input
-          placeholder={field.placeholder}
-          value={(value as string) || ''}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      )}
+    const currentValue = (value as string) || ''
+    const selectValue = isCustomMode ? 'カスタム入力' : (currentValue || field.default || '')
 
-      {field.type === 'number' && (
-        <Input
-          type="number"
-          min={field.min}
-          max={field.max}
-          step={field.step || 1}
-          value={(value as number) || ''}
-          onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-        />
-      )}
-
-      {field.type === 'checkbox' && (
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id={`${sectionId}-${field.id}`}
-            checked={(value as boolean) || false}
-            onCheckedChange={(checked) => onChange(checked)}
+    return (
+      <div className="space-y-2">
+        <select
+          value={selectValue}
+          onChange={(e) => {
+            if (e.target.value === 'カスタム入力') {
+              onCustomModeChange?.(true)
+              onChange('')
+            } else {
+              onCustomModeChange?.(false)
+              onChange(e.target.value)
+            }
+          }}
+          className={SELECT_CLASS}
+        >
+          <option value="">選択してください</option>
+          {field.options.map((opt) => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+          <option value="カスタム入力">カスタム入力</option>
+        </select>
+        {isCustomMode && (
+          <Input
+            placeholder={field.customPlaceholder || ''}
+            value={currentValue}
+            onChange={(e) => onChange(e.target.value)}
           />
-          <label htmlFor={`${sectionId}-${field.id}`} className="text-sm cursor-pointer">
-            {field.label}
-          </label>
-        </div>
-      )}
+        )}
+      </div>
+    )
+  }
 
-      {field.type === 'textarea' && (
-        <Textarea
-          placeholder={field.placeholder}
-          value={(value as string) || ''}
-          rows={field.rows}
-          onChange={(e) => onChange(e.target.value)}
+  if (field.type === 'text') {
+    return (
+      <Input
+        placeholder={field.placeholder}
+        value={(value as string) || ''}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    )
+  }
+
+  if (field.type === 'number') {
+    return (
+      <Input
+        type="number"
+        min={field.min}
+        max={field.max}
+        step={field.step || 1}
+        value={(value as number) || ''}
+        onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+      />
+    )
+  }
+
+  if (field.type === 'textarea') {
+    return (
+      <Textarea
+        placeholder={field.placeholder}
+        value={(value as string) || ''}
+        rows={field.rows}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    )
+  }
+
+  if (field.type === 'checkbox') {
+    return (
+      <div className="flex items-center gap-2">
+        <Checkbox
+          id={`${sectionId}-${field.id}`}
+          checked={(value as boolean) || false}
+          onCheckedChange={(checked) => onChange(checked === true)}
         />
-      )}
+        <label htmlFor={`${sectionId}-${field.id}`} className="text-sm cursor-pointer">
+          {field.label}
+        </label>
+      </div>
+    )
+  }
 
-      {field.type === 'multiselect' && (
-        <div className="space-y-2">
-          {field.options.map((opt) => {
-            const current = (value as string[]) || []
-            const checked = current.includes(opt)
-            return (
-              <div key={opt} className="flex items-center gap-2">
-                <Checkbox
-                  id={`${sectionId}-${field.id}-${opt}`}
-                  checked={checked}
-                  onCheckedChange={(isChecked) => {
-                    const updated = isChecked
-                      ? [...current, opt]
-                      : current.filter((item) => item !== opt)
-                    onChange(updated)
-                  }}
-                />
-                <label
-                  htmlFor={`${sectionId}-${field.id}-${opt}`}
-                  className="text-sm cursor-pointer"
-                >
-                  {opt}
-                </label>
-              </div>
-            )
-          })}
-        </div>
-      )}
-    </div>
-  )
+  if (field.type === 'multiselect') {
+    const current = (value as string[]) || []
+    return (
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
+        {field.options.map((opt) => (
+          <div key={opt} className="flex items-center gap-2">
+            <Checkbox
+              id={`${sectionId}-${field.id}-${opt}`}
+              checked={current.includes(opt)}
+              onCheckedChange={(checked) => {
+                const updated = checked
+                  ? [...current, opt]
+                  : current.filter((item) => item !== opt)
+                onChange(updated)
+              }}
+            />
+            <label htmlFor={`${sectionId}-${field.id}-${opt}`} className="text-sm cursor-pointer">
+              {opt}
+            </label>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (field.type === 'color') {
+    const rawVal = getRawColor((value as string) || '', colorFormat)
+    return (
+      <Input
+        placeholder={COLOR_PLACEHOLDERS[colorFormat] || ''}
+        value={rawVal}
+        onChange={(e) => onChange(assembleColor(colorFormat, e.target.value))}
+        className="font-mono"
+      />
+    )
+  }
+
+  return null
 }
