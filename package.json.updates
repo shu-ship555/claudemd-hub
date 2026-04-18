@@ -1,0 +1,29 @@
+// Add these scripts to package.json:
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  }
+}
+
+// Key dependencies are already installed:
+- next (latest with App Router)
+- react & react-dom
+- @supabase/supabase-js
+- @supabase/auth-helpers-nextjs (note: deprecated, consider migration)
+- next-themes (for dark mode)
+- tailwindcss (v4)
+- typescript
+- @types/node, @types/react, @types/react-dom
+
+// shadcn/ui components added:
+- button
+- card
+- input
+- label
+- alert
+- tabs
+- dialog
+- form
