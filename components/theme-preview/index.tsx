@@ -11,6 +11,20 @@ const GOOGLE_FONTS_FAMILIES: Record<string, string> = {
   'Noto Sans JP': 'Noto+Sans+JP',
 }
 
+// macOS/Windows でフォント名が異なるシステムフォントのフォールバックスタック
+const SYSTEM_FONT_STACK: Record<string, string> = {
+  'Yu Gothic': '"Yu Gothic", YuGothic, sans-serif',
+  'Meiryo': 'Meiryo, "Meiryo UI", sans-serif',
+  'Helvetica': 'Helvetica, "Helvetica Neue", Arial, sans-serif',
+  'Arial': 'Arial, sans-serif',
+  'San Francisco': '-apple-system, BlinkMacSystemFont, sans-serif',
+}
+
+function resolveFontFamily(latin?: string, japanese?: string): string {
+  const resolve = (name?: string) => name ? (SYSTEM_FONT_STACK[name] ?? `"${name}"`) : null
+  return [resolve(latin), resolve(japanese), 'sans-serif'].filter(Boolean).join(', ')
+}
+
 function useGoogleFonts(fonts: { latin?: string; japanese?: string } | undefined) {
   useEffect(() => {
     const families = [fonts?.latin, fonts?.japanese]
@@ -43,14 +57,20 @@ const GRANULARITIES: { key: Granularity; label: string }[] = [
 
 export type Colors = {
   bg: string; surface: string; border: string; primary: string
+  secondary: string; tertiary: string
   text: string; muted: string; success: string; warning: string
   danger: string; orange: string; info: string
+  gray0: string; gray1: string; gray2: string; gray3: string; gray4: string
+  gray5: string; gray6: string; gray7: string; gray8: string; gray9: string
 }
 
 const DARK: Colors = {
   bg: '#0b1326', surface: '#111c35', border: '#1e2d50', primary: '#2665fd',
+  secondary: '#3b65ce', tertiary: '#0d38a5',
   text: '#dae2fd', muted: '#7a90c4', success: '#4ade80', warning: '#fbbf24',
   danger: '#ffb4ab', orange: '#fb923c', info: '#38bdf8',
+  gray0: '#ffffff', gray1: '#e3e3e3', gray2: '#c7c7c7', gray3: '#ababab', gray4: '#8f8f8f',
+  gray5: '#737373', gray6: '#575757', gray7: '#3b3b3b', gray8: '#1f1f1f', gray9: '#000000',
 }
 
 const LIGHT: Colors = LIGHT_COLORS
@@ -70,15 +90,12 @@ function DefaultAtom({ c, sp, circle }: PreviewProps) {
         <div className="flex flex-wrap" style={{ gap }}>
           {[
             { name: 'Primary', color: c.primary },
-            { name: 'Info', color: c.info },
+            { name: 'Secondary', color: c.secondary },
+            { name: 'Tertiary', color: c.tertiary },
             { name: 'Success', color: c.success },
             { name: 'Warning', color: c.warning },
             { name: 'Danger', color: c.danger },
-            { name: 'Highlight', color: c.orange },
             { name: 'Text', color: c.text },
-            { name: 'Muted', color: c.muted },
-            { name: 'Border', color: c.border },
-            { name: 'Surface', color: c.surface },
             { name: 'BG', color: c.bg },
           ].map(({ name, color }) => (
             <div key={name} className="flex flex-col items-center gap-1">
@@ -111,7 +128,6 @@ function DefaultAtom({ c, sp, circle }: PreviewProps) {
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Badges</p>
         <div className="flex flex-wrap" style={{ gap }}>
           {[
-            { label: 'Info', bg: `${c.info}22`, color: c.info },
             { label: 'Success', bg: `${c.success}22`, color: c.success },
             { label: 'Warning', bg: `${c.warning}22`, color: c.warning },
             { label: 'Danger', bg: `${c.danger}22`, color: c.danger },
@@ -332,7 +348,7 @@ export function ThemePreview({ theme, height = '400px', customColors, fonts, lay
       {/* Preview — ここだけスクロール */}
       <div
         className="overflow-y-auto min-h-0"
-        style={{ fontFamily: [fonts?.latin, fonts?.japanese, 'sans-serif'].filter(Boolean).join(', ') || undefined }}
+        style={{ fontFamily: resolveFontFamily(fonts?.latin, fonts?.japanese) }}
       >
         <PreviewComponent c={colors} sp={sp} circle={circle} />
       </div>

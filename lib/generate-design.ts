@@ -1,4 +1,5 @@
 import { DesignConfig, designTemplate } from './design-template'
+import { SPACING_SCALES } from './constants'
 
 type SectionCfg = Record<string, unknown>
 
@@ -10,13 +11,7 @@ const SECTION_TITLES: Record<string, string> = {
   visualTheme: 'Visual Theme & Atmosphere',
   colorPalette: 'Color Palette & Roles',
   typography: 'Typography Rules',
-  components: 'Component Stylings',
   layout: 'Layout',
-  depth: 'Depth',
-  guidelines: "Do's and Don'ts",
-  responsive: 'Responsive Behavior',
-  agentGuide: 'Agent Prompt Guide',
-  misc: 'Additional Notes',
 }
 
 export function generateDesignMarkdown(config: DesignConfig): string {
@@ -53,20 +48,8 @@ function generateSectionContent(sectionId: string, cfg: SectionCfg): string {
       return renderColorPalette(cfg)
     case 'typography':
       return renderTypography(cfg)
-    case 'components':
-      return renderComponents(cfg)
     case 'layout':
       return renderLayout(cfg)
-    case 'depth':
-      return renderDepth(cfg)
-    case 'guidelines':
-      return renderGuidelines(cfg)
-    case 'responsive':
-      return renderResponsive(cfg)
-    case 'agentGuide':
-      return renderAgentGuide(cfg)
-    case 'misc':
-      return renderMisc(cfg)
     default:
       return ''
   }
@@ -142,40 +125,44 @@ function renderColorGroup(heading: string, items: Array<[string, unknown]>): str
   return `${text}\n`
 }
 
-function renderShadowGroup(heading: string, items: Array<[string, unknown]>): string {
-  const rows = items.filter(([, v]) => hasValue(v))
-  if (rows.length === 0) return ''
-  let text = `### ${heading}\n`
-  for (const [name, value] of rows) {
-    text += `- **${name}** (\`${String(value).trim()}\`)\n`
-  }
-  return `${text}\n`
+function renderNotes(raw: unknown): string {
+  const lines = toLines(raw)
+  if (lines.length === 0) return ''
+  return lines.map((l) => (l.startsWith('-') ? l : `- ${l}`)).join('\n') + '\n'
 }
 
 function renderColorPalette(cfg: SectionCfg): string {
   let text = ''
   text += renderColorGroup('Primary', [
-    ['CTA buttons, links', cfg.primaryCtaColor],
-    ['Primary text', cfg.primaryTextColor],
+    ['Primary', cfg.primaryCtaColor],
+    ['Secondary', cfg.secondaryCtaColor],
+    ['Tertiary', cfg.tertiaryCtaColor],
     ['Primary surface', cfg.primarySurfaceColor],
-    ['Spotlight', cfg.spotlightColor],
   ])
+  const keyNotes = renderNotes(cfg.keyColorNotes)
+  if (keyNotes) text += `#### キーカラーの使い方\n${keyNotes}\n`
+  text += renderColorGroup('Grayscale', [
+    ['White', cfg.gray0],
+    ['Gray 1', cfg.gray1],
+    ['Gray 2', cfg.gray2],
+    ['Gray 3', cfg.gray3],
+    ['Gray 4', cfg.gray4],
+    ['Gray 5', cfg.gray5],
+    ['Gray 6', cfg.gray6],
+    ['Gray 7', cfg.gray7],
+    ['Gray 8', cfg.gray8],
+    ['Black', cfg.gray9],
+  ])
+  const commonNotes = renderNotes(cfg.commonColorNotes)
+  if (commonNotes) text += `#### グレースケールの使い方\n${commonNotes}\n`
   text += renderColorGroup('Semantic', [
-    ['Semantic / Accent', cfg.semanticColor],
     ['Success', cfg.successColor],
     ['Error', cfg.errorColor],
     ['Warning', cfg.warningColor],
     ['Weak text', cfg.weakTextColor],
   ])
-  text += renderColorGroup('Neutral', [
-    ['Secondary text', cfg.secondaryTextColor],
-    ['Card borders', cfg.borderColor],
-    ['Subtle surface', cfg.subtleSurfaceColor],
-  ])
-  text += renderShadowGroup('Shadows', [
-    ['Elevated', cfg.shadowElevated],
-    ['Soft', cfg.shadowSoft],
-  ])
+  const semanticNotes = renderNotes(cfg.semanticColorNotes)
+  if (semanticNotes) text += `#### セマンティックカラーの使い方\n${semanticNotes}\n`
   return text
 }
 
@@ -190,159 +177,20 @@ function renderTypography(cfg: SectionCfg): string {
   return `${text}\n`
 }
 
-function renderComponents(cfg: SectionCfg): string {
-  let text = ''
-
-  const btnLines: string[] = []
-
-  const primaryParts: string[] = []
-  if (hasValue(cfg.primaryBtnBg)) primaryParts.push(`\`${str(cfg.primaryBtnBg).trim()}\``)
-  if (hasValue(cfg.primaryBtnText)) primaryParts.push(`\`${str(cfg.primaryBtnText).trim()}\` text`)
-  if (hasValue(cfg.primaryBtnPadding))
-    primaryParts.push(`${str(cfg.primaryBtnPadding).trim()} padding`)
-  if (hasValue(cfg.primaryBtnRadius))
-    primaryParts.push(`${str(cfg.primaryBtnRadius).trim()} radius`)
-  if (primaryParts.length > 0) {
-    btnLines.push(`- **Primary**: ${primaryParts.join(', ')}`)
-  }
-
-  if (hasValue(cfg.secondaryBtnStyle)) {
-    btnLines.push(`- **Secondary**: ${str(cfg.secondaryBtnStyle).trim()}`)
-  }
-
-  for (const line of toLines(cfg.otherButtons)) {
-    const colonMatch = line.match(/^(.+?):\s*(.+)$/)
-    if (colonMatch) {
-      btnLines.push(`- **${colonMatch[1].trim()}**: ${colonMatch[2].trim()}`)
-    } else {
-      btnLines.push(`- ${line}`)
-    }
-  }
-
-  if (btnLines.length > 0) {
-    text += `### Buttons\n${btnLines.join('\n')}\n\n`
-  }
-
-  const cardParts: string[] = []
-  if (hasValue(cfg.cardBorder)) cardParts.push(`\`${str(cfg.cardBorder).trim()}\``)
-  if (hasValue(cfg.cardRadius)) cardParts.push(`${str(cfg.cardRadius).trim()} radius`)
-  if (cardParts.length > 0) {
-    text += `### Cards: ${cardParts.join(', ')}\n`
-  }
-
-  if (hasValue(cfg.inputStyle)) {
-    text += `### Inputs: ${str(cfg.inputStyle).trim()}\n`
-  }
-
-  if (cardParts.length > 0 || hasValue(cfg.inputStyle)) text += '\n'
-
-  return text
-}
-
 function renderLayout(cfg: SectionCfg): string {
   const bullets: string[] = []
 
-  const range = str(cfg.spacingRange).trim()
   const base = str(cfg.spacingBase).trim()
-  if (range && base) {
-    bullets.push(`- Spacing: ${range} (${base} base)`)
-  } else if (range) {
-    bullets.push(`- Spacing: ${range}`)
+  if (base) {
+    bullets.push(`- Base Unit: ${base}`)
   }
-
-  const radii: Array<[string, unknown]> = [
-    ['small', cfg.radiusSmall],
-    ['buttons', cfg.radiusButton],
-    ['cards', cfg.radiusCard],
-    ['sections', cfg.radiusSection],
-    ['large', cfg.radiusLarge],
-  ]
-  const validRadii = radii.filter(([, v]) => hasValue(v))
-  if (validRadii.length > 0 || cfg.useCircleRadius) {
-    const parts = validRadii.map(([label, value]) => `${String(value).trim()} (${label})`)
-    if (cfg.useCircleRadius) parts.push('50% (circles)')
-    bullets.push(`- Radius: ${parts.join(', ')}`)
+  if (base && SPACING_SCALES[base]) {
+    bullets.push(`- Spacing Scale: ${SPACING_SCALES[base].join(', ')}`)
+  }
+  if (cfg.useCircleRadius) {
+    bullets.push(`- Radius: 50% (circles)`)
   }
 
   if (bullets.length === 0) return ''
   return `${bullets.join('\n')}\n\n`
-}
-
-function renderDepth(cfg: SectionCfg): string {
-  const bullets: string[] = []
-  if (hasValue(cfg.shadowPhilosophy)) {
-    bullets.push(`- ${str(cfg.shadowPhilosophy).trim()}`)
-  }
-  if (hasValue(cfg.ambientShadow)) {
-    bullets.push(`- Soft ambient: \`${str(cfg.ambientShadow).trim()}\``)
-  }
-  if (bullets.length === 0) return ''
-  return `${bullets.join('\n')}\n\n`
-}
-
-function renderGuidelines(cfg: SectionCfg): string {
-  let text = ''
-  const dos = toLines(cfg.dos)
-  const donts = toLines(cfg.donts)
-  if (dos.length > 0) {
-    text += `### Do: ${dos.join(', ')}\n`
-  }
-  if (donts.length > 0) {
-    text += `### Don't: ${donts.join(', ')}\n`
-  }
-  if (text) text += '\n'
-  return text
-}
-
-function renderResponsive(cfg: SectionCfg): string {
-  let text = ''
-  const bpEntries: Array<[string, unknown]> = [
-    ['sm', cfg.bpSm],
-    ['md', cfg.bpMd],
-    ['lg', cfg.bpLg],
-    ['xl', cfg.bpXl],
-    ['2xl', cfg.bp2xl],
-  ]
-  const bps = bpEntries
-    .filter(([, v]) => v !== '' && v !== undefined && v !== null && v !== 0 && Number(v) > 0)
-    .map(([name, v]) => `${name}: ${v}px`)
-
-  if (bps.length > 0) {
-    text += `Breakpoints: ${bps.join(', ')}\n\n`
-  }
-
-  if (hasValue(cfg.responsiveNotes)) {
-    text += `${str(cfg.responsiveNotes).trim()}\n\n`
-  }
-  return text
-}
-
-function renderAgentGuide(cfg: SectionCfg): string {
-  let text = ''
-  const items: Array<[string, unknown]> = [
-    ['Text', cfg.agentTextColor],
-    ['CTA', cfg.agentCtaColor],
-    ['Background', cfg.agentBgColor],
-    ['Border', cfg.agentBorderColor],
-  ]
-  for (const [name, value] of items) {
-    if (!hasValue(value)) continue
-    const parsed = parseNameValue(value)
-    if (parsed.name) {
-      text += `- ${name}: ${parsed.name} (\`${parsed.value}\`)\n`
-    } else {
-      text += `- ${name}: \`${parsed.value}\`\n`
-    }
-  }
-  if (text) text += '\n'
-  if (hasValue(cfg.agentExamples)) {
-    text += `${str(cfg.agentExamples).trim()}\n\n`
-  }
-  return text
-}
-
-function renderMisc(cfg: SectionCfg): string {
-  const content = typeof cfg.miscContent === 'string' ? cfg.miscContent.trim() : ''
-  if (!content) return ''
-  return `${content}\n\n`
 }
