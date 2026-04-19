@@ -1,8 +1,34 @@
 'use client'
 
 import { Moon, Sun } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { TabBar } from '@/components/ui/tab-bar'
+import { LIGHT_COLORS } from '@/lib/constants'
+
+const GOOGLE_FONTS_FAMILIES: Record<string, string> = {
+  'Roboto': 'Roboto',
+  'Inter': 'Inter',
+  'Noto Sans JP': 'Noto+Sans+JP',
+}
+
+function useGoogleFonts(fonts: { latin?: string; japanese?: string } | undefined) {
+  useEffect(() => {
+    const families = [fonts?.latin, fonts?.japanese]
+      .filter((f): f is string => !!f && f in GOOGLE_FONTS_FAMILIES)
+      .map((f) => GOOGLE_FONTS_FAMILIES[f])
+    if (families.length === 0) return
+
+    const url = `https://fonts.googleapis.com/css2?${families.map((f) => `family=${f}:wght@400;500;700`).join('&')}&display=swap`
+    const existing = document.querySelector(`link[data-gf="${families.join(',')}"]`)
+    if (existing) return
+
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = url
+    link.dataset.gf = families.join(',')
+    document.head.appendChild(link)
+  }, [fonts?.latin, fonts?.japanese])
+}
 
 export type Granularity = 'atom' | 'module' | 'component' | 'template'
 
@@ -15,42 +41,48 @@ const GRANULARITIES: { key: Granularity; label: string }[] = [
 
 // ── カラーセット ──────────────────────────────────────────────────────────────
 
-type Colors = {
+export type Colors = {
   bg: string; surface: string; border: string; primary: string
   text: string; muted: string; success: string; warning: string
-  danger: string; orange: string
+  danger: string; orange: string; info: string
 }
 
 const DARK: Colors = {
   bg: '#0b1326', surface: '#111c35', border: '#1e2d50', primary: '#2665fd',
   text: '#dae2fd', muted: '#7a90c4', success: '#4ade80', warning: '#fbbf24',
-  danger: '#ffb4ab', orange: '#fb923c',
+  danger: '#ffb4ab', orange: '#fb923c', info: '#38bdf8',
 }
 
-const LIGHT: Colors = {
-  bg: '#f8faff', surface: '#ffffff', border: '#d1daf5', primary: '#2665fd',
-  text: '#0f1e3d', muted: '#5a6a9a', success: '#16a34a', warning: '#d97706',
-  danger: '#dc2626', orange: '#ea580c',
-}
+const LIGHT: Colors = LIGHT_COLORS
 
 // ── デフォルトテーマ コンポーネント ──────────────────────────────────────────
 
-function DefaultAtom({ c }: { c: Colors }) {
+type PreviewProps = { c: Colors; sp: number; circle: boolean }
+
+function DefaultAtom({ c, sp, circle }: PreviewProps) {
+  const gap = sp
+  const pad = sp * 1.5
+  const brad = circle ? '50%' : `${sp}px`
   return (
-    <div className="space-y-6 p-5 rounded-xl" style={{ background: c.bg, color: c.text }}>
+    <div className="space-y-6 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Colors</p>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-wrap" style={{ gap }}>
           {[
             { name: 'Primary', color: c.primary },
+            { name: 'Info', color: c.info },
             { name: 'Success', color: c.success },
             { name: 'Warning', color: c.warning },
             { name: 'Danger', color: c.danger },
             { name: 'Highlight', color: c.orange },
+            { name: 'Text', color: c.text },
             { name: 'Muted', color: c.muted },
+            { name: 'Border', color: c.border },
+            { name: 'Surface', color: c.surface },
+            { name: 'BG', color: c.bg },
           ].map(({ name, color }) => (
             <div key={name} className="flex flex-col items-center gap-1">
-              <div className="w-9 h-9 rounded-lg" style={{ background: color }} />
+              <div className="w-9 h-9" style={{ background: color, borderRadius: brad }} />
               <span className="text-[10px]" style={{ color: c.muted }}>{name}</span>
             </div>
           ))}
@@ -59,32 +91,34 @@ function DefaultAtom({ c }: { c: Colors }) {
 
       <section className="space-y-1">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Typography</p>
-        <p className="font-bold" style={{ fontSize: 18, color: c.text }}>Page Title</p>
+        <p className="font-bold" style={{ fontSize: 18, color: c.text }}>Design System デザインシステム</p>
         <p className="font-bold font-mono" style={{ fontSize: 20, color: c.text }}>1,234.56</p>
-        <p style={{ fontSize: 14, color: c.text }}>Body text — 14px regular</p>
-        <p style={{ fontSize: 12, color: c.muted }}>Supplemental — 12px muted</p>
-        <p style={{ fontSize: 10, color: c.muted }}>Minimum — 10px</p>
+        <p style={{ fontSize: 14, color: c.text }}>Body text — 本文テキスト 14px</p>
+        <p style={{ fontSize: 12, color: c.muted }}>Supplemental — 補足テキスト 12px</p>
+        <p style={{ fontSize: 10, color: c.muted }}>Minimum — 最小サイズ 10px</p>
       </section>
 
       <section className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Buttons</p>
-        <div className="flex gap-2 flex-wrap">
-          <button className="px-3 py-1.5 rounded-lg text-sm font-medium" style={{ background: c.primary, color: '#fff' }}>Primary</button>
-          <button className="px-3 py-1.5 rounded-lg text-sm font-medium" style={{ background: 'transparent', border: `1px solid ${c.border}`, color: c.text }}>Secondary</button>
-          <button className="px-3 py-1.5 rounded-lg text-sm font-medium opacity-40 cursor-not-allowed" style={{ background: c.primary, color: '#fff' }}>Disabled</button>
+        <div className="flex flex-wrap" style={{ gap }}>
+          <button className="text-sm font-medium" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Primary</button>
+          <button className="text-sm font-medium" style={{ background: 'transparent', border: `1px solid ${c.border}`, color: c.text, padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Secondary</button>
+          <button className="text-sm font-medium opacity-40 cursor-not-allowed" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Disabled</button>
         </div>
       </section>
 
       <section className="space-y-2">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Badges</p>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-wrap" style={{ gap }}>
           {[
-            { label: 'Info', bg: `${c.primary}22`, color: c.primary },
+            { label: 'Info', bg: `${c.info}22`, color: c.info },
             { label: 'Success', bg: `${c.success}22`, color: c.success },
             { label: 'Warning', bg: `${c.warning}22`, color: c.warning },
             { label: 'Danger', bg: `${c.danger}22`, color: c.danger },
           ].map(({ label, bg, color }) => (
-            <span key={label} className="px-2 py-0.5 rounded-full text-xs font-medium" style={{ background: bg, color }}>{label}</span>
+            <span key={label} className="text-xs font-medium" style={{ background: bg, color, padding: `${sp * 0.25}px ${sp}px`, borderRadius: circle ? 9999 : sp }}>
+              {label}
+            </span>
           ))}
         </div>
       </section>
@@ -92,27 +126,29 @@ function DefaultAtom({ c }: { c: Colors }) {
   )
 }
 
-function DefaultModule({ c }: { c: Colors }) {
+function DefaultModule({ c, sp, circle }: PreviewProps) {
+  const pad = sp * 1.5
+  const brad = circle ? 9999 : sp
   return (
-    <div className="space-y-4 p-5 rounded-xl" style={{ background: c.bg, color: c.text }}>
+    <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-1.5">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Form Field</p>
         <div className="space-y-1">
           <label className="text-sm font-medium" style={{ color: c.text }}>Email</label>
-          <input readOnly defaultValue="user@example.com" className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-            style={{ background: c.surface, border: `1px solid ${c.border}`, color: c.text }} />
+          <input readOnly defaultValue="user@example.com" className="w-full text-sm outline-none"
+            style={{ background: c.surface, border: `1px solid ${c.border}`, color: c.text, padding: `${sp}px ${sp * 1.5}px`, borderRadius: sp }} />
         </div>
       </section>
 
       <section className="space-y-1.5">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Stat Cards</p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3" style={{ gap: sp }}>
           {[
             { label: 'Sets', value: '12', color: c.primary },
             { label: 'Reps', value: '84', color: c.success },
             { label: 'kcal', value: '320', color: c.orange },
           ].map(({ label, value, color }) => (
-            <div key={label} className="rounded-lg p-2.5 text-center" style={{ background: c.surface, border: `1px solid ${c.border}` }}>
+            <div key={label} className="text-center" style={{ background: c.surface, border: `1px solid ${c.border}`, padding: sp * 1.25, borderRadius: sp }}>
               <p className="font-bold font-mono text-xl" style={{ color }}>{value}</p>
               <p className="text-xs" style={{ color: c.muted }}>{label}</p>
             </div>
@@ -122,24 +158,35 @@ function DefaultModule({ c }: { c: Colors }) {
 
       <section className="space-y-1.5">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Alert</p>
-        <div className="flex gap-2 items-start rounded-lg px-3 py-2.5" style={{ background: `${c.primary}22`, border: `1px solid ${c.primary}44` }}>
+        <div className="flex items-start" style={{ gap: sp, background: `${c.primary}22`, border: `1px solid ${c.primary}44`, padding: `${sp}px ${sp * 1.5}px`, borderRadius: sp }}>
           <span style={{ color: c.primary, fontSize: 14 }}>ℹ</span>
           <p className="text-sm" style={{ color: c.text }}>Synced 3 minutes ago</p>
+        </div>
+      </section>
+
+      {/* circle prop used for badge-style chip */}
+      <section className="space-y-1.5">
+        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Tags</p>
+        <div className="flex flex-wrap" style={{ gap: sp * 0.5 }}>
+          {['Design', 'System', 'UI/UX'].map((t) => (
+            <span key={t} className="text-xs font-medium" style={{ background: `${c.primary}18`, color: c.primary, padding: `${sp * 0.25}px ${sp}px`, borderRadius: brad }}>{t}</span>
+          ))}
         </div>
       </section>
     </div>
   )
 }
 
-function DefaultComponent({ c }: { c: Colors }) {
+function DefaultComponent({ c, sp }: PreviewProps) {
+  const pad = sp * 1.5
   return (
-    <div className="space-y-4 p-5 rounded-xl" style={{ background: c.bg, color: c.text }}>
+    <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-1.5">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Data Card</p>
-        <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${c.border}` }}>
-          <div className="flex items-center justify-between px-4 py-3" style={{ background: c.surface, borderBottom: `1px solid ${c.border}` }}>
+        <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${c.border}`, borderRadius: sp }}>
+          <div className="flex items-center justify-between" style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp}px ${sp * 2}px` }}>
             <span className="text-sm font-semibold" style={{ color: c.text }}>Workout Log</span>
-            <button className="text-xs px-2.5 py-1 rounded-lg" style={{ background: c.primary, color: '#fff' }}>+ Add</button>
+            <button className="text-xs" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.5}px ${sp * 1.25}px`, borderRadius: sp * 0.75 }}>+ Add</button>
           </div>
           {[
             { name: 'Bench Press', sets: 4, reps: 8, status: 'success' },
@@ -148,9 +195,9 @@ function DefaultComponent({ c }: { c: Colors }) {
           ].map(({ name, sets, reps, status }) => {
             const color = status === 'success' ? c.success : status === 'warning' ? c.warning : c.danger
             return (
-              <div key={name} className="flex items-center justify-between px-4 py-2.5" style={{ borderBottom: `1px solid ${c.border}` }}>
+              <div key={name} className="flex items-center justify-between" style={{ borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 2}px` }}>
                 <span className="text-sm" style={{ color: c.text }}>{name}</span>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center" style={{ gap: sp * 1.5 }}>
                   <span className="font-mono text-sm" style={{ color: c.muted }}>{sets}×{reps}</span>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
                 </div>
@@ -162,10 +209,9 @@ function DefaultComponent({ c }: { c: Colors }) {
 
       <section className="space-y-1.5">
         <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Navigation</p>
-        <div className="flex gap-1 p-1 rounded-lg" style={{ background: c.surface, border: `1px solid ${c.border}` }}>
+        <div className="flex" style={{ gap: sp * 0.5, padding: sp * 0.5, background: c.surface, border: `1px solid ${c.border}`, borderRadius: sp }}>
           {['Dashboard', 'History', 'Profile'].map((item, i) => (
-            <button key={item} className="flex-1 text-xs py-1.5 rounded-md font-medium"
-              style={i === 0 ? { background: c.primary, color: '#fff' } : { color: c.muted }}>
+            <button key={item} className="flex-1 text-xs font-medium" style={{ ...(i === 0 ? { background: c.primary, color: '#fff' } : { color: c.muted }), padding: `${sp * 0.5}px 0`, borderRadius: sp * 0.75 }}>
               {item}
             </button>
           ))}
@@ -175,39 +221,40 @@ function DefaultComponent({ c }: { c: Colors }) {
   )
 }
 
-function DefaultTemplate({ c }: { c: Colors }) {
+function DefaultTemplate({ c, sp, circle }: PreviewProps) {
+  const avatarRadius = circle ? '50%' : `${sp}px`
   return (
-    <div className="rounded-xl overflow-hidden" style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text }}>
-      <div className="flex items-center justify-between px-4 py-2.5" style={{ background: c.surface, borderBottom: `1px solid ${c.border}` }}>
+    <div className="overflow-hidden" style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text, borderRadius: sp * 1.5 }}>
+      <div className="flex items-center justify-between" style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 2}px` }}>
         <span className="text-sm font-bold" style={{ color: c.text }}>MyApp</span>
-        <div className="flex gap-3">
+        <div className="flex" style={{ gap: sp * 1.5 }}>
           {['Home', 'Log', 'Stats'].map((item, i) => (
             <span key={item} className="text-xs" style={{ color: i === 1 ? c.primary : c.muted }}>{item}</span>
           ))}
         </div>
-        <div className="w-6 h-6 rounded-full" style={{ background: c.primary }} />
+        <div style={{ width: sp * 3, height: sp * 3, background: c.primary, borderRadius: avatarRadius }} />
       </div>
 
-      <div className="p-4 space-y-3">
-        <div className="grid grid-cols-3 gap-2">
+      <div style={{ padding: sp * 2, display: 'flex', flexDirection: 'column', gap: sp * 1.5 }}>
+        <div className="grid grid-cols-3" style={{ gap: sp }}>
           {[
             { label: 'Workouts', value: '24', color: c.primary },
             { label: 'Total Sets', value: '312', color: c.success },
             { label: 'kcal', value: '8.4k', color: c.orange },
           ].map(({ label, value, color }) => (
-            <div key={label} className="rounded-lg p-2 text-center" style={{ background: c.surface, border: `1px solid ${c.border}` }}>
+            <div key={label} className="text-center" style={{ background: c.surface, border: `1px solid ${c.border}`, padding: sp, borderRadius: sp }}>
               <p className="font-bold font-mono" style={{ fontSize: 16, color }}>{value}</p>
               <p style={{ fontSize: 10, color: c.muted }}>{label}</p>
             </div>
           ))}
         </div>
 
-        <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${c.border}` }}>
-          <div className="px-3 py-2" style={{ background: c.surface, borderBottom: `1px solid ${c.border}` }}>
+        <div className="overflow-hidden" style={{ border: `1px solid ${c.border}`, borderRadius: sp }}>
+          <div style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 1.5}px` }}>
             <span style={{ fontSize: 11, fontWeight: 600, color: c.muted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recent</span>
           </div>
           {['Bench Press — 4×8', 'Squat — 3×10', 'Pull-up — 3×6'].map((item) => (
-            <div key={item} className="flex items-center justify-between px-3 py-2" style={{ borderBottom: `1px solid ${c.border}` }}>
+            <div key={item} className="flex items-center justify-between" style={{ borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 1.5}px` }}>
               <span style={{ fontSize: 12, color: c.text }}>{item}</span>
               <span style={{ fontSize: 10, color: c.muted }}>Today</span>
             </div>
@@ -218,7 +265,7 @@ function DefaultTemplate({ c }: { c: Colors }) {
   )
 }
 
-const DEFAULT_VIEWS: Record<Granularity, React.FC<{ c: Colors }>> = {
+const DEFAULT_VIEWS: Record<Granularity, React.FC<PreviewProps>> = {
   atom: DefaultAtom,
   module: DefaultModule,
   component: DefaultComponent,
@@ -230,11 +277,18 @@ const DEFAULT_VIEWS: Record<Granularity, React.FC<{ c: Colors }>> = {
 interface ThemePreviewProps {
   theme: string
   height?: string
+  customColors?: Colors
+  fonts?: { latin?: string; japanese?: string }
+  layout?: { spacingBase?: string; useCircleRadius?: boolean }
 }
 
-export function ThemePreview({ theme, height = '400px' }: ThemePreviewProps) {
+export function ThemePreview({ theme, height = '400px', customColors, fonts, layout }: ThemePreviewProps) {
   const [granularity, setGranularity] = useState<Granularity>('atom')
   const [isDark, setIsDark] = useState(false)
+  useGoogleFonts(fonts)
+
+  const sp = parseInt(layout?.spacingBase ?? '8', 10) || 8
+  const circle = layout?.useCircleRadius ?? false
 
   if (!theme || theme === '') {
     return (
@@ -244,15 +298,8 @@ export function ThemePreview({ theme, height = '400px' }: ThemePreviewProps) {
     )
   }
 
-  if (theme === 'カスタム') {
-    return (
-      <div className="flex items-center justify-center h-48 rounded-xl border border-dashed border-destructive/50 text-destructive text-sm">
-        カスタムテーマのコンポーネントプレビューは未対応です
-      </div>
-    )
-  }
-
-  const colors = isDark ? DARK : LIGHT
+  const isCustom = theme === 'カスタム'
+  const colors = isCustom ? customColors ?? LIGHT : isDark ? DARK : LIGHT
   const PreviewComponent = DEFAULT_VIEWS[granularity]
 
   return (
@@ -265,14 +312,16 @@ export function ThemePreview({ theme, height = '400px' }: ThemePreviewProps) {
           onChange={setGranularity}
           className="flex-1"
         />
-        <button
-          type="button"
-          onClick={() => setIsDark((d) => !d)}
-          className="p-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors shrink-0"
-          title={isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
-        >
-          {isDark ? <Sun className="h-3.5 w-3.5 text-muted-foreground" /> : <Moon className="h-3.5 w-3.5 text-muted-foreground" />}
-        </button>
+        {!isCustom && (
+          <button
+            type="button"
+            onClick={() => setIsDark((d) => !d)}
+            className="p-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors shrink-0"
+            title={isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
+          >
+            {isDark ? <Sun className="h-3.5 w-3.5 text-muted-foreground" /> : <Moon className="h-3.5 w-3.5 text-muted-foreground" />}
+          </button>
+        )}
       </div>
 
       {/* Disclaimer — スクロール対象外・固定 */}
@@ -281,8 +330,11 @@ export function ThemePreview({ theme, height = '400px' }: ThemePreviewProps) {
       </p>
 
       {/* Preview — ここだけスクロール */}
-      <div className="overflow-y-auto min-h-0">
-        <PreviewComponent c={colors} />
+      <div
+        className="overflow-y-auto min-h-0"
+        style={{ fontFamily: [fonts?.latin, fonts?.japanese, 'sans-serif'].filter(Boolean).join(', ') || undefined }}
+      >
+        <PreviewComponent c={colors} sp={sp} circle={circle} />
       </div>
     </div>
   )

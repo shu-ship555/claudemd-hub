@@ -1,10 +1,11 @@
 'use client'
 
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Palette, Type, LayoutGrid } from 'lucide-react'
 import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
-import { useSaveConfig } from '@/lib/hooks/use-save-config'
+import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
+import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, LIGHT_COLORS } from '@/lib/constants'
 import { downloadTextFile } from '@/lib/download'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -17,7 +18,7 @@ import { SectionCard } from '@/components/ui/section-card'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { THEME_PRESETS } from '@/lib/theme-presets'
-import { ThemePreview } from '@/components/theme-preview'
+import { ThemePreview, type Colors } from '@/components/theme-preview'
 import { useState } from 'react'
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
@@ -27,14 +28,54 @@ const PREVIEW_TABS = [
   { key: 'component' as const, label: 'コンポーネント' },
 ]
 
+
+const COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
+  { key: 'bg', label: '背景色' },
+  { key: 'surface', label: 'サーフェス色' },
+  { key: 'border', label: 'ボーダー色' },
+  { key: 'primary', label: 'プライマリ色' },
+  { key: 'info', label: 'インフォメーション色' },
+  { key: 'text', label: 'テキスト色' },
+  { key: 'muted', label: 'ミュート色' },
+  { key: 'success', label: '成功色' },
+  { key: 'warning', label: '警告色' },
+  { key: 'danger', label: '危険色' },
+  { key: 'orange', label: 'ハイライト色' },
+]
+
+function colorsToConfigPatch(colors: Colors) {
+  return {
+    colorPalette: {
+      enabled: true,
+      primaryCtaColor: colors.primary,
+      primaryTextColor: colors.text,
+      primarySurfaceColor: colors.bg,
+      weakTextColor: colors.muted,
+      subtleSurfaceColor: colors.surface,
+      borderColor: colors.border,
+      successColor: colors.success,
+      warningColor: colors.warning,
+      errorColor: colors.danger,
+      semanticColor: colors.info,
+    },
+    agentGuide: {
+      enabled: true,
+      agentCtaColor: colors.primary,
+      agentTextColor: colors.text,
+      agentBgColor: colors.bg,
+      agentBorderColor: colors.border,
+    },
+  }
+}
+
 export default function DashboardPage() {
-  const { config, preview, updateField } = useDesignConfig()
+  const { config, preview, updateField, batchUpdate } = useDesignConfig()
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
-  const { isSaving, save } = useSaveConfig()
-  const [fileName, setFileName] = useState('DESIGN.md')
+  const { fileName, setFileName, isSaving, save } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [presetPreview, setPresetPreview] = useState<string | null>(null)
   const [previewMode, setPreviewMode] = useState<'markdown' | 'component'>('markdown')
+  const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
   const { refA: formScrollRef, refB: previewScrollRef, handleAScroll, handleBScroll } =
     useScrollSync<HTMLDivElement, HTMLTextAreaElement>()
 
@@ -42,12 +83,15 @@ export default function DashboardPage() {
   const displayPreview = presetPreview ?? preview
   const section = 'visualTheme'
   const v = config[section] ?? {}
+  const tc = config['typography'] ?? {}
+  const lc = config['layout'] ?? {}
 
   const handleThemeChange = (val: string) => {
     setThemeSelect(val)
     if (val === 'カスタム') {
       setPresetPreview(null)
       updateField(section, 'themeName', '')
+      batchUpdate((prev) => ({ ...prev, ...colorsToConfigPatch(customColors) }))
     } else if (THEME_PRESETS[val]) {
       setPresetPreview(THEME_PRESETS[val].content)
       updateField(section, 'themeName', val)
@@ -55,6 +99,12 @@ export default function DashboardPage() {
       setPresetPreview(null)
       updateField(section, 'themeName', '')
     }
+  }
+
+  const handleColorChange = (key: keyof Colors, value: string) => {
+    const next = { ...customColors, [key]: value }
+    setCustomColors(next)
+    batchUpdate((prev) => ({ ...prev, ...colorsToConfigPatch(next) }))
   }
 
   return (
@@ -75,7 +125,7 @@ export default function DashboardPage() {
               <select
                 value={themeSelect}
                 onChange={(e) => handleThemeChange(e.target.value)}
-                className="w-full rounded-md border border-input bg-transparent dark:bg-input/30 px-3 py-2 text-sm"
+                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
               >
                 <option value="">選択してください</option>
                 {THEME_OPTIONS.map((opt) => (
@@ -91,35 +141,128 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* ビジュアルテーマ section */}
-            <fieldset disabled={!isCustom}>
-              <SectionCard
-                label="ビジュアルテーマ"
-                description="ブランドの世界観・インスピレーション元・全体の雰囲気"
-                icon={Sparkles}
-                className={cn('transition-opacity', !isCustom && 'opacity-50')}
-              >
-                <div className="space-y-2">
-                  <FieldLabel requirement="required">ビジュアル雰囲気の説明</FieldLabel>
-                  <Textarea
-                    placeholder="例: 白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"
-                    value={(v.atmosphere as string) ?? ''}
-                    onChange={(e) => updateField(section, 'atmosphere', e.target.value)}
-                    className="min-h-32"
-                  />
-                </div>
+            {isCustom && (
+              <>
+                {/* ビジュアルテーマ section */}
+                <SectionCard
+                  label="ビジュアルテーマ"
+                  description="ブランドの世界観・インスピレーション元・全体の雰囲気"
+                  icon={Sparkles}
+                >
+                  <div className="space-y-2">
+                    <FieldLabel requirement="optional">ビジュアル雰囲気の説明</FieldLabel>
+                    <Textarea
+                      placeholder="例: 白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"
+                      value={(v.atmosphere as string) ?? ''}
+                      onChange={(e) => updateField(section, 'atmosphere', e.target.value)}
+                      className="min-h-32"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <FieldLabel requirement="optional">主要な特徴（1行1項目）</FieldLabel>
-                  <Textarea
-                    placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
-                    value={(v.keyCharacteristics as string) ?? ''}
-                    onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
-                    className="min-h-40"
-                  />
-                </div>
-              </SectionCard>
-            </fieldset>
+                  <div className="space-y-2">
+                    <FieldLabel requirement="optional">主要な特徴（1行1項目）</FieldLabel>
+                    <Textarea
+                      placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
+                      value={(v.keyCharacteristics as string) ?? ''}
+                      onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
+                      className="min-h-40"
+                    />
+                  </div>
+                </SectionCard>
+
+                {/* カラーパレット section */}
+                <SectionCard
+                  label="カラーパレット"
+                  description="コンポーネントプレビューとマークダウンの両方に反映されます"
+                  icon={Palette}
+                >
+                  <div className="grid grid-cols-2 gap-3">
+                    {COLOR_FIELDS.map(({ key, label }) => (
+                      <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input
+                          type="color"
+                          value={customColors[key]}
+                          onChange={(e) => handleColorChange(key, e.target.value)}
+                          className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                        />
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
+                      </label>
+                    ))}
+                  </div>
+                </SectionCard>
+
+                {/* タイポグラフィ section */}
+                <SectionCard
+                  label="タイポグラフィ"
+                  description="欧文・和文フォントファミリー"
+                  icon={Type}
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <FieldLabel requirement="optional">欧文フォント</FieldLabel>
+                      <select
+                        value={(tc.latinFont as string) ?? ''}
+                        onChange={(e) => updateField('typography', 'latinFont', e.target.value)}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="">未指定</option>
+                        {LATIN_FONTS.map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <FieldLabel requirement="optional">和文フォント</FieldLabel>
+                      <select
+                        value={(tc.japaneseFont as string) ?? ''}
+                        onChange={(e) => updateField('typography', 'japaneseFont', e.target.value)}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="">未指定</option>
+                        {JAPANESE_FONTS.map((f) => (
+                          <option key={f} value={f}>{f}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                {/* レイアウト section */}
+                <SectionCard
+                  label="レイアウト"
+                  description="スペーシングと角丸の設定"
+                  icon={LayoutGrid}
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <FieldLabel requirement="optional">基準単位</FieldLabel>
+                      <select
+                        value={(lc.spacingBase as string) ?? ''}
+                        onChange={(e) => updateField('layout', 'spacingBase', e.target.value)}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="">未指定</option>
+                        {SPACING_BASE_OPTIONS.map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={(lc.useCircleRadius as boolean) ?? false}
+                        onChange={(e) => updateField('layout', 'useCircleRadius', e.target.checked)}
+                        className="h-4 w-4 rounded border-input accent-primary"
+                      />
+                      <span className="text-muted-foreground">円形要素（50%）を使用する</span>
+                    </label>
+                  </div>
+                </SectionCard>
+              </>
+            )}
           </div>
 
           {/* Preview & Save Section */}
@@ -151,7 +294,13 @@ export default function DashboardPage() {
                   onScroll={handleBScroll}
                 />
               ) : (
-                <ThemePreview theme={themeSelect} height="calc(100vh - 480px)" />
+                <ThemePreview
+                  theme={themeSelect}
+                  height="calc(100vh - 480px)"
+                  customColors={customColors}
+                  fonts={{ latin: tc.latinFont as string, japanese: tc.japaneseFont as string }}
+                  layout={{ spacingBase: lc.spacingBase as string, useCircleRadius: lc.useCircleRadius as boolean }}
+                />
               )}
 
               <div className="flex gap-2">
@@ -166,7 +315,7 @@ export default function DashboardPage() {
                 {!isAuthLoading && (
                   isLoggedIn ? (
                     <Button
-                      onClick={() => save(fileName, displayPreview)}
+                      onClick={() => save(displayPreview)}
                       disabled={isSaving}
                       className="flex-1"
                     >

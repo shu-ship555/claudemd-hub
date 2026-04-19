@@ -179,75 +179,15 @@ function renderColorPalette(cfg: SectionCfg): string {
   return text
 }
 
-function splitFontFamily(raw: string): { head: string; fallbacks: string[] } {
-  const parts = raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-  const [head = '', ...fallbacks] = parts
-  return { head, fallbacks }
-}
-
 function renderTypography(cfg: SectionCfg): string {
-  let text = ''
+  const latin = str(cfg.latinFont).trim()
+  const japanese = str(cfg.japaneseFont).trim()
+  if (!latin && !japanese) return ''
 
-  const primary = str(cfg.primaryFont).trim()
-  const display = str(cfg.displayFont).trim()
-  if (primary || display) {
-    text += `### Font Families\n`
-    if (primary) {
-      const { head, fallbacks } = splitFontFamily(primary)
-      if (fallbacks.length > 0) {
-        const label = fallbacks.length > 1 ? 'fallbacks' : 'fallback'
-        text += `- **Primary**: \`${head}\`, ${label}: \`${fallbacks.join(', ')}\`\n`
-      } else {
-        text += `- **Primary**: \`${head}\`\n`
-      }
-    }
-    if (display) {
-      const { head, fallbacks } = splitFontFamily(display)
-      if (fallbacks.length > 0) {
-        const label = fallbacks.length > 1 ? 'fallbacks' : 'fallback'
-        text += `- **Display**: \`${head}\`, ${label}: \`${fallbacks.join(', ')}\`\n`
-      } else {
-        text += `- **Display**: \`${head}\`\n`
-      }
-    }
-    text += '\n'
-  }
-
-  const primaryHead = splitFontFamily(primary).head
-  const displayHead = splitFontFamily(display).head || primaryHead
-
-  const rows: Array<[string, unknown, 'primary' | 'display']> = [
-    ['Display Hero', cfg.displayHero, 'primary'],
-    ['Display Bold', cfg.displayBold, 'display'],
-    ['Section Heading', cfg.sectionHeading, 'primary'],
-    ['Sub-heading', cfg.subHeading, 'primary'],
-    ['Card Title', cfg.cardTitle, 'primary'],
-    ['Feature', cfg.featureText, 'primary'],
-    ['Body', cfg.bodyText, 'primary'],
-    ['Body Medium', cfg.bodyMedium, 'primary'],
-    ['Button', cfg.buttonText, 'primary'],
-    ['Caption', cfg.captionText, 'primary'],
-  ]
-  const valid = rows.filter(([, v]) => hasValue(v))
-  if (valid.length > 0) {
-    text += `### Hierarchy\n\n`
-    text += `| Role | Font | Size | Weight | Line Height | Letter Spacing |\n`
-    text += `| ---- | ---- | ---- | ------ | ----------- | -------------- |\n`
-    for (const [name, value, fontKey] of valid) {
-      const parts = String(value)
-        .split('/')
-        .map((s) => s.trim())
-      const [size = '', weight = '', lineHeight = '', letterSpacing = ''] = parts
-      const font = fontKey === 'display' ? displayHead : primaryHead
-      text += `| ${name} | ${font} | ${size} | ${weight} | ${lineHeight} | ${letterSpacing} |\n`
-    }
-    text += '\n'
-  }
-
-  return text
+  let text = `### Font Families\n`
+  if (latin) text += `- **Latin**: \`${latin}\`\n`
+  if (japanese) text += `- **Japanese**: \`${japanese}\`\n`
+  return `${text}\n`
 }
 
 function renderComponents(cfg: SectionCfg): string {

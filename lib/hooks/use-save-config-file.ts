@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { createConfigFile } from '@/app/dashboard/actions'
+import { ERROR_MESSAGES } from '@/lib/constants'
 
 export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
   const [fileName, setFileName] = useState(defaultFileName)
@@ -9,17 +10,17 @@ export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
 
   const save = async (content: string) => {
     if (!fileName.trim()) {
-      alert('ファイル名を入力してください')
+      alert(ERROR_MESSAGES.FILE_NAME_REQUIRED)
       return
     }
     setIsSaving(true)
     try {
       await createConfigFile(fileName, content)
-      alert('DESIGN.md を保存しました')
+      alert(ERROR_MESSAGES.SAVE_SUCCESS)
       setFileName(defaultFileName)
     } catch (error) {
       console.error('Save error:', error)
-      alert('保存に失敗しました')
+      alert(ERROR_MESSAGES.SAVE_FAILED)
     } finally {
       setIsSaving(false)
     }
