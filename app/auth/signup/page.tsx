@@ -21,7 +21,7 @@ export default function SignupPage() {
     setError('')
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError('パスワードが一致しません')
       return
     }
 
@@ -33,7 +33,7 @@ export default function SignupPage() {
       if (error) throw error
       router.push('/auth/verify')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed')
+      setError(err instanceof Error ? err.message : '登録に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -41,17 +41,17 @@ export default function SignupPage() {
 
   return (
     <AuthCard
-      title="Create Account"
-      description="Sign up to start managing your config files"
-      footerPrompt="Already have an account?"
-      footerLinkLabel="Login"
+      title="アカウント作成"
+      description="設定ファイルの管理を始めるには登録してください"
+      footerPrompt="すでにアカウントをお持ちの方は"
+      footerLinkLabel="ログイン"
       footerLinkHref="/auth/login"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <AuthError message={error} />
         <AuthField
           id="email"
-          label="Email"
+          label="メールアドレス"
           type="email"
           value={email}
           onChange={setEmail}
@@ -59,7 +59,7 @@ export default function SignupPage() {
         />
         <AuthField
           id="password"
-          label="Password"
+          label="パスワード"
           type="password"
           value={password}
           onChange={setPassword}
@@ -67,14 +67,14 @@ export default function SignupPage() {
         />
         <AuthField
           id="confirm-password"
-          label="Confirm Password"
+          label="パスワード確認"
           type="password"
           value={confirmPassword}
           onChange={setConfirmPassword}
           disabled={isLoading}
         />
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'Creating account...' : 'Sign Up'}
+          {isLoading ? '作成中...' : '登録する'}
         </Button>
       </form>
     </AuthCard>

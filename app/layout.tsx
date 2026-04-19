@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Claude Config Manager",
-  description: "Manage Claude Code configuration files",
+  description: "Claude Code の設定ファイルを管理・整理します",
 };
 
 export default function RootLayout({

@@ -54,17 +54,17 @@ export default function LoginPage() {
 
   return (
     <AuthCard
-      title="Login"
-      description="Enter your email and password to login"
-      footerPrompt="Don't have an account?"
-      footerLinkLabel="Sign up"
+      title="ログイン"
+      description="メールアドレスとパスワードを入力してください"
+      footerPrompt="アカウントをお持ちでない方は"
+      footerLinkLabel="新規登録"
       footerLinkHref="/auth/signup"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <AuthError message={error} />
         <AuthField
           id="email"
-          label="Email"
+          label="メールアドレス"
           type="email"
           value={email}
           onChange={setEmail}
@@ -72,14 +72,14 @@ export default function LoginPage() {
         />
         <AuthField
           id="password"
-          label="Password"
+          label="パスワード"
           type="password"
           value={password}
           onChange={setPassword}
           disabled={isLoading}
         />
         <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? 'ログイン中...' : 'ログイン'}
         </Button>
       </form>
     </AuthCard>

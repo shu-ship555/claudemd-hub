@@ -9,12 +9,12 @@ export default function Home() {
         <CardHeader>
           <CardTitle className="text-2xl">Claude Config Manager</CardTitle>
           <CardDescription>
-            Manage and organize your Claude Code configuration files
+            Claude Code の設定ファイルを管理・整理します
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <p className="text-sm text-muted-foreground">
-            Store, version, and sync your Claude Code settings across multiple machines.
+            Claude Code の設定を保存・バージョン管理し、複数のマシン間で同期できます。
           </p>
           <div className="flex flex-col gap-3">
             <Link href="/dashboard">

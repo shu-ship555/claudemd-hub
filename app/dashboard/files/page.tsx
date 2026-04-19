@@ -34,9 +34,9 @@ export default async function FilesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-4">
             <div>
-              <CardTitle>Configuration Files</CardTitle>
+              <CardTitle>設定ファイル一覧</CardTitle>
               <CardDescription>
-                Manage and sync your Claude Code configuration files
+                Claude Code の設定ファイルを管理・同期します
               </CardDescription>
             </div>
             <UploadDialog />

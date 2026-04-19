@@ -25,7 +25,7 @@ export default function DashboardClient() {
 
   return (
     <Button variant="outline" onClick={handleLogout} disabled={isLoading}>
-      {isLoading ? 'Logging out...' : 'Logout'}
+      {isLoading ? 'ログアウト中...' : 'ログアウト'}
     </Button>
   )
 }

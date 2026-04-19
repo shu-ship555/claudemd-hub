@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react'
 import { useState } from 'react'
-import { cn } from '@/lib/utils'
+import { TabBar } from '@/components/ui/tab-bar'
 
 export type Granularity = 'atom' | 'module' | 'component' | 'template'
 
@@ -259,23 +259,12 @@ export function ThemePreview({ theme, height = '400px' }: ThemePreviewProps) {
     <div className="flex flex-col gap-3" style={{ height }}>
       {/* Controls — スクロール対象外 */}
       <div className="flex items-center gap-2 shrink-0">
-        <div className="flex gap-1 p-1 rounded-lg bg-muted/40 border border-border flex-1">
-          {GRANULARITIES.map(({ key, label }) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => setGranularity(key)}
-              className={cn(
-                'flex-1 text-xs py-1.5 rounded-md font-medium transition-colors',
-                granularity === key
-                  ? 'bg-card text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <TabBar
+          items={GRANULARITIES}
+          value={granularity}
+          onChange={setGranularity}
+          className="flex-1"
+        />
         <button
           type="button"
           onClick={() => setIsDark((d) => !d)}

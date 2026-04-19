@@ -4,35 +4,42 @@ import { Sparkles } from 'lucide-react'
 import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
+import { useSaveConfig } from '@/lib/hooks/use-save-config'
 import { downloadTextFile } from '@/lib/download'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
+import { FieldLabel } from '@/components/ui/field-label'
+import { TabBar } from '@/components/ui/tab-bar'
+import { SectionCard } from '@/components/ui/section-card'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { createConfigFile } from './actions'
 import { THEME_PRESETS } from '@/lib/theme-presets'
 import { ThemePreview } from '@/components/theme-preview'
 import { useState } from 'react'
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
 
+const PREVIEW_TABS = [
+  { key: 'markdown' as const, label: 'マークダウン' },
+  { key: 'component' as const, label: 'コンポーネント' },
+]
+
 export default function DashboardPage() {
   const { config, preview, updateField } = useDesignConfig()
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
-  const [isSaving, setIsSaving] = useState(false)
+  const { isSaving, save } = useSaveConfig()
   const [fileName, setFileName] = useState('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [presetPreview, setPresetPreview] = useState<string | null>(null)
+  const [previewMode, setPreviewMode] = useState<'markdown' | 'component'>('markdown')
   const { refA: formScrollRef, refB: previewScrollRef, handleAScroll, handleBScroll } =
     useScrollSync<HTMLDivElement, HTMLTextAreaElement>()
 
   const isCustom = themeSelect === 'カスタム'
   const displayPreview = presetPreview ?? preview
-  const [previewMode, setPreviewMode] = useState<'markdown' | 'component'>('markdown')
   const section = 'visualTheme'
   const v = config[section] ?? {}
 
@@ -50,22 +57,6 @@ export default function DashboardPage() {
     }
   }
 
-  const handleSave = async () => {
-    if (!fileName.trim()) {
-      alert('ファイル名を入力してください')
-      return
-    }
-    setIsSaving(true)
-    try {
-      await createConfigFile(fileName, displayPreview)
-      alert('DESIGN.md を保存しました')
-    } catch {
-      alert('保存に失敗しました')
-    } finally {
-      setIsSaving(false)
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader title="DESIGN.md Generator" subtitle="カスタム設計ガイドラインを生成して保存します" />
@@ -80,10 +71,7 @@ export default function DashboardPage() {
           >
             {/* Standalone theme selector */}
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5">
-                <Label className="text-sm font-medium">テーマ名 / インスピレーション元</Label>
-                <Badge variant="destructive">必須</Badge>
-              </div>
+              <FieldLabel requirement="required">テーマ名 / インスピレーション元</FieldLabel>
               <select
                 value={themeSelect}
                 onChange={(e) => handleThemeChange(e.target.value)}
@@ -104,47 +92,33 @@ export default function DashboardPage() {
             </div>
 
             {/* ビジュアルテーマ section */}
-            <fieldset disabled={!isCustom} className="group">
-              <div className={cn(
-                'rounded-xl border border-border bg-card overflow-hidden transition-opacity',
-                !isCustom && 'opacity-50'
-              )}>
-                <div className="px-6 pt-3.5 pb-4 bg-blue-500/8 rounded-t-xl space-y-1">
-                  <Label className="text-sm font-semibold flex items-center gap-1.5">
-                    <Sparkles className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                    ビジュアルテーマ
-                  </Label>
-                  <p className="text-xs text-muted-foreground">ブランドの世界観・インスピレーション元・全体の雰囲気</p>
+            <fieldset disabled={!isCustom}>
+              <SectionCard
+                label="ビジュアルテーマ"
+                description="ブランドの世界観・インスピレーション元・全体の雰囲気"
+                icon={Sparkles}
+                className={cn('transition-opacity', !isCustom && 'opacity-50')}
+              >
+                <div className="space-y-2">
+                  <FieldLabel requirement="required">ビジュアル雰囲気の説明</FieldLabel>
+                  <Textarea
+                    placeholder="例: 白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"
+                    value={(v.atmosphere as string) ?? ''}
+                    onChange={(e) => updateField(section, 'atmosphere', e.target.value)}
+                    className="min-h-32"
+                  />
                 </div>
 
-                <div className="space-y-5 px-6 pt-5.5 pb-6">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-sm font-medium">ビジュアル雰囲気の説明</label>
-                      <Badge variant="destructive">必須</Badge>
-                    </div>
-                    <Textarea
-                      placeholder="例: 白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"
-                      value={(v.atmosphere as string) ?? ''}
-                      onChange={(e) => updateField(section, 'atmosphere', e.target.value)}
-                      className="min-h-32"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-1.5">
-                      <label className="text-sm font-medium">主要な特徴（1行1項目）</label>
-                      <Badge variant="outline">任意</Badge>
-                    </div>
-                    <Textarea
-                      placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
-                      value={(v.keyCharacteristics as string) ?? ''}
-                      onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
-                      className="min-h-40"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <FieldLabel requirement="optional">主要な特徴（1行1項目）</FieldLabel>
+                  <Textarea
+                    placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
+                    value={(v.keyCharacteristics as string) ?? ''}
+                    onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
+                    className="min-h-40"
+                  />
                 </div>
-              </div>
+              </SectionCard>
             </fieldset>
           </div>
 
@@ -162,35 +136,20 @@ export default function DashboardPage() {
                 />
               </div>
 
-              {/* Tab switcher */}
-              <div className="flex gap-1 p-1 rounded-lg bg-muted/40 border border-border">
-                {(['markdown', 'component'] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setPreviewMode(mode)}
-                    className={cn(
-                      'flex-1 text-xs py-1.5 rounded-md font-medium transition-colors',
-                      previewMode === mode
-                        ? 'bg-card text-foreground shadow-sm'
-                        : 'text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    {mode === 'markdown' ? 'マークダウン' : 'コンポーネント'}
-                  </button>
-                ))}
-              </div>
+              <TabBar
+                items={PREVIEW_TABS}
+                value={previewMode}
+                onChange={setPreviewMode}
+              />
 
               {previewMode === 'markdown' ? (
-                <div className="space-y-2">
-                  <Textarea
-                    ref={previewScrollRef}
-                    value={displayPreview}
-                    readOnly
-                    className="h-[calc(100vh-480px)] min-h-64 font-mono text-xs"
-                    onScroll={handleBScroll}
-                  />
-                </div>
+                <Textarea
+                  ref={previewScrollRef}
+                  value={displayPreview}
+                  readOnly
+                  className="h-[calc(100vh-480px)] min-h-64 font-mono text-xs"
+                  onScroll={handleBScroll}
+                />
               ) : (
                 <ThemePreview theme={themeSelect} height="calc(100vh - 480px)" />
               )}
@@ -206,7 +165,11 @@ export default function DashboardPage() {
                 </Button>
                 {!isAuthLoading && (
                   isLoggedIn ? (
-                    <Button onClick={handleSave} disabled={isSaving} className="flex-1">
+                    <Button
+                      onClick={() => save(fileName, displayPreview)}
+                      disabled={isSaving}
+                      className="flex-1"
+                    >
                       {isSaving ? '保存中...' : '保存'}
                     </Button>
                   ) : (

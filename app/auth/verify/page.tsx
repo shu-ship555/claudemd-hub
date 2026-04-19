@@ -9,27 +9,27 @@ export default function VerifyPage() {
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Check Your Email</CardTitle>
+          <CardTitle>メールを確認してください</CardTitle>
           <CardDescription>
-            We&apos;ve sent you a confirmation link
+            確認用リンクをメールで送信しました
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
             <p>
-              Click the link in your email to confirm your account and get started.
+              メールに記載されているリンクをクリックして、アカウントを有効化してください。
             </p>
           </div>
 
           <div className="text-sm text-muted-foreground space-y-2">
             <p>
-              Didn&apos;t receive the email? Check your spam folder or try signing up again.
+              メールが届かない場合は、迷惑メールフォルダをご確認いただくか、再度登録をお試しください。
             </p>
           </div>
 
           <Link href="/auth/login">
             <Button variant="outline" className="w-full">
-              Back to Login
+              ログインに戻る
             </Button>
           </Link>
         </CardContent>
