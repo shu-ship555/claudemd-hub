@@ -28,22 +28,22 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 h-12 bg-black/80 backdrop-blur-[20px] backdrop-saturate-180">
-      <div className="max-w-7xl mx-auto px-4 h-full flex justify-between items-center">
+    <header className="sticky top-0 z-50 h-14 bg-card/90 backdrop-blur-xl backdrop-saturate-150">
+      <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
         <div>
-          <h1 className="text-sm font-semibold text-white leading-tight">{title}</h1>
+          <h1 className="text-sm font-semibold leading-tight">{title}</h1>
           {subtitle && (
-            <p className="text-xs text-white/60">{subtitle}</p>
+            <p className="text-xs text-muted-foreground">{subtitle}</p>
           )}
           {!subtitle && userEmail && (
-            <p className="text-xs text-white/60">{userEmail}</p>
+            <p className="text-xs text-muted-foreground">{userEmail}</p>
           )}
         </div>
-        <nav className="flex items-center gap-4">
-          <a href="/dashboard" className="text-xs text-white/80 hover:text-white transition-colors">
+        <nav className="flex items-center gap-5">
+          <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             ジェネレーター
           </a>
-          <a href="/dashboard/files" className="text-xs text-white/80 hover:text-white transition-colors">
+          <a href="/dashboard/files" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             設定ファイル管理
           </a>
           <DashboardClient />

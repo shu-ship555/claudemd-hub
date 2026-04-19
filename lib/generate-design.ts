@@ -356,15 +356,19 @@ function renderGuidelines(cfg: SectionCfg): string {
 
 function renderResponsive(cfg: SectionCfg): string {
   let text = ''
-  const selected = Array.isArray(cfg.breakpoints) ? (cfg.breakpoints as string[]) : []
-  const customList = str(cfg.customBreakpoints)
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean)
-  const allBps = [...selected, ...customList]
+  const bpEntries: Array<[string, unknown]> = [
+    ['sm', cfg.bpSm],
+    ['md', cfg.bpMd],
+    ['lg', cfg.bpLg],
+    ['xl', cfg.bpXl],
+    ['2xl', cfg.bp2xl],
+  ]
+  const bps = bpEntries
+    .filter(([, v]) => v !== '' && v !== undefined && v !== null && v !== 0 && Number(v) > 0)
+    .map(([name, v]) => `${name}: ${v}px`)
 
-  if (allBps.length > 0) {
-    text += `Breakpoints: ${allBps.join(', ')}\n\n`
+  if (bps.length > 0) {
+    text += `Breakpoints: ${bps.join(', ')}\n\n`
   }
 
   if (hasValue(cfg.responsiveNotes)) {

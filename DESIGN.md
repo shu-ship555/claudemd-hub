@@ -10,12 +10,12 @@
 ---
 
 ## 2. Typography & Hierarchy
-`Montserrat` の幾何学的な美しさと、`Geist Mono` の機能性を組み合わせ、設計書としての信頼性を高めます。
+`Geist Mono` の機能性を組み合わせ、設計書としての信頼性を高めます。
 
 ### Font Families
 | Role | Font Stack | Notes |
 | :--- | :--- | :--- |
-| **Interface / Headings** | Montserrat + Noto Sans JP | 欧文のモダンさと和文の可読性を両立。 |
+| **Interface / Headings** | Geist Mono + Noto Sans JP | 欧文のモダンさと和文の可読性を両立。 |
 | **Code / Specs / Values** | Geist Mono (`font-mono`) | 設定値、コード片、プロパティ記述用。 |
 
 ### Type Scale & Rules
@@ -25,6 +25,7 @@
 - **Technical Values**: `text-xl` (20px) / Bold / `font-mono`
 - **Minimal Size**: 視認性担保のため `text-[10px]` を最小値とする。
 - **Optical Tracking**: すべてのサイズで微細なネガティブ・トラッキングを適用し、タイトで洗練された印象を与えます。
+- **Do Not Use Emoji**: 絵文字の使用を禁止します。絵文字と同等の効果を得たい場合アイコンをしようします。
 
 ---
 
@@ -48,12 +49,11 @@
 設計ユニットは `8 (2rem)`。すべての数値は 2・4・8 の倍数に収束させます。
 
 ### Visual Balance (上方錯視の補正)
-カードやモーダル内のPaddingは、人間の目の特性に合わせ上部をわずかに詰め、光学的中心を整えます。
-- Standard: `pt-5 pb-6`
-- Header: `pt-3 pb-2`
+全て余白は、人間の目の特性に合わせ上部をわずかに詰め、光学的中心を整えます。
+上部と下部の余白差は8〜10%以内に収めてください。
 
 ### Responsive Behavior
-- **Max Content Width**: `max-w-5xl` (約960px) で情報の拡散を防止。
+- **Max Content Width**: `max-w-7xl:` (約1280px) で情報の拡散を防止。
 - **Grid Strategy**: スマートフォンでは1〜2列、PC（`sm`以上）では4列を基本とし、ドキュメントの密度を最適化します。
 
 ---

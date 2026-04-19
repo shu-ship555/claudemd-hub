@@ -16,7 +16,7 @@ interface FieldRendererProps {
   onCustomModeChange?: (isCustom: boolean) => void
 }
 
-const SELECT_CLASS = 'w-full rounded-md border border-input bg-background px-3 py-2 text-sm'
+const SELECT_CLASS = 'w-full rounded-md border border-input bg-transparent dark:bg-input/30 px-3 py-2 text-sm'
 
 export function FieldRenderer({
   sectionId,
@@ -88,14 +88,41 @@ export function FieldRenderer({
   }
 
   if (field.type === 'number') {
+    if (field.toggle) {
+      const isEnabled = value !== '' && value !== undefined
+      return (
+        <div className="flex items-center gap-1.5">
+          <Checkbox
+            id={`${sectionId}-${field.id}-toggle`}
+            checked={isEnabled}
+            onCheckedChange={(checked) => onChange(checked ? field.default : '')}
+          />
+          <label htmlFor={`${sectionId}-${field.id}-toggle`} className="text-sm cursor-pointer select-none w-7">
+            {field.label}
+          </label>
+          <Input
+            type="number"
+            min={field.min}
+            max={field.max}
+            step={field.step || 1}
+            disabled={!isEnabled}
+            value={isEnabled ? (value as number) : field.default}
+            onChange={(e) => onChange(e.target.value === '' ? field.default : parseInt(e.target.value))}
+            className="w-20 h-7 text-xs"
+          />
+        </div>
+      )
+    }
+
     return (
       <Input
         type="number"
         min={field.min}
         max={field.max}
         step={field.step || 1}
-        value={(value as number) || ''}
-        onChange={(e) => onChange(parseInt(e.target.value) || 0)}
+        placeholder={String(field.default)}
+        value={value === '' || value === undefined ? '' : (value as number)}
+        onChange={(e) => onChange(e.target.value === '' ? '' : parseInt(e.target.value))}
       />
     )
   }

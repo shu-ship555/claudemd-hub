@@ -33,6 +33,7 @@ export interface NumberField {
   min?: number
   max?: number
   step?: number
+  toggle?: boolean
   dependsOn?: { fieldId: string; values: (string | boolean)[] }
 }
 
@@ -99,8 +100,8 @@ export interface DesignConfig {
 export const designTemplate: DesignSection[] = [
   {
     id: 'visualTheme',
-    label: '🎭 ビジュアルテーマ',
-    icon: '🎭',
+    label: 'ビジュアルテーマ',
+    icon: 'Sparkles',
     description: 'ブランドの世界観・インスピレーション元・全体の雰囲気',
     enabled: true,
     fields: [
@@ -136,8 +137,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'colorPalette',
-    label: '🎨 カラーパレット',
-    icon: '🎨',
+    label: 'カラーパレット',
+    icon: 'Palette',
     description: 'プライマリ・セマンティック・ニュートラル（ライト／ダーク）を各1色定義',
     enabled: true,
     fields: [
@@ -247,8 +248,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'typography',
-    label: '✍️ タイポグラフィ',
-    icon: '✍️',
+    label: 'タイポグラフィ',
+    icon: 'Type',
     description: 'フォントファミリーと階層（サイズ / ウェイト / 行間 / 字間）',
     enabled: true,
     fields: [
@@ -454,8 +455,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'components',
-    label: '🧩 コンポーネント',
-    icon: '🧩',
+    label: 'コンポーネント',
+    icon: 'Puzzle',
     description: 'ボタン、カード、インプットなどのデフォルトスタイル',
     enabled: true,
     fields: [
@@ -544,8 +545,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'layout',
-    label: '📐 レイアウト',
-    icon: '📐',
+    label: 'レイアウト',
+    icon: 'LayoutGrid',
     description: 'スペーシングとラジウスのスケール',
     enabled: true,
     fields: [
@@ -628,8 +629,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'depth',
-    label: '🌫️ 奥行き・シャドウ',
-    icon: '🌫️',
+    label: '奥行き・シャドウ',
+    icon: 'Layers',
     description: 'シャドウシステムの方針',
     enabled: true,
     fields: [
@@ -655,15 +656,15 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'guidelines',
-    label: '✅ すべきこと・避けること',
-    icon: '✅',
+    label: 'すべきこと・避けること',
+    icon: 'ListChecks',
     description: 'デザイン上で推奨されること・避けるべきこと',
     enabled: true,
     fields: [
       {
         type: 'textarea',
         id: 'dos',
-        label: 'Do（推奨・1行1項目）',
+        label: 'すべきこと（1行1項目）',
         requirement: 'optional',
         placeholder:
           '例:\nAirtable Blue を CTA に使う\nHaas をポジティブトラッキングで使用\n12px ラジウスのボタン',
@@ -673,7 +674,7 @@ export const designTemplate: DesignSection[] = [
       {
         type: 'textarea',
         id: 'donts',
-        label: 'やってはいけないこと（1行1項目）',
+        label: '避けること（1行1項目）',
         requirement: 'optional',
         placeholder: '例:\nポジティブレタースペーシングをスキップする\n重いシャドウを使う',
         default: '',
@@ -683,27 +684,56 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'responsive',
-    label: '📱 レスポンシブ対応',
-    icon: '📱',
+    label: 'レスポンシブ対応',
+    icon: 'MonitorSmartphone',
     description: 'ブレークポイント戦略',
     enabled: true,
     fields: [
       {
-        type: 'multiselect',
-        id: 'breakpoints',
-        label: 'ブレークポイント',
-        requirement: 'required',
-        options: ['sm (640px)', 'md (768px)', 'lg (1024px)', 'xl (1280px)', '2xl (1536px)'],
-        default: [],
-      } as MultiSelectField,
-      {
-        type: 'text',
-        id: 'customBreakpoints',
-        label: 'カスタムブレークポイント（カンマ区切り）',
+        type: 'number',
+        id: 'bpSm',
+        label: 'sm',
         requirement: 'optional',
-        placeholder: '例: 480px, 1440px',
-        default: '',
-      } as TextField,
+        default: 640,
+        min: 1,
+        toggle: true,
+      } as NumberField,
+      {
+        type: 'number',
+        id: 'bpMd',
+        label: 'md',
+        requirement: 'optional',
+        default: 768,
+        min: 1,
+        toggle: true,
+      } as NumberField,
+      {
+        type: 'number',
+        id: 'bpLg',
+        label: 'lg',
+        requirement: 'optional',
+        default: 1024,
+        min: 1,
+        toggle: true,
+      } as NumberField,
+      {
+        type: 'number',
+        id: 'bpXl',
+        label: 'xl',
+        requirement: 'optional',
+        default: 1280,
+        min: 1,
+        toggle: true,
+      } as NumberField,
+      {
+        type: 'number',
+        id: 'bp2xl',
+        label: '2xl',
+        requirement: 'optional',
+        default: 1536,
+        min: 1,
+        toggle: true,
+      } as NumberField,
       {
         type: 'textarea',
         id: 'responsiveNotes',
@@ -718,8 +748,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'agentGuide',
-    label: '🤖 エージェント向けガイド',
-    icon: '🤖',
+    label: 'エージェント向けガイド',
+    icon: 'Bot',
     description: 'AI/エージェント向けの簡易カラーリファレンス',
     enabled: true,
     fields: [
@@ -765,8 +795,8 @@ export const designTemplate: DesignSection[] = [
   },
   {
     id: 'misc',
-    label: '📝 その他',
-    icon: '📝',
+    label: 'その他',
+    icon: 'FileText',
     description: 'プロジェクト固有の追加ルールやメモ',
     enabled: false,
     fields: [

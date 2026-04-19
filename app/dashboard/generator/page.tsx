@@ -166,7 +166,7 @@ export default function GeneratorPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="max-w-6xl mx-auto px-4 pt-5.5 pb-6">
           <h1 className="text-3xl font-bold">DESIGN.md ジェネレーター</h1>
           <p className="text-sm text-muted-foreground mt-1">
             カスタム設計ガイドラインを生成します
@@ -174,7 +174,7 @@ export default function GeneratorPage() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 pt-7.25 pb-8">
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Form Section */}
           <div className="space-y-6">
@@ -220,7 +220,7 @@ export default function GeneratorPage() {
                                   onChange={(e) =>
                                     handleFieldChange(section.id, field.id, e.target.value)
                                   }
-                                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                  className="w-full rounded-md border border-input bg-transparent dark:bg-input/30 px-3 py-2 text-sm"
                                 >
                                   {getFieldOptions(field, config, section.id).map((opt) => (
                                     <option key={opt} value={opt}>

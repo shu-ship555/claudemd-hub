@@ -12,7 +12,7 @@ export function buildInitialConfig(): DesignConfig {
       if (field.type === 'multiselect') {
         initial[section.id][field.id] = field.default || []
       } else if (field.type === 'number') {
-        initial[section.id][field.id] = ''
+        initial[section.id][field.id] = field.toggle ? '' : field.default
       } else if (field.type === 'checkbox') {
         initial[section.id][field.id] = false
       } else {

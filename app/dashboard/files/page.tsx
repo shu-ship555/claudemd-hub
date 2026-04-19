@@ -30,7 +30,7 @@ export default async function FilesPage() {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader title="設定ファイル管理" subtitle="Claude Code の設定ファイルを管理・同期します" />
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      <main className="max-w-7xl mx-auto px-4 pt-7.25 pb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-4">
             <div>
