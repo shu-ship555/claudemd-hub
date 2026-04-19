@@ -17,11 +17,22 @@ export async function POST(request: Request) {
 
     const res = NextResponse.json({ user })
 
+    const secure = process.env.NODE_ENV === 'production'
+
     res.cookies.set({
       name: 'sb-access-token',
       value: accessToken,
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure,
+      sameSite: 'lax',
+      maxAge: 3600,
+    })
+
+    res.cookies.set({
+      name: 'sb-user-email',
+      value: user.email ?? '',
+      httpOnly: false,
+      secure,
       sameSite: 'lax',
       maxAge: 3600,
     })
@@ -31,7 +42,7 @@ export async function POST(request: Request) {
         name: 'sb-refresh-token',
         value: refreshToken,
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure,
         sameSite: 'lax',
         maxAge: 604800,
       })

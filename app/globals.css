@@ -6,7 +6,7 @@
   /* Dark mode defaults — slightly off-black for depth */
   --color-background: oklch(0.08 0.004 270);
   --color-foreground: oklch(0.97 0 0);
-  --color-card: oklch(0.14 0.006 272);
+  --color-card: oklch(1 0 0);
   --color-card-foreground: oklch(0.97 0 0);
   --color-popover: oklch(0.16 0.006 272);
   --color-popover-foreground: oklch(0.97 0 0);

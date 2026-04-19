@@ -10,7 +10,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/config')) {
+  const protectedRoutes = ['/dashboard/files', '/config']
+
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
     const accessToken = request.cookies.get('sb-access-token')?.value
 
     if (!accessToken) {

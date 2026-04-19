@@ -14,6 +14,7 @@ export default function DashboardClient() {
     try {
       const supabase = createClient()
       await supabase.auth.signOut()
+      document.cookie = 'sb-user-email=; Max-Age=0; path=/'
       router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
