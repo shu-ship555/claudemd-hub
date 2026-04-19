@@ -1,9 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 
-function readUserEmailFromCookie(): string | null {
-  if (typeof document === 'undefined') return null
+function subscribe() {
+  return () => {}
+}
+
+function getSnapshot(): string | null {
   const value = document.cookie
     .split('; ')
     .find((row) => row.startsWith('sb-user-email='))
@@ -11,16 +14,16 @@ function readUserEmailFromCookie(): string | null {
   return value ? decodeURIComponent(value) : null
 }
 
-export function useAuth() {
-  const [userEmail, setUserEmail] = useState<string | null | undefined>(undefined)
+function getServerSnapshot(): null {
+  return null
+}
 
-  useEffect(() => {
-    setUserEmail(readUserEmailFromCookie())
-  }, [])
+export function useAuth() {
+  const userEmail = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   return {
     isLoggedIn: userEmail != null && userEmail !== '',
-    isLoading: userEmail === undefined,
-    userEmail: userEmail ?? null,
+    isLoading: false,
+    userEmail,
   }
 }

@@ -16,17 +16,24 @@ export default function Home() {
           <p className="text-sm text-muted-foreground">
             Store, version, and sync your Claude Code settings across multiple machines.
           </p>
-          <div className="flex gap-3">
-            <Link href="/auth/login" className="flex-1">
-              <Button variant="default" className="w-full">
-                Login
+          <div className="flex flex-col gap-3">
+            <Link href="/dashboard">
+              <Button className="w-full">
+                DESIGN.md を生成する
               </Button>
             </Link>
-            <Link href="/auth/signup" className="flex-1">
-              <Button variant="outline" className="w-full">
-                Sign Up
-              </Button>
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/auth/login" className="flex-1">
+                <Button variant="outline" className="w-full">
+                  ログイン
+                </Button>
+              </Link>
+              <Link href="/auth/signup" className="flex-1">
+                <Button variant="outline" className="w-full">
+                  新規登録
+                </Button>
+              </Link>
+            </div>
           </div>
         </CardContent>
       </Card>
