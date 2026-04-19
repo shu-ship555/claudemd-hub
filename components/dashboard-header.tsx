@@ -1,35 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import DashboardClient from '@/app/dashboard/dashboard-client'
-import { fetchSupabaseUser } from '@/lib/supabase-auth'
+import { useAuth } from '@/lib/hooks/use-auth'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface DashboardHeaderProps {
   title: string
   subtitle?: string
 }
 
-function readAccessTokenFromCookie(): string | undefined {
-  return document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('sb-access-token='))
-    ?.split('=')[1]
-}
-
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
-  const [userEmail, setUserEmail] = useState('')
-
-  useEffect(() => {
-    const token = readAccessTokenFromCookie()
-    if (!token) return
-    fetchSupabaseUser(token).then((user) => {
-      if (user?.email) setUserEmail(user.email)
-    })
-  }, [])
+  const { isLoggedIn, isLoading, userEmail } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 h-14 bg-card/90 backdrop-blur-xl backdrop-saturate-150">
-      <div className="max-w-7xl mx-auto px-6 h-full flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 h-full pb-px flex justify-between items-center">
         <div>
           <h1 className="text-sm font-semibold leading-tight">{title}</h1>
           {subtitle && (
@@ -43,10 +29,25 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
           <a href="/dashboard" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             ジェネレーター
           </a>
-          <a href="/dashboard/files" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
-            設定ファイル管理
-          </a>
-          <DashboardClient />
+          {isLoggedIn && (
+            <a href="/dashboard/files" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+              設定ファイル管理
+            </a>
+          )}
+          {!isLoading && (
+            isLoggedIn ? (
+              <DashboardClient />
+            ) : (
+              <div className="flex items-center gap-2">
+                <a href="/auth/login" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  ログイン
+                </a>
+                <a href="/auth/signup" className={cn(buttonVariants({ size: 'xs' }))}>
+                  新規登録
+                </a>
+              </div>
+            )
+          )}
         </nav>
       </div>
     </header>

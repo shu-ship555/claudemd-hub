@@ -13,6 +13,9 @@ import { generateDesignMarkdown } from '@/lib/generate-design'
 import { createConfigFile } from '../actions'
 import { buildInitialConfig } from '@/lib/hooks/use-design-config'
 import { downloadTextFile } from '@/lib/download'
+import { useAuth } from '@/lib/hooks/use-auth'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 function shouldShowField(field: DesignField, config: DesignConfig, sectionId: string): boolean {
   if (!field.dependsOn) return true
@@ -111,6 +114,7 @@ export default function GeneratorPage() {
   const [preview, setPreview] = useState(generateDesignMarkdown(config))
   const [isSaving, setIsSaving] = useState(false)
   const [fileName, setFileName] = useState('DESIGN.md')
+  const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
 
   const handleToggleSection = (sectionId: string) => {
     const draft = {
@@ -364,13 +368,24 @@ export default function GeneratorPage() {
                   >
                     ダウンロード
                   </Button>
-                  <Button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="flex-1"
-                  >
-                    {isSaving ? '保存中...' : '保存'}
-                  </Button>
+                  {!isAuthLoading && (
+                    isLoggedIn ? (
+                      <Button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="flex-1"
+                      >
+                        {isSaving ? '保存中...' : '保存'}
+                      </Button>
+                    ) : (
+                      <a
+                        href="/auth/login"
+                        className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 justify-center')}
+                      >
+                        ログインして保存
+                      </a>
+                    )
+                  )}
                 </div>
               </CardContent>
             </Card>

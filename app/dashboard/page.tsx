@@ -16,6 +16,9 @@ import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
 import { downloadTextFile } from '@/lib/download'
 import { FieldRenderer } from '@/components/design-form/field-renderer'
 import { COLOR_FORMATS, getColorFormat, getRawColor, assembleColor } from '@/lib/color-utils'
+import { useAuth } from '@/lib/hooks/use-auth'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 const HIDDEN_SECTIONS = new Set(['components', 'depth', 'agentGuide'])
 
@@ -34,6 +37,7 @@ const SECTION_ICONS: Record<string, LucideIcon> = {
 
 export default function DashboardPage() {
   const { config, preview, toggleSection, updateField, batchUpdate } = useDesignConfig()
+  const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
   const [detailedSections, setDetailedSections] = useState<Set<string>>(new Set())
   const [colorFormat, setColorFormat] = useState('HEX')
   const [customModes, setCustomModes] = useState<Set<string>>(new Set())
@@ -311,13 +315,24 @@ export default function DashboardPage() {
                 >
                   ダウンロード
                 </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex-1"
-                >
-                  {isSaving ? '保存中...' : '保存'}
-                </Button>
+                {!isAuthLoading && (
+                  isLoggedIn ? (
+                    <Button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="flex-1"
+                    >
+                      {isSaving ? '保存中...' : '保存'}
+                    </Button>
+                  ) : (
+                    <a
+                      href="/auth/login"
+                      className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 justify-center')}
+                    >
+                      ログインして保存
+                    </a>
+                  )
+                )}
               </div>
             </div>
           </div>
