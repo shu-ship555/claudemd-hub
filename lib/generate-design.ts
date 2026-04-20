@@ -14,7 +14,7 @@ function parseTextStyle(style: string): { fontSize: string; weight: string; line
   return {
     fontSize: `${fontSize}px`,
     weight: weight === 'B' ? 'Bold' : 'Normal',
-    lineHeight: lineHeight,
+    lineHeight: `${lineHeight}%`,
   }
 }
 
