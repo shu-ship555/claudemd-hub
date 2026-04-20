@@ -15,7 +15,7 @@ export function buildInitialConfig(): DesignConfig {
       } else if (field.type === 'number') {
         initial[section.id][field.id] = field.toggle ? '' : field.default
       } else if (field.type === 'checkbox') {
-        initial[section.id][field.id] = false
+        initial[section.id][field.id] = field.default
       } else {
         initial[section.id][field.id] = field.default || ''
       }
@@ -28,8 +28,10 @@ export function buildInitialConfig(): DesignConfig {
     const catKey = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase() as keyof typeof DEFAULT_TEXT_STYLES
     const selectedStylesField = `${cat}SelectedStyles`
     const allStyles = [
+      ...(DEFAULT_TEXT_STYLES[catKey]?.Bk || []),
       ...(DEFAULT_TEXT_STYLES[catKey]?.B || []),
       ...(DEFAULT_TEXT_STYLES[catKey]?.N || []),
+      ...(DEFAULT_TEXT_STYLES[catKey]?.Th || []),
     ]
     initial.typography![selectedStylesField] = allStyles.join(',')
   }

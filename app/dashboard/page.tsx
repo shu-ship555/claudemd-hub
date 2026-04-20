@@ -116,14 +116,17 @@ const SEMANTIC_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
   { key: 'warning', label: '警告' },
 ]
 
-function parseTextStyle(style: string): { fontSize: string; weight: string; lineHeight: string } {
-  const match = style.match(/^(\d+)([BN])-(\d+)$/)
-  if (!match) return { fontSize: '', weight: '', lineHeight: '' }
-  const [, fontSize, weight, lineHeight] = match
+function parseTextStyle(style: string): { fontSize: string; weight: string; lineHeight: string; letterSpacing: string } {
+  const match = style.match(/^(\d+)(Th|N|B|Bk)-(\d+)-(-?\d+)$/)
+  if (!match) return { fontSize: '', weight: '', lineHeight: '', letterSpacing: '' }
+  const [, fontSize, weight, lineHeight, letterSpacingValue] = match
+  const letterSpacingNum = parseInt(letterSpacingValue)
+  const weightMap: Record<string, string> = { 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }
   return {
     fontSize: `${fontSize}px`,
-    weight: weight === 'B' ? 'Bold' : 'Normal',
+    weight: weightMap[weight] || weight,
     lineHeight: `${lineHeight}%`,
+    letterSpacing: `${(letterSpacingNum * 0.01).toFixed(2)}em`,
   }
 }
 
@@ -802,16 +805,51 @@ export default function DashboardPage() {
                           return (
                             <div key={category} className="space-y-3 pb-6 border-b last:border-b-0">
                               <p className="text-xs font-medium text-foreground">{categoryLabel}</p>
-                              {TEXT_STYLE_WEIGHTS.map((weight) => (
+                              {TEXT_STYLE_WEIGHTS.map((weight) => {
+                                const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
+                                const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
+                                const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
+                                const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
+                                const weightStyles = DEFAULT_TEXT_STYLES[category][weight] || []
+                                const allSelected = isUnset ? true : (weightStyles.length > 0 && weightStyles.every(s => savedSelection.includes(s)))
+                                const someSelected = isUnset ? true : weightStyles.some(s => savedSelection.includes(s))
+                                return (
                                 <div key={`${category}-${weight}`} className="space-y-2">
-                                  <p className="text-[10px] text-muted-foreground ml-2">{weight === 'B' ? 'Bold' : 'Normal'}</p>
+                                  <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
+                                    <input
+                                      type="checkbox"
+                                      checked={allSelected}
+                                      ref={(el) => {
+                                        if (el && someSelected && !allSelected) el.indeterminate = true
+                                      }}
+                                      onChange={(e) => {
+                                        const current = savedSelection.filter((s: string) => s.trim())
+                                        if (e.target.checked) {
+                                          for (const style of weightStyles) {
+                                            if (!current.includes(style)) {
+                                              current.push(style)
+                                            }
+                                          }
+                                        } else {
+                                          for (const style of weightStyles) {
+                                            const idx = current.indexOf(style)
+                                            if (idx > -1) current.splice(idx, 1)
+                                          }
+                                        }
+                                        updateField('typography', selectedStylesField, current.join(','))
+                                      }}
+                                      className="h-4 w-4 rounded border-input accent-primary mr-2 cursor-pointer"
+                                    />
+                                  </div>
                                   <div className="grid grid-cols-2 gap-2 ml-2">
                                     {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
                                       const parsed = parseTextStyle(style)
                                       const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
-                                      const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)?.trim()
-                                      const savedSelection = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
-                                      const isSelected = !savedSelection.length || savedSelection.includes(style)
+                                      const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
+                                      const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
+                                      const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
+                                      const isSelected = isUnset ? true : savedSelection.includes(style)
                                       return (
                                         <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
                                           <input
@@ -831,13 +869,14 @@ export default function DashboardPage() {
                                             }}
                                             className="h-4 w-4 rounded border-input accent-primary"
                                           />
-                                          <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}</span>
+                                          <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}｜{parsed.letterSpacing}</span>
                                         </label>
                                       )
                                     })}
                                   </div>
                                 </div>
-                              ))}
+                                )
+                              })}
                               <div className="space-y-2 mt-4">
                                 <p className="text-xs font-medium text-foreground">{categoryLabel}の使い方</p>
                                 <Textarea
@@ -862,6 +901,18 @@ export default function DashboardPage() {
                   icon={LayoutGrid}
                 >
                   <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <FieldLabel requirement="optional">レイアウトタイプ</FieldLabel>
+                      <select
+                        value={(lc.layoutType as string) ?? 'liquid'}
+                        onChange={(e) => updateField('layout', 'layoutType', e.target.value)}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="liquid">リキッド（流動的）</option>
+                        <option value="solid">ソリッド（固定幅）</option>
+                      </select>
+                    </div>
+
                     <div className="space-y-1.5">
                       <FieldLabel requirement="optional">基準単位</FieldLabel>
                       <select
@@ -918,14 +969,50 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer">
+                    <div className="border-t pt-4">
+                      <p className="text-xs font-medium text-foreground mb-3">ブレイクポイント</p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {[
+                          { key: 'sm' as const, label: 'sm' },
+                          { key: 'md' as const, label: 'md' },
+                          { key: 'lg' as const, label: 'lg' },
+                          { key: '2xl' as const, label: '2xl' },
+                        ].map(({ key, label }) => (
+                          <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-muted/20 p-2">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={(lc[`${key}BreakpointEnabled` as keyof typeof lc] as boolean) ?? true}
+                                onChange={(e) => updateField('layout', `${key}BreakpointEnabled`, e.target.checked)}
+                                className="h-4 w-4 rounded border-input accent-primary"
+                              />
+                              <span className="text-xs font-medium text-muted-foreground">{label}</span>
+                            </label>
+                            <div className="flex items-center gap-1 ml-auto">
+                              <input
+                                type="number"
+                                min={1}
+                                value={(lc[`${key}BreakpointValue` as keyof typeof lc] as number) ?? 0}
+                                onChange={(e) => updateField('layout', `${key}BreakpointValue`, Number(e.target.value))}
+                                disabled={!((lc[`${key}BreakpointEnabled` as keyof typeof lc] as boolean) ?? true)}
+                                className="w-16 rounded-md border border-input bg-transparent px-2 py-1 text-xs text-right disabled:opacity-50"
+                                placeholder="px"
+                              />
+                              <span className="text-xs text-muted-foreground w-5">px</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <label className="flex items-center gap-2 text-sm cursor-pointer border-t pt-4">
                       <input
                         type="checkbox"
-                        checked={(lc.useCircleRadius as boolean) ?? false}
-                        onChange={(e) => updateField('layout', 'useCircleRadius', e.target.checked)}
+                        checked={(lc.ergonomicsGuidance as boolean) ?? false}
+                        onChange={(e) => updateField('layout', 'ergonomicsGuidance', e.target.checked)}
                         className="h-4 w-4 rounded border-input accent-primary"
                       />
-                      <span className="text-muted-foreground">円形要素（50%）を使用する</span>
+                      <span className="text-muted-foreground">人間工学に基づく指示を含める</span>
                     </label>
                   </div>
                 </SectionCard>
@@ -970,7 +1057,7 @@ export default function DashboardPage() {
                     : { ...customColors, success: LIGHT_COLORS.success, danger: LIGHT_COLORS.danger, warning: LIGHT_COLORS.warning }
                   }
                   fonts={{ latin: tc.latinFont as string, japanese: tc.japaneseFont as string }}
-                  layout={{ spacingBase: lc.spacingBase as string, useCircleRadius: lc.useCircleRadius as boolean }}
+                  layout={{ spacingBase: lc.spacingBase as string }}
                 />
               )}
 

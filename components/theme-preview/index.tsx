@@ -79,12 +79,12 @@ const LIGHT: Colors = LIGHT_COLORS
 
 // ── デフォルトテーマ コンポーネント ──────────────────────────────────────────
 
-type PreviewProps = { c: Colors; sp: number; circle: boolean }
+type PreviewProps = { c: Colors; sp: number }
 
-function DefaultAtom({ c, sp, circle }: PreviewProps) {
+function DefaultAtom({ c, sp }: PreviewProps) {
   const gap = sp
   const pad = sp * 1.5
-  const brad = circle ? '50%' : `${sp}px`
+  const brad = `${sp}px`
   return (
     <div className="space-y-6 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-2">
@@ -134,7 +134,7 @@ function DefaultAtom({ c, sp, circle }: PreviewProps) {
             { label: 'Warning', bg: `${c.warning}22`, color: c.warning },
             { label: 'Danger', bg: `${c.danger}22`, color: c.danger },
           ].map(({ label, bg, color }) => (
-            <span key={label} className="text-xs font-medium" style={{ background: bg, color, padding: `${sp * 0.25}px ${sp}px`, borderRadius: circle ? 9999 : sp }}>
+            <span key={label} className="text-xs font-medium" style={{ background: bg, color, padding: `${sp * 0.25}px ${sp}px`, borderRadius: sp }}>
               {label}
             </span>
           ))}
@@ -144,9 +144,9 @@ function DefaultAtom({ c, sp, circle }: PreviewProps) {
   )
 }
 
-function DefaultModule({ c, sp, circle }: PreviewProps) {
+function DefaultModule({ c, sp }: PreviewProps) {
   const pad = sp * 1.5
-  const brad = circle ? 9999 : sp
+  const brad = sp
   return (
     <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-1.5">
@@ -239,8 +239,8 @@ function DefaultComponent({ c, sp }: PreviewProps) {
   )
 }
 
-function DefaultTemplate({ c, sp, circle }: PreviewProps) {
-  const avatarRadius = circle ? '50%' : `${sp}px`
+function DefaultTemplate({ c, sp }: PreviewProps) {
+  const avatarRadius = `${sp}px`
   return (
     <div className="overflow-hidden" style={{ background: c.bg, border: `1px solid ${c.border}`, color: c.text, borderRadius: sp * 1.5 }}>
       <div className="flex items-center justify-between" style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 2}px` }}>
@@ -297,7 +297,7 @@ interface ThemePreviewProps {
   height?: string
   customColors?: Colors
   fonts?: { latin?: string; japanese?: string }
-  layout?: { spacingBase?: string; useCircleRadius?: boolean }
+  layout?: { spacingBase?: string }
 }
 
 export function ThemePreview({ theme, height = '400px', customColors, fonts, layout }: ThemePreviewProps) {
@@ -306,7 +306,6 @@ export function ThemePreview({ theme, height = '400px', customColors, fonts, lay
   useGoogleFonts(fonts)
 
   const sp = parseInt(layout?.spacingBase ?? '8', 10) || 8
-  const circle = layout?.useCircleRadius ?? false
 
   if (!theme || theme === '') {
     return (
@@ -352,7 +351,7 @@ export function ThemePreview({ theme, height = '400px', customColors, fonts, lay
         className="overflow-y-auto min-h-0"
         style={{ fontFamily: resolveFontFamily(fonts?.latin, fonts?.japanese) }}
       >
-        <PreviewComponent c={colors} sp={sp} circle={circle} />
+        <PreviewComponent c={colors} sp={sp} />
       </div>
     </div>
   )

@@ -1,27 +1,320 @@
-# Design System
+# Design System Guidelines
 
-## Overview
-A focused, minimal dark interface for a developer productivity tool.
-Clean lines, low visual noise, high information density.
+## 1. Visual Theme & Atmosphere
 
-## Colors
-- **Primary** (#2665fd): CTAs, active states, key interactive elements
-- **Secondary** (#475569): Supporting UI, chips, secondary actions
-- **Surface** (#0b1326): Page backgrounds
-- **On-surface** (#dae2fd): Primary text on dark backgrounds
-- **Error** (#ffb4ab): Validation errors, destructive actions
+ライトなベースカラーにブルー系のアクセントを組み合わせた、クリーンでプロフェッショナルなビジュアル。余白を活かしたレイアウトで情報の見通しをよくする。
 
-## Typography
-- **Headlines**: Inter, semi-bold
-- **Body**: Inter, regular, 14–16px
-- **Labels**: Inter, medium, 12px, uppercase for section headers
+**Key Characteristics:**
+- ライトな背景色とディープなテキストカラーによる高コントラスト
+- ブルー系プライマリカラーを CTA とリンクに使用
+- グレースケールで情報の階層を表現
+- 十分な余白とスペーシングで読みやすさを確保
 
-## Components
-- **Buttons**: Rounded (8px), primary uses brand blue fill
-- **Inputs**: 1px border, subtle surface-variant background
-- **Cards**: No elevation, relies on border and background contrast
+## 2. Color Palette & Roles
 
-## Do's and Don'ts
-- Do use the primary color sparingly, only for the most important action
-- Don't mix rounded and sharp corners in the same view
-- Do maintain 4:1 contrast ratio for all text
+### KeyColor
+- **Primary** (`#1a4fd6`)
+- **Secondary** (`#3b65ce`)
+- **Tertiary** (`#0d38a5`)
+- **Primary surface** (`#ebf1ff`)
+
+#### キーカラーの使い方
+- ブランドのメインカラーとして CTA ボタン・リンク・強調に使用する
+- セカンダリ・ターシャリは階調表現やホバー状態に活用する
+- バックグラウンドはページ全体の基調色として使用する
+
+### Grayscale
+- **White** (`#ffffff`)
+- **Gray 1** (`#f0f0f0`)
+- **Gray 2** (`#e0e0e0`)
+- **Gray 3** (`#d0d0d0`)
+- **Gray 4** (`#c0c0c0`)
+- **Gray 5** (`#b0b0b0`)
+- **Gray 6** (`#808080`)
+- **Gray 7** (`#606060`)
+- **Gray 8** (`#404040`)
+- **Gray 9** (`#202020`)
+- **Gray 10** (`#101010`)
+- **Gray 11** (`#050505`)
+- **Gray 12** (`#010101`)
+- **Black** (`#000000`)
+
+#### グレースケールの使い方
+- White〜Gray 3 は背景・サーフェスに適する
+- Gray 4〜Gray 6 はサブテキスト・ミュートテキストに適する
+- Gray 7〜Black は見出し・本文テキストに適する
+
+### Semantic
+- **Success** (`#16a34a`)
+- **Error** (`#dc2626`)
+- **Warning** (`#d97706`)
+
+#### セマンティックカラーの使い方
+- サクセス：完了・承認・正常状態のフィードバックに使用する
+- エラー：失敗・削除・危険な操作のフィードバックに使用する
+- 警告：注意・期限・確認が必要な状態のフィードバックに使用する
+
+## 3. Typography Rules
+
+### Font Families
+- **Latin**: `Inter`
+- **Japanese**: `Noto Sans JP`
+
+### Text Styles
+
+#### 見出し
+
+**Black:**
+- 128px | Black | 140% | -0.02em
+- 96px | Black | 140% | -0.02em
+- 64px | Black | 140% | -0.01em
+- 56px | Black | 140% | -0.01em
+- 48px | Black | 140% | -0.01em
+
+**Bold:**
+- 128px | Bold | 140% | -0.02em
+- 96px | Bold | 140% | -0.02em
+- 64px | Bold | 140% | -0.01em
+- 56px | Bold | 140% | -0.01em
+- 48px | Bold | 140% | -0.01em
+
+**Normal:**
+- 128px | Normal | 140% | -0.02em
+- 96px | Normal | 140% | -0.02em
+- 64px | Normal | 140% | -0.01em
+- 56px | Normal | 140% | -0.01em
+- 48px | Normal | 140% | -0.01em
+
+**Thin:**
+- 128px | Thin | 140% | -0.02em
+- 96px | Thin | 140% | -0.02em
+- 64px | Thin | 140% | -0.01em
+- 56px | Thin | 140% | -0.01em
+- 48px | Thin | 140% | -0.01em
+
+**使い方:**
+- サイトのメインタイトルやセクション見出しに使用します
+
+
+#### 本文
+
+**Black:**
+- 40px | Black | 140% | 0.00em
+- 36px | Black | 140% | 0.00em
+- 32px | Black | 150% | 0.00em
+- 28px | Black | 150% | 0.00em
+- 26px | Black | 150% | 0.00em
+- 24px | Black | 150% | 0.00em
+- 22px | Black | 150% | 0.00em
+- 20px | Black | 150% | 0.00em
+- 18px | Black | 160% | 0.00em
+- 16px | Black | 160% | 0.00em
+- 14px | Black | 160% | 0.00em
+- 12px | Black | 170% | 0.02em
+- 10px | Black | 170% | 0.04em
+
+**Bold:**
+- 40px | Bold | 140% | 0.00em
+- 36px | Bold | 140% | 0.00em
+- 32px | Bold | 150% | 0.00em
+- 28px | Bold | 150% | 0.00em
+- 26px | Bold | 150% | 0.00em
+- 24px | Bold | 150% | 0.00em
+- 22px | Bold | 150% | 0.00em
+- 20px | Bold | 150% | 0.00em
+- 18px | Bold | 160% | 0.00em
+- 16px | Bold | 160% | 0.00em
+- 14px | Bold | 160% | 0.00em
+- 12px | Bold | 170% | 0.02em
+- 10px | Bold | 170% | 0.04em
+
+**Normal:**
+- 40px | Normal | 140% | 0.00em
+- 36px | Normal | 140% | 0.00em
+- 32px | Normal | 150% | 0.00em
+- 28px | Normal | 150% | 0.00em
+- 26px | Normal | 150% | 0.00em
+- 24px | Normal | 150% | 0.00em
+- 22px | Normal | 150% | 0.00em
+- 20px | Normal | 150% | 0.00em
+- 18px | Normal | 160% | 0.00em
+- 16px | Normal | 160% | 0.00em
+- 14px | Normal | 160% | 0.00em
+- 12px | Normal | 170% | 0.02em
+- 10px | Normal | 170% | 0.04em
+
+**Thin:**
+- 40px | Thin | 140% | 0.00em
+- 36px | Thin | 140% | 0.00em
+- 32px | Thin | 150% | 0.00em
+- 28px | Thin | 150% | 0.00em
+- 26px | Thin | 150% | 0.00em
+- 24px | Thin | 150% | 0.00em
+- 22px | Thin | 150% | 0.00em
+- 20px | Thin | 150% | 0.00em
+- 18px | Thin | 160% | 0.00em
+- 16px | Thin | 160% | 0.00em
+- 14px | Thin | 160% | 0.00em
+- 12px | Thin | 170% | 0.02em
+- 10px | Thin | 170% | 0.04em
+
+**使い方:**
+- 通常の本文テキストや説明文に使用します
+
+
+#### 本文（表示情報量を優先）
+
+**Black:**
+- 16px | Black | 130% | 0.00em
+- 16px | Black | 120% | 0.00em
+- 14px | Black | 130% | 0.01em
+- 14px | Black | 120% | 0.01em
+- 12px | Black | 130% | 0.02em
+- 10px | Black | 120% | 0.02em
+
+**Bold:**
+- 16px | Bold | 130% | 0.00em
+- 16px | Bold | 120% | 0.00em
+- 14px | Bold | 130% | 0.01em
+- 14px | Bold | 120% | 0.01em
+- 12px | Bold | 130% | 0.02em
+- 10px | Bold | 120% | 0.02em
+
+**Normal:**
+- 16px | Normal | 130% | 0.00em
+- 16px | Normal | 120% | 0.00em
+- 14px | Normal | 130% | 0.01em
+- 14px | Normal | 120% | 0.01em
+- 12px | Normal | 130% | 0.02em
+- 10px | Normal | 120% | 0.02em
+
+**Thin:**
+- 16px | Thin | 130% | 0.00em
+- 16px | Thin | 120% | 0.00em
+- 14px | Thin | 130% | 0.01em
+- 14px | Thin | 120% | 0.01em
+- 12px | Thin | 130% | 0.02em
+- 10px | Thin | 120% | 0.02em
+
+**使い方:**
+- 情報密度を優先する場面で、限られたスペースに多くの情報を表示します
+
+
+#### UIテキスト
+
+**Black:**
+- 16px | Black | 100% | 0.02em
+- 14px | Black | 100% | 0.02em
+- 12px | Black | 100% | 0.03em
+- 10px | Black | 100% | 0.05em
+
+**Bold:**
+- 16px | Bold | 100% | 0.02em
+- 14px | Bold | 100% | 0.02em
+- 12px | Bold | 100% | 0.03em
+- 10px | Bold | 100% | 0.05em
+
+**Normal:**
+- 16px | Normal | 100% | 0.02em
+- 14px | Normal | 100% | 0.02em
+- 12px | Normal | 100% | 0.03em
+- 10px | Normal | 100% | 0.05em
+
+**Thin:**
+- 16px | Thin | 100% | 0.02em
+- 14px | Thin | 100% | 0.02em
+- 12px | Thin | 100% | 0.03em
+- 10px | Thin | 100% | 0.05em
+
+**使い方:**
+- ボタンやラベルなど、UI要素内のテキストに使用します
+
+
+#### コードテキスト
+
+**Black:**
+- 16px | Black | 150% | 0.00em
+- 14px | Black | 150% | 0.00em
+- 12px | Black | 150% | 0.00em
+- 10px | Black | 150% | 0.00em
+
+**Bold:**
+- 16px | Bold | 150% | 0.00em
+- 14px | Bold | 150% | 0.00em
+- 12px | Bold | 150% | 0.00em
+- 10px | Bold | 150% | 0.00em
+
+**Normal:**
+- 16px | Normal | 150% | 0.00em
+- 14px | Normal | 150% | 0.00em
+- 12px | Normal | 150% | 0.00em
+- 10px | Normal | 150% | 0.00em
+
+**Thin:**
+- 16px | Thin | 150% | 0.00em
+- 14px | Thin | 150% | 0.00em
+- 12px | Thin | 150% | 0.00em
+- 10px | Thin | 150% | 0.00em
+
+**使い方:**
+- preタグとcodeタグとのテキストに使用します
+
+## 4. Layout
+
+- Layout Type: リキッド（流動的）
+- Base Unit: 8px
+- Spacing Scale: 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920
+- Breakpoints: sm: 640px, md: 768px, lg: 1024px, 2xl: 1536px
+
+### 人間工学に基づく指示
+
+#### 1. 視覚的なバランスを整える「幾何学的・心理学的錯視」
+
+人間は物理的に正確な中心や直線を、必ずしも「正解」とは感じません。デザイナーの仕事は、数値を疑い、「目に正しく見えるよう」に数値を裏切ることです。
+
+**上方錯視（Vertical-Horizontal Illusion）**
+- 同じ長さの垂直線と水平線がある場合、垂直線の方が長く見える現象です。
+- 図形の垂直方向の中央は、実際よりも少し下にあるように感じられます。
+- デザインへの応用：UIやテキストを配置する際、幾何学的な中央よりもわずかに（要素の高さに対して4〜8%ほど）上に配置すると、視覚的に中央にどっしり構えて見えます。
+
+**面積模倣（外形による中心のズレ）**
+- 「再生ボタン（▶︎）」のような三角形を円や四角形の中央に置く際、幾何学的な中心に置くと左に寄って見えます。
+- デザインへの応用：重心位置を考慮し、**「視覚的な重心」**に合わせて右側に余白を多めに取ります。
+
+#### 2. 認知負荷を軽減する「ゲシュタルトの法則」
+
+ユーザーが画面を見た瞬間、要素をどう「グループ」として認識するかを制御します。
+
+**近接の法則（Proximity）**
+- 近いもの同士は関連があると感じます。
+- 関連するラベルと入力フォームは近づけ、別のセクションとは大きな余白（ホワイトスペース）で区切ります。
+
+**類同の法則（Similarity）**
+- 色や形が同じものは同じ機能を持つと認識します。
+- 「保存」と「削除」のボタンが同じ色だと誤操作を招くため、色で機能を区別します。
+
+**閉合の法則（Closure）**
+- 枠線がなくても、要素の配置によって「ひとかたまりの領域」を脳が補完します。
+- 過剰な線（罫線）を減らし、スッキリした画面を作るのに役立ちます。
+
+#### 3. 操作性を高める「運動機能の法則」
+
+デバイスを操作する際の身体的な制約や物理的な法則です。
+
+**フィッツの法則（Fitts's Law）**
+- ターゲットに到達するまでの時間は、ターゲットまでの距離と、ターゲットの大きさに依存します。
+- デザインへの応用：重要なアクション（コンバージョンボタンなど）は大きく、押しやすい位置に配置する。逆に、削除などの危険なボタンはあえて小さくしたり、離れた場所に置くことで誤操作を防ぎます。
+
+**ヒックの法則（Hick's Law）**
+- 選択肢の数が増えるほど、意思決定にかかる時間は対数的に増加します。
+- デザインへの応用：メニュー項目を増やしすぎない。複雑な登録フォームは、ステップごとに分割（ステップUI）して、1画面あたりの選択肢を減らします。
+
+#### 4. 視覚情報の優先順位「色の人間工学」
+
+**プルキンエ現象**
+- 暗い場所では青色が明るく見え、赤色が暗く沈んで見えます。
+- ナイトモードのデザインでは、色のコントラストに注意が必要です。
+
+**誘目性**
+- 赤や黄色は目を引きやすく、青や緑は落ち着きを与えます。
+- 警告には赤、進行には緑といった「色のメンタルモデル」を利用することで、説明がなくても伝わるデザインになります。
