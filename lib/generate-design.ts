@@ -38,6 +38,8 @@ export function generateDesignMarkdown(config: DesignConfig): string {
     const sectionCfg = config[section.id]
     if (!sectionCfg || !sectionCfg.enabled) continue
 
+    if (!themeName && section.id === 'typography') continue
+
     const content = generateSectionContent(section.id, sectionCfg)
     if (!content.trim()) continue
 
