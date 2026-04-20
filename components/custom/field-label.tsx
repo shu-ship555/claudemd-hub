@@ -9,7 +9,7 @@ interface FieldLabelProps {
 
 export function FieldLabel({ children, requirement, className }: FieldLabelProps) {
   return (
-    <div className={cn('flex items-center gap-1.5', className)}>
+    <div className={cn('flex items-center gap-2', className)}>
       <label className="text-sm font-medium">{children}</label>
       {requirement === 'required' && <Badge variant="destructive">必須</Badge>}
       {requirement === 'optional' && <Badge variant="outline">任意</Badge>}

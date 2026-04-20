@@ -301,7 +301,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-background">
       <DashboardHeader title="DESIGN.md Generator" subtitle="Claudeに読み込ませるDESIGN.mdを生成するためのツールです" />
 
-      <main className="max-w-7xl mx-auto px-6 pt-11 pb-12">
+      <main className="max-w-7xl mx-auto px-6 pt-10 pb-12">
         <div className="grid gap-12 lg:grid-cols-2">
           {/* Form Section */}
           <div
@@ -484,7 +484,7 @@ export default function DashboardPage() {
                           const showContrast = key !== 'bg'
                           const ratio = showContrast ? getContrastRatio(customColors[key], customColors.bg) : null
                           const level = ratio !== null ? getContrastLevel(key, ratio) : null
-                          const badgeClass = level === 'aa' ? 'bg-success/15 text-success' : level === 'aa-ui' ? 'bg-warning/15 text-warning' : level === 'fail' ? 'bg-danger/15 text-danger' : ''
+                          const badgeClass = level === 'aa' ? 'bg-success/15 text-success' : level === 'aa-ui' ? 'bg-warning/15 text-warning' : level === 'fail' ? 'bg-destructive/15 text-destructive' : ''
                           return (
                             <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
                               <input
@@ -520,7 +520,7 @@ export default function DashboardPage() {
                                 const next = ((cc.additionalKeyColorSets as any) || []).filter((_: any, i: number) => i !== idx)
                                 updateField('colorPalette', 'additionalKeyColorSets', next)
                               }}
-                              className="text-xs px-2 py-1 rounded border border-dashed border-muted-foreground text-muted-foreground hover:border-danger hover:text-danger"
+                              className="text-xs px-2 py-1 rounded border border-dashed border-muted-foreground text-muted-foreground hover:border-destructive hover:text-destructive"
                             >
                               削除
                             </button>
@@ -616,7 +616,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const primaryRatio = getContrastRatio(set.primaryColor, set.bgColor)
                                 const primaryLevel = getContrastLevel('primary', primaryRatio)
-                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success/15 text-success' : primaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success/15 text-success' : primaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -640,7 +640,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const secondaryRatio = getContrastRatio(set.secondaryColor, set.bgColor)
                                 const secondaryLevel = getContrastLevel('secondary', secondaryRatio)
-                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success/15 text-success' : secondaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success/15 text-success' : secondaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -664,7 +664,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const tertiaryRatio = getContrastRatio(set.tertiaryColor, set.bgColor)
                                 const tertiaryLevel = getContrastLevel('tertiary', tertiaryRatio)
-                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success/15 text-success' : tertiaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success/15 text-success' : tertiaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -1440,7 +1440,7 @@ export default function DashboardPage() {
                   <Label htmlFor="filename">ファイル名</Label>
                   {fileCount !== null && (
                     <span className={`text-xs font-mono ${
-                      fileCount >= maxFiles ? 'text-danger' : 'text-muted-foreground'
+                      fileCount >= maxFiles ? 'text-destructive' : 'text-muted-foreground'
                     }`}>
                       {fileCount} / {maxFiles}
                     </span>
