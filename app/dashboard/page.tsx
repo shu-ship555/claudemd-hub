@@ -175,6 +175,7 @@ export default function DashboardPage() {
     if (val === 'カスタム') {
       setPresetPreview(null)
       updateField(section, 'themeName', '')
+      updateField(section, 'isCustomTheme', true)
       const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
       batchUpdate((prev) => {
         const patch = colorsToConfigPatch(customColors, useSemanticColors)

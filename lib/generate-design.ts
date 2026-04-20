@@ -33,12 +33,14 @@ export function generateDesignMarkdown(config: DesignConfig): string {
 
   let markdown = `${title}\n\n`
 
+  const isCustomTheme = config.visualTheme?.isCustomTheme as boolean
+
   let index = 0
   for (const section of designTemplate) {
     const sectionCfg = config[section.id]
     if (!sectionCfg || !sectionCfg.enabled) continue
 
-    if (!themeName && section.id === 'typography') continue
+    if (!themeName && !isCustomTheme && section.id === 'typography') continue
 
     const content = generateSectionContent(section.id, sectionCfg)
     if (!content.trim()) continue
