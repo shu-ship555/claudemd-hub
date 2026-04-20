@@ -269,7 +269,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Dsp テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '',
+        default: 'サイトのメインタイトルやセクション見出しに使用します',
         rows: 3,
       } as TextareaField,
       {
@@ -278,7 +278,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Std テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '',
+        default: '通常の本文テキストや説明文に使用します',
         rows: 3,
       } as TextareaField,
       {
@@ -287,7 +287,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Dns テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '',
+        default: '情報密度を優先する場面で、限られたスペースに多くの情報を表示します',
         rows: 3,
       } as TextareaField,
       {
@@ -296,7 +296,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Oln テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '',
+        default: 'ボタンやラベルなど、UI要素内のテキストに使用します',
         rows: 3,
       } as TextareaField,
       {
@@ -305,7 +305,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Mono テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '',
+        default: 'プログラムコードや技術的なテキストに使用します',
         rows: 3,
       } as TextareaField,
     ],
