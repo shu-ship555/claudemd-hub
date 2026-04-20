@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { Sparkles, Palette, Type, LayoutGrid, Info } from 'lucide-react'
+import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes } from 'lucide-react'
 import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
-import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS } from '@/lib/constants'
+import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from '@/lib/constants'
 import { downloadTextFile } from '@/lib/download'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -14,12 +14,44 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FieldLabel } from '@/components/ui/field-label'
 import { SectionCard } from '@/components/ui/section-card'
+import { Switch } from '@/components/ui/switch'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { THEME_PRESETS } from '@/lib/theme-presets'
 import { hexToHsl, hslToHex, getContrastRatio, getContrastLevel } from '@/lib/color-utils'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { Colors } from '@/components/theme-preview'
+
+type ComponentItem = {
+  id: string
+  name: string
+  purpose: string
+  variants: string
+  sizes: string
+  states: string
+  anatomy: string
+  accessibility: string
+  dosDonts: string
+}
+
+const COMPONENT_FIELDS: { id: keyof Omit<ComponentItem, 'id' | 'name'>; label: string; placeholder: string }[] = [
+  { id: 'purpose',       label: '① 目的と使い分け',        placeholder: '例: Primary Button は1画面に1つ\n破壊的操作には Destructive variant を使う' },
+  { id: 'variants',      label: '② バリアント',            placeholder: '例: Primary / Secondary / Ghost / Destructive\nそれぞれの用途を記述' },
+  { id: 'sizes',         label: '③ サイズ',               placeholder: '例: Small (h-6, px-2) / Medium (h-8, px-3) / Large (h-10, px-4)\n各文脈での使い分けも記述' },
+  { id: 'states',        label: '④ 状態',                 placeholder: '例: Default / Hover / Active / Focus / Disabled / Loading\n各状態の色・境界線・透明度を明示' },
+  { id: 'anatomy',       label: '⑤ 構造と寸法',            placeholder: '例: アイコン + ラベル、間隔8px\n左右パディング16px、高さ40px、border-radius 8px' },
+  { id: 'accessibility', label: '⑥ アクセシビリティ要件',   placeholder: '例: aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px' },
+  { id: 'dosDonts',      label: '⑦ Do / Don\'t',          placeholder: 'Do: Primary Button は1画面に1つ\nDon\'t: Primary Button を並べない' },
+]
+
+const SHADCN_FIELDS: { id: string; label: string; placeholder: string }[] = [
+  { id: 'shadcnTokenMapping',          label: '① デザイントークン CSS 変数マッピング', placeholder: '例: --primary → hsl(var(--blue-600))\n--radius → 0.5rem' },
+  { id: 'shadcnComponentList',         label: '② 採用コンポーネント一覧',            placeholder: '例: Button, Dialog, Select, Toast, Form...' },
+  { id: 'shadcnUsageGuide',            label: '③ 使い分けガイド',                  placeholder: '例:\n- オーバーレイ: Dialog（確認）/ Sheet（サイドパネル）\n- 通知: Toast（一時）/ Alert（常設）\n- 選択: Select（6項目以上）/ RadioGroup（5項目以下）\n- Button variant: default / destructive / outline / ghost / link' },
+  { id: 'shadcnCustomizationPolicy',   label: '④ カスタマイズポリシー',              placeholder: '例:\n許可: CSS変数の上書き、className追加\n禁止: コンポーネント内部DOMの直接編集\nディレクトリ: components/ui/（自動生成）, components/custom/（独自）' },
+  { id: 'shadcnStandardPatterns',      label: '⑤ 標準パターン',                    placeholder: '例:\nForm: react-hook-form + zod + FormField\n破壊的操作フロー: 操作ボタン → AlertDialog（確認）→ Toast（結果）' },
+  { id: 'shadcnCustomComponents',      label: '⑥ 独自コンポーネント仕様',            placeholder: '例: shadcn/ui にない独自コンポーネントの仕様を記述' },
+]
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
 
@@ -127,8 +159,44 @@ export default function DashboardPage() {
   const { fileName, setFileName, isSaving, save } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
+  const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS)
+  const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set())
   const formScrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    batchUpdate((prev) => ({ ...prev, components: { ...prev.components, componentItems: DEFAULT_COMPONENT_ITEMS as any } }))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const previewScrollRef = useRef<HTMLTextAreaElement>(null)
+
+  const addComponentItem = () => {
+    const id = Date.now().toString()
+    const newItem: ComponentItem = { id, name: '', purpose: '', variants: '', sizes: '', states: '', anatomy: '', accessibility: '', dosDonts: '' }
+    const next = [...componentItems, newItem]
+    setComponentItems(next)
+    setOpenComponentIds((prev) => new Set([...prev, id]))
+    batchUpdate((prev) => ({ ...prev, components: { ...prev.components, componentItems: next as any } }))
+  }
+
+  const removeComponentItem = (id: string) => {
+    const next = componentItems.filter((item) => item.id !== id)
+    setComponentItems(next)
+    batchUpdate((prev) => ({ ...prev, components: { ...prev.components, componentItems: next as any } }))
+  }
+
+  const updateComponentItem = (id: string, field: keyof ComponentItem, value: string) => {
+    const next = componentItems.map((item) => item.id === id ? { ...item, [field]: value } : item)
+    setComponentItems(next)
+    batchUpdate((prev) => ({ ...prev, components: { ...prev.components, componentItems: next as any } }))
+  }
+
+  const toggleComponentOpen = (id: string) => {
+    setOpenComponentIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) { next.delete(id) } else { next.add(id) }
+      return next
+    })
+  }
 
   const isCustom = themeSelect === 'カスタム'
 
@@ -138,18 +206,22 @@ export default function DashboardPage() {
     const lines = currentPreview.split('\n')
     let targetLineIndex = -1
 
-    const sectionMap: Record<string, string> = {
-      visualTheme: '## 1. Visual Theme',
-      colorPalette: '## 2. Color Palette',
-      typography: '## 3. Typography',
-      layout: '## 4. Layout',
+    const sectionKeywords: Record<string, string> = {
+      visualTheme: 'Visual Theme',
+      colorPalette: 'Color Palette',
+      typography: 'Typography',
+      icons: 'Icons',
+      layout: 'Layout',
+      components: 'Components',
+      accessibility: 'Accessibility',
+      other: 'Other',
     }
 
-    const sectionHeader = sectionMap[sectionName]
-    if (!sectionHeader) return
+    const keyword = sectionKeywords[sectionName]
+    if (!keyword) return
 
     for (let i = 0; i < lines.length; i++) {
-      if (lines[i].includes(sectionHeader)) {
+      if (lines[i].startsWith('## ') && lines[i].includes(keyword)) {
         targetLineIndex = i
         break
       }
@@ -170,6 +242,10 @@ export default function DashboardPage() {
   const tc = config['typography'] ?? {}
   const lc = config['layout'] ?? {}
   const cc = config['colorPalette'] ?? {}
+  const cmp = config['components'] ?? {}
+  const ac = config['accessibility'] ?? {}
+  const oc = config['other'] ?? {}
+  const ic = config['icons'] ?? {}
 
   const handleThemeChange = (val: string) => {
     setThemeSelect(val)
@@ -264,7 +340,7 @@ export default function DashboardPage() {
                   onClick={() => handleSectionClick('visualTheme')}
                 >
                   <div className="space-y-2">
-                    <FieldLabel requirement="optional">ビジュアル雰囲気の説明</FieldLabel>
+                    <FieldLabel>ビジュアル雰囲気の説明</FieldLabel>
                     <Textarea
                       placeholder="例: 白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"
                       value={(v.atmosphere as string) ?? ''}
@@ -274,7 +350,7 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <FieldLabel requirement="optional">主要な特徴（1行1項目）</FieldLabel>
+                    <FieldLabel>主要な特徴（1行1項目）</FieldLabel>
                     <Textarea
                       placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
                       value={(v.keyCharacteristics as string) ?? ''}
@@ -743,7 +819,7 @@ export default function DashboardPage() {
                 >
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <FieldLabel requirement="optional">欧文フォント</FieldLabel>
+                      <FieldLabel>欧文フォント</FieldLabel>
                       <select
                         value={(tc.latinFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'latinFont', e.target.value)}
@@ -765,7 +841,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <FieldLabel requirement="optional">和文フォント</FieldLabel>
+                      <FieldLabel>和文フォント</FieldLabel>
                       <select
                         value={(tc.japaneseFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'japaneseFont', e.target.value)}
@@ -799,9 +875,34 @@ export default function DashboardPage() {
                           }
                           const notesField = notesFieldMap[category.toLowerCase()]
                           const categoryLabel = CATEGORY_LABELS[category]
+                          const customEnabledField = `${category.toLowerCase()}CustomEnabled`
+                          const customStylesField = `${category.toLowerCase()}CustomStyles`
+                          const isCustom = (tc[customEnabledField as keyof typeof tc] as boolean) ?? false
                           return (
                             <div key={category} className="space-y-3 pb-6 border-b last:border-b-0">
-                              <p className="text-xs font-medium text-foreground">{categoryLabel}</p>
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-medium text-foreground">{categoryLabel}</p>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                  <span className="text-xs text-muted-foreground">自分で設定する</span>
+                                  <Switch
+                                    checked={isCustom}
+                                    onCheckedChange={(checked) => updateField('typography', customEnabledField, checked)}
+                                  />
+                                </label>
+                              </div>
+                              {isCustom ? (
+                                <div className="space-y-2">
+                                  <Textarea
+                                    value={(tc[customStylesField as keyof typeof tc] as string) ?? ''}
+                                    onChange={(e) => updateField('typography', customStylesField, e.target.value)}
+                                    placeholder={`例: 64px | Bold | 140% | -0.01em\n48px | Bold | 140% | -0.01em\n32px | Normal | 150% | 0em`}
+                                    className="min-h-28 text-xs font-mono"
+                                  />
+                                  <p className="text-[10px] text-muted-foreground">→ 1行1スタイルで入力してください。改行すると箇条書きに出力されます。</p>
+                                </div>
+                              ) : null}
+                              <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
+                              <div className="space-y-8">
                               {TEXT_STYLE_WEIGHTS.map((weight) => {
                                 const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
                                 const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
@@ -874,6 +975,7 @@ export default function DashboardPage() {
                                 </div>
                                 )
                               })}
+                              </div>
                               <div className="space-y-2 mt-4">
                                 <p className="text-xs font-medium text-foreground">{categoryLabel}の使い方</p>
                                 <Textarea
@@ -883,10 +985,57 @@ export default function DashboardPage() {
                                   placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
                                 />
                               </div>
+                              </div>
                             </div>
                           )
                         })}
                       </div>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                {/* アイコン section */}
+                <SectionCard
+                  label="アイコン"
+                  onClick={() => handleSectionClick('icons')}
+                  description="アイコンライブラリの設定"
+                  icon={Shapes}
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <FieldLabel>アイコンライブラリ</FieldLabel>
+                      <select
+                        value={(ic.iconLibrary as string) ?? 'lucide-react'}
+                        onChange={(e) => updateField('icons', 'iconLibrary', e.target.value)}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="lucide-react">Lucide React</option>
+                        <option value="カスタム">カスタム</option>
+                      </select>
+                    </div>
+
+                    {(ic.iconLibrary as string) === 'カスタム' && (
+                      <div className="space-y-1.5">
+                        <FieldLabel>カスタムアイコンの詳細</FieldLabel>
+                        <Textarea
+                          value={(ic.iconCustomDetails as string) ?? ''}
+                          onChange={(e) => updateField('icons', 'iconCustomDetails', e.target.value)}
+                          placeholder={`例: SVGアイコンは public/icons/ 配下に格納\nコンポーネントは components/icons/ で管理\nサイズ: 16px / 20px / 24px の 3展開\nアイコン色は CSS 変数で制御`}
+                          className="min-h-28 text-sm"
+                        />
+                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5">
+                      <FieldLabel>補足情報</FieldLabel>
+                      <Textarea
+                        value={(ic.iconNotes as string) ?? ''}
+                        onChange={(e) => updateField('icons', 'iconNotes', e.target.value)}
+                        placeholder={`例: アイコンは必ず aria-hidden="true" を付与する\nデフォルトサイズは 20px\nテキストと併用するときは gap-2 で配置`}
+                        className="min-h-20 text-sm"
+                      />
+                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -900,7 +1049,7 @@ export default function DashboardPage() {
                 >
                   <div className="space-y-4">
                     <div className="space-y-1.5">
-                      <FieldLabel requirement="optional">レイアウトタイプ</FieldLabel>
+                      <FieldLabel>レイアウトタイプ</FieldLabel>
                       <select
                         value={(lc.layoutType as string) ?? 'liquid'}
                         onChange={(e) => updateField('layout', 'layoutType', e.target.value)}
@@ -912,7 +1061,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <FieldLabel requirement="optional">基準単位</FieldLabel>
+                      <FieldLabel>基準単位</FieldLabel>
                       <select
                         value={(lc.spacingBase as string) ?? ''}
                         onChange={(e) => updateField('layout', 'spacingBase', e.target.value)}
@@ -927,7 +1076,7 @@ export default function DashboardPage() {
                       {(lc.spacingBase as string) === 'custom' && (
                         <Textarea
                           placeholder="カンマまたは改行で区切ってください"
-                          defaultValue="1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920"
+                          defaultValue="1, 2, 4, 8, 10, 12, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920"
                           onChange={(e) => updateField('layout', 'spacingBaseCustom', e.target.value)}
                           className="min-h-24 text-xs"
                         />
@@ -974,6 +1123,7 @@ export default function DashboardPage() {
                           { key: 'sm' as const, label: 'sm' },
                           { key: 'md' as const, label: 'md' },
                           { key: 'lg' as const, label: 'lg' },
+                          { key: 'xl' as const, label: 'xl' },
                           { key: '2xl' as const, label: '2xl' },
                         ].map(({ key, label }) => (
                           <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-muted/20 p-2">
@@ -1003,15 +1153,279 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    <label className="flex items-center gap-2 text-sm cursor-pointer border-t pt-4">
-                      <input
-                        type="checkbox"
-                        checked={(lc.ergonomicsGuidance as boolean) ?? false}
-                        onChange={(e) => updateField('layout', 'ergonomicsGuidance', e.target.checked)}
-                        className="h-4 w-4 rounded border-input accent-primary"
+                    <div className="border-t pt-4 space-y-3">
+                      <label className="flex items-center gap-2 text-sm cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={(lc.ergonomicsGuidance as boolean) ?? false}
+                          onChange={(e) => updateField('layout', 'ergonomicsGuidance', e.target.checked)}
+                          className="h-4 w-4 rounded border-input accent-primary"
+                        />
+                        <span className="text-muted-foreground">人間工学に基づく指示を含める</span>
+                      </label>
+                      {(lc.ergonomicsGuidance as boolean) && (
+                        <Textarea
+                          value={(lc.ergonomicsContent as string) ?? ERGONOMICS_DEFAULT_TEXT}
+                          onChange={(e) => updateField('layout', 'ergonomicsContent', e.target.value)}
+                          className="min-h-48 font-mono text-xs"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </SectionCard>
+
+                {/* コンポーネント section */}
+                <SectionCard
+                  label="コンポーネント"
+                  onClick={() => handleSectionClick('components')}
+                  description="コンポーネント定義・エレベーション・共通指針"
+                  icon={Layers}
+                >
+                  <div className="space-y-4">
+                    {/* shadcn/ui スイッチ */}
+                    <label className="flex items-center justify-end gap-2 cursor-pointer">
+                      <span className="text-sm text-muted-foreground select-none">shadcn/ui を利用する</span>
+                      <Switch
+                        checked={(cmp.useShadcn as boolean) ?? false}
+                        onCheckedChange={(checked) => updateField('components', 'useShadcn', checked)}
                       />
-                      <span className="text-muted-foreground">人間工学に基づく指示を含める</span>
                     </label>
+
+                    {(cmp.useShadcn as boolean) ? (
+                      /* shadcn/ui モード */
+                      <div className="space-y-4">
+                        {SHADCN_FIELDS.map(({ id, label, placeholder }) => (
+                          <div key={id} className="space-y-1.5">
+                            <FieldLabel>{label}</FieldLabel>
+                            <Textarea
+                              value={(cmp[id] as string) ?? ''}
+                              onChange={(e) => updateField('components', id, e.target.value)}
+                              placeholder={placeholder}
+                              className="min-h-24 text-sm"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      /* 独自コンポーネントモード */
+                      <>
+                        <div className="space-y-1.5">
+                          <FieldLabel>エレベーション（シャドウ）</FieldLabel>
+                          <select
+                            value={(cmp.elevation as string) ?? 'md'}
+                            onChange={(e) => updateField('components', 'elevation', e.target.value)}
+                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                          >
+                            {['none', 'sm', 'md', 'lg'].map((v) => (
+                              <option key={v} value={v}>{v}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <FieldLabel>コンポーネント共通指針</FieldLabel>
+                          <Textarea
+                            value={(cmp.componentNotes as string) ?? ''}
+                            onChange={(e) => updateField('components', 'componentNotes', e.target.value)}
+                            placeholder="例: ボタンはprimary colorで塗りつぶし、カードはborderのみでelevationなし"
+                            className="min-h-16 text-sm"
+                          />
+                        </div>
+
+                        <div className="border-t pt-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-foreground">コンポーネント定義</p>
+                            <button
+                              type="button"
+                              onClick={addComponentItem}
+                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary/5"
+                            >
+                              <Plus className="size-3" />
+                              追加
+                            </button>
+                          </div>
+
+                          {componentItems.length === 0 && (
+                            <p className="text-xs text-muted-foreground text-center py-4">
+                              「追加」からコンポーネントを定義してください
+                            </p>
+                          )}
+
+                          {componentItems.map((item) => {
+                            const isOpen = openComponentIds.has(item.id)
+                            return (
+                              <div key={item.id} className="rounded-md border border-input overflow-hidden">
+                                <div className="flex items-center gap-2 px-3 py-2 bg-muted/30">
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleComponentOpen(item.id)}
+                                    className="flex items-center gap-2 flex-1 text-left"
+                                  >
+                                    {isOpen ? <ChevronUp className="size-3.5 text-muted-foreground shrink-0" /> : <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />}
+                                    <Input
+                                      value={item.name}
+                                      onChange={(e) => updateComponentItem(item.id, 'name', e.target.value)}
+                                      onClick={(e) => e.stopPropagation()}
+                                      placeholder="コンポーネント名（例: Button）"
+                                      className="h-6 text-xs border-none bg-transparent px-0 font-medium focus-visible:ring-0"
+                                    />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeComponentItem(item.id)}
+                                    className="text-muted-foreground hover:text-destructive shrink-0"
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </button>
+                                </div>
+
+                                {isOpen && (
+                                  <div className="p-3 space-y-3">
+                                    {COMPONENT_FIELDS.map(({ id, label, placeholder }) => (
+                                      <div key={id} className="space-y-1">
+                                        <p className="text-xs font-medium text-foreground">{label}</p>
+                                        <Textarea
+                                          value={item[id]}
+                                          onChange={(e) => updateComponentItem(item.id, id, e.target.value)}
+                                          placeholder={placeholder}
+                                          className="min-h-16 text-xs font-mono"
+                                        />
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </SectionCard>
+
+                {/* アクセシビリティ section */}
+                <SectionCard
+                  label="アクセシビリティ"
+                  onClick={() => handleSectionClick('accessibility')}
+                  description="WCAG 準拠レベルとコントラスト比の基準"
+                  icon={Eye}
+                >
+                  <div className="space-y-4">
+                    <div className="space-y-1.5">
+                      <FieldLabel>WCAG 準拠レベル</FieldLabel>
+                      <select
+                        value={(ac.contrastLevel as string) ?? 'AA'}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          if (val === 'AA') {
+                            batchUpdate((prev) => ({
+                              ...prev,
+                              accessibility: {
+                                ...(prev.accessibility ?? {}),
+                                contrastLevel: val,
+                                textContrastMin: '4.5',
+                                largeTextContrastMin: '3.0',
+                                uiContrastMin: '3.0',
+                              },
+                            }))
+                          } else if (val === 'AAA') {
+                            batchUpdate((prev) => ({
+                              ...prev,
+                              accessibility: {
+                                ...(prev.accessibility ?? {}),
+                                contrastLevel: val,
+                                textContrastMin: '7.0',
+                                largeTextContrastMin: '4.5',
+                                uiContrastMin: '3.0',
+                              },
+                            }))
+                          } else {
+                            updateField('accessibility', 'contrastLevel', val)
+                          }
+                        }}
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                      >
+                        <option value="AA">WCAG AA（最低基準・4.5:1）</option>
+                        <option value="AAA">WCAG AAA（最高基準・7:1）</option>
+                        <option value="カスタム">カスタム</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-foreground">コントラスト比の基準</p>
+
+                      {((ac.contrastLevel as string) ?? 'AA') !== 'カスタム' ? (
+                        <div className="rounded-md border border-input bg-muted/20 p-3 space-y-2">
+                          {([
+                            { label: '通常テキスト（18pt未満 / 太字14pt未満）', aa: '4.5', aaa: '7.0' },
+                            { label: '大テキスト（18pt以上 / 太字14pt以上）', aa: '3.0', aaa: '4.5' },
+                            { label: 'UIコンポーネント・グラフィック', aa: '3.0', aaa: '3.0' },
+                          ] as const).map(({ label, aa, aaa }) => {
+                            const level = (ac.contrastLevel as string) ?? 'AA'
+                            const value = level === 'AAA' ? aaa : aa
+                            return (
+                              <div key={label} className="flex items-center justify-between">
+                                <span className="text-xs text-muted-foreground">{label}</span>
+                                <span className="font-mono text-xs font-medium text-foreground">{value}:1</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {([
+                            { field: 'textContrastMin', label: '通常テキスト（18pt未満 / 太字14pt未満）', placeholder: '4.5' },
+                            { field: 'largeTextContrastMin', label: '大テキスト（18pt以上 / 太字14pt以上）', placeholder: '3.0' },
+                            { field: 'uiContrastMin', label: 'UIコンポーネント・グラフィック', placeholder: '3.0' },
+                          ] as const).map(({ field, label, placeholder }) => (
+                            <div key={field} className="flex items-center gap-3">
+                              <span className="text-xs text-muted-foreground flex-1">{label}</span>
+                              <div className="flex items-center gap-1">
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  max={21}
+                                  step={0.1}
+                                  placeholder={placeholder}
+                                  value={(ac[field] as string) ?? ''}
+                                  onChange={(e) => updateField('accessibility', field, e.target.value)}
+                                  className="w-20 text-right text-xs"
+                                />
+                                <span className="text-xs text-muted-foreground">:1</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <FieldLabel>補足情報</FieldLabel>
+                      <Textarea
+                        value={(ac.accessibilityNotes as string) ?? ''}
+                        onChange={(e) => updateField('accessibility', 'accessibilityNotes', e.target.value)}
+                        placeholder={`例: ダークモード時は別途コントラスト検証を行う\nスクリーンリーダー対応（aria属性必須）\nprefers-reduced-motion を尊重する`}
+                        className="min-h-24 text-sm"
+                      />
+                    </div>
+                  </div>
+                </SectionCard>
+
+                {/* その他 section */}
+                <SectionCard
+                  label="その他"
+                  description="上記以外の任意の補足情報"
+                  icon={FileText}
+                  onClick={() => handleSectionClick('other')}
+                >
+                  <div className="space-y-1.5">
+                    <Textarea
+                      value={(oc.otherContent as string) ?? ''}
+                      onChange={(e) => updateField('other', 'otherContent', e.target.value)}
+                      placeholder="上記セクション以外に記載したい内容を自由に入力してください"
+                      className="min-h-40 text-sm"
+                    />
+                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
                   </div>
                 </SectionCard>
               </>

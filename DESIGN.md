@@ -65,32 +65,25 @@
 #### 見出し
 
 **Black:**
-- 128px | Black | 140% | -0.02em
-- 96px | Black | 140% | -0.02em
 - 64px | Black | 140% | -0.01em
-- 56px | Black | 140% | -0.01em
 - 48px | Black | 140% | -0.01em
+- 40px | Black | 140% | 0.00em
+- 32px | Black | 150% | 0.00em
+- 24px | Black | 150% | 0.00em
 
 **Bold:**
-- 128px | Bold | 140% | -0.02em
-- 96px | Bold | 140% | -0.02em
 - 64px | Bold | 140% | -0.01em
-- 56px | Bold | 140% | -0.01em
 - 48px | Bold | 140% | -0.01em
+- 40px | Bold | 140% | 0.00em
+- 32px | Bold | 150% | 0.00em
+- 24px | Bold | 150% | 0.00em
 
 **Normal:**
-- 128px | Normal | 140% | -0.02em
-- 96px | Normal | 140% | -0.02em
 - 64px | Normal | 140% | -0.01em
-- 56px | Normal | 140% | -0.01em
 - 48px | Normal | 140% | -0.01em
-
-**Thin:**
-- 128px | Thin | 140% | -0.02em
-- 96px | Thin | 140% | -0.02em
-- 64px | Thin | 140% | -0.01em
-- 56px | Thin | 140% | -0.01em
-- 48px | Thin | 140% | -0.01em
+- 40px | Normal | 140% | 0.00em
+- 32px | Normal | 150% | 0.00em
+- 24px | Normal | 150% | 0.00em
 
 **使い方:**
 - サイトのメインタイトルやセクション見出しに使用します
@@ -99,64 +92,25 @@
 #### 本文
 
 **Black:**
-- 40px | Black | 140% | 0.00em
-- 36px | Black | 140% | 0.00em
-- 32px | Black | 150% | 0.00em
-- 28px | Black | 150% | 0.00em
-- 26px | Black | 150% | 0.00em
 - 24px | Black | 150% | 0.00em
-- 22px | Black | 150% | 0.00em
 - 20px | Black | 150% | 0.00em
-- 18px | Black | 160% | 0.00em
 - 16px | Black | 160% | 0.00em
 - 14px | Black | 160% | 0.00em
 - 12px | Black | 170% | 0.02em
-- 10px | Black | 170% | 0.04em
 
 **Bold:**
-- 40px | Bold | 140% | 0.00em
-- 36px | Bold | 140% | 0.00em
-- 32px | Bold | 150% | 0.00em
-- 28px | Bold | 150% | 0.00em
-- 26px | Bold | 150% | 0.00em
 - 24px | Bold | 150% | 0.00em
-- 22px | Bold | 150% | 0.00em
 - 20px | Bold | 150% | 0.00em
-- 18px | Bold | 160% | 0.00em
 - 16px | Bold | 160% | 0.00em
 - 14px | Bold | 160% | 0.00em
 - 12px | Bold | 170% | 0.02em
-- 10px | Bold | 170% | 0.04em
 
 **Normal:**
-- 40px | Normal | 140% | 0.00em
-- 36px | Normal | 140% | 0.00em
-- 32px | Normal | 150% | 0.00em
-- 28px | Normal | 150% | 0.00em
-- 26px | Normal | 150% | 0.00em
 - 24px | Normal | 150% | 0.00em
-- 22px | Normal | 150% | 0.00em
 - 20px | Normal | 150% | 0.00em
-- 18px | Normal | 160% | 0.00em
 - 16px | Normal | 160% | 0.00em
 - 14px | Normal | 160% | 0.00em
 - 12px | Normal | 170% | 0.02em
-- 10px | Normal | 170% | 0.04em
-
-**Thin:**
-- 40px | Thin | 140% | 0.00em
-- 36px | Thin | 140% | 0.00em
-- 32px | Thin | 150% | 0.00em
-- 28px | Thin | 150% | 0.00em
-- 26px | Thin | 150% | 0.00em
-- 24px | Thin | 150% | 0.00em
-- 22px | Thin | 150% | 0.00em
-- 20px | Thin | 150% | 0.00em
-- 18px | Thin | 160% | 0.00em
-- 16px | Thin | 160% | 0.00em
-- 14px | Thin | 160% | 0.00em
-- 12px | Thin | 170% | 0.02em
-- 10px | Thin | 170% | 0.04em
 
 **使い方:**
 - 通常の本文テキストや説明文に使用します
@@ -170,7 +124,6 @@
 - 14px | Black | 130% | 0.01em
 - 14px | Black | 120% | 0.01em
 - 12px | Black | 130% | 0.02em
-- 10px | Black | 120% | 0.02em
 
 **Bold:**
 - 16px | Bold | 130% | 0.00em
@@ -178,7 +131,6 @@
 - 14px | Bold | 130% | 0.01em
 - 14px | Bold | 120% | 0.01em
 - 12px | Bold | 130% | 0.02em
-- 10px | Bold | 120% | 0.02em
 
 **Normal:**
 - 16px | Normal | 130% | 0.00em
@@ -186,15 +138,6 @@
 - 14px | Normal | 130% | 0.01em
 - 14px | Normal | 120% | 0.01em
 - 12px | Normal | 130% | 0.02em
-- 10px | Normal | 120% | 0.02em
-
-**Thin:**
-- 16px | Thin | 130% | 0.00em
-- 16px | Thin | 120% | 0.00em
-- 14px | Thin | 130% | 0.01em
-- 14px | Thin | 120% | 0.01em
-- 12px | Thin | 130% | 0.02em
-- 10px | Thin | 120% | 0.02em
 
 **使い方:**
 - 情報密度を優先する場面で、限られたスペースに多くの情報を表示します
@@ -220,12 +163,6 @@
 - 12px | Normal | 100% | 0.03em
 - 10px | Normal | 100% | 0.05em
 
-**Thin:**
-- 16px | Thin | 100% | 0.02em
-- 14px | Thin | 100% | 0.02em
-- 12px | Thin | 100% | 0.03em
-- 10px | Thin | 100% | 0.05em
-
 **使い方:**
 - ボタンやラベルなど、UI要素内のテキストに使用します
 
@@ -250,20 +187,18 @@
 - 12px | Normal | 150% | 0.00em
 - 10px | Normal | 150% | 0.00em
 
-**Thin:**
-- 16px | Thin | 150% | 0.00em
-- 14px | Thin | 150% | 0.00em
-- 12px | Thin | 150% | 0.00em
-- 10px | Thin | 150% | 0.00em
-
 **使い方:**
 - preタグとcodeタグとのテキストに使用します
 
-## 4. Layout
+## 4. Icons
+
+- **Library**: `lucide-react`
+
+## 5. Layout
 
 - Layout Type: リキッド（流動的）
 - Base Unit: 8px
-- Spacing Scale: 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920
+- Spacing Scale: 1, 2, 4, 8, 10, 12, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920
 - Breakpoints: sm: 640px, md: 768px, lg: 1024px, 2xl: 1536px
 
 ### 人間工学に基づく指示
@@ -318,3 +253,380 @@
 **誘目性**
 - 赤や黄色は目を引きやすく、青や緑は落ち着きを与えます。
 - 警告には赤、進行には緑といった「色のメンタルモデル」を利用することで、説明がなくても伝わるデザインになります。
+
+## 6. Components
+
+> shadcn/ui を使用
+> コンポーネントの実装仕様は https://ui.shadcn.com/ を参照すること。
+
+### 1. デザイントークン CSS 変数マッピング
+
+shadcn/ui は HSL 形式の CSS 変数で動作する。DESIGN.md の HEX 値を以下の通り対応させる。
+
+```css
+:root {
+  /* ============================================================
+     KeyColor
+     ============================================================ */
+  --primary:              220 79% 47%;  /* Primary         #1a4fd6 */
+  --primary-foreground:     0  0% 100%; /* White           #ffffff */
+  --primary-surface:      220 100% 96%; /* Primary surface #ebf1ff */
+  --ring:                 220 79% 47%;  /* Focus ring      #1a4fd6 */
+
+  /* ============================================================
+     Grayscale
+     ============================================================ */
+  --background:             0  0% 100%; /* White           #ffffff */
+  --foreground:             0  0% 25%;  /* Gray 8          #404040 */
+  --card:                   0  0% 100%; /* White           #ffffff */
+  --card-foreground:        0  0% 25%;  /* Gray 8          #404040 */
+  --popover:                0  0% 100%; /* White           #ffffff */
+  --popover-foreground:     0  0% 25%;  /* Gray 8          #404040 */
+  --muted:                  0  0% 94%;  /* Gray 1          #f0f0f0 */
+  --muted-foreground:       0  0% 69%;  /* Gray 5          #b0b0b0 */
+  --border:                 0  0% 88%;  /* Gray 2          #e0e0e0 */
+  --input:                  0  0% 88%;  /* Gray 2          #e0e0e0 */
+
+  /* ============================================================
+     shadcn UI 用（hover 時などに背景色として使用される）
+     ============================================================ */
+  --secondary:              0  0% 94%;  /* Gray 1          #f0f0f0 */
+  --secondary-foreground:   0  0% 25%;  /* Gray 8          #404040 */
+  --accent:                 0  0% 94%;  /* Gray 1          #f0f0f0 */
+  --accent-foreground:      0  0% 25%;  /* Gray 8          #404040 */
+
+  /* ============================================================
+     Semantic
+     ============================================================ */
+  --destructive:            0 72% 51%;  /* Error           #dc2626 */
+  --destructive-foreground:  0  0% 100%;/* White           #ffffff */
+  --success:              142 72% 36%;  /* Success         #16a34a */
+  --success-foreground:     0  0% 100%; /* White           #ffffff */
+  --warning:               32 95% 44%;  /* Warning         #d97706 */
+  --warning-foreground:     0  0% 100%; /* White           #ffffff */
+
+  /* ============================================================
+     Shape
+     ============================================================ */
+  --radius: 0.5rem;                     /* 8px */
+}
+```
+
+#### Button の状態カラー対応表
+
+DESIGN.md の Button コンポーネント仕様をトークン名で表現する。
+
+| 状態 | プロパティ | トークン | カラーコード |
+|------|-----------|---------|-------------|
+| Default | bg | `--primary` / Primary | `#1a4fd6` |
+| Default | text | `--primary-foreground` / White | `#ffffff` |
+| Hover | bg | Secondary（KeyColor） | `#3b65ce` |
+| Active | bg | Tertiary（KeyColor） | `#0d38a5` |
+| Focus-visible | outline | `--ring` / Primary | `#1a4fd6` 2px / offset 2px |
+| Disabled | bg | `--border` / Gray 2 | `#e0e0e0` |
+| Disabled | text | `--muted-foreground` / Gray 5 | `#b0b0b0` |
+| Disabled | cursor | — | `not-allowed` |
+
+> **Note:** Hover（Secondary #3b65ce）と Active（Tertiary #0d38a5）は shadcn のデフォルト変数にないため、Tailwind のカスタムカラーか CSS で直接指定する。
+
+---
+
+### 2. 採用コンポーネント一覧
+
+#### 採用
+
+| カテゴリ | コンポーネント |
+|---------|--------------|
+| 入力 | Button、Input、Textarea、Select、Checkbox、RadioGroup、Label |
+| フォーム | Form（react-hook-form + zod と組み合わせて使用） |
+| 表示 | Card、Badge、Avatar、Separator、Skeleton |
+| オーバーレイ | Dialog、AlertDialog、Sheet、Tooltip、DropdownMenu |
+| 通知 | Toast（Sonner） |
+| ナビゲーション | Tabs |
+| 選択 | Combobox |
+
+#### 非採用
+
+| コンポーネント | 理由 |
+|--------------|------|
+| Carousel | 使用機会が限定的。独自実装で統一 |
+| Menubar | Web アプリ向きでない |
+| Context Menu | モバイル非対応 |
+| Resizable | 使用機会なし |
+| Command | Combobox で代替 |
+| Accordion | 独自の折りたたみ UI で統一 |
+
+---
+
+### 3. 使い分けガイド
+
+#### オーバーレイ系
+
+| コンポーネント | 使う場面 | 使わない場面 |
+|--------------|---------|------------|
+| **Dialog** | 確認・フォーム入力など、ユーザーの応答が必要な場面 | 単純な情報提示（Toast で十分） |
+| **AlertDialog** | 削除など破壊的操作の最終確認 | 通常のアクション確認（Dialog を使う） |
+| **Sheet** | 設定パネル・フィルターなど補助的な操作領域 | 主要なアクション（Dialog を使う） |
+| **Tooltip** | アイコンボタンの補足説明（hover で表示） | 重要な情報（常時表示が必要な場合は Label を使う） |
+
+#### 通知・フィードバック系
+
+| コンポーネント | 使う場面 | 自動消滅 |
+|--------------|---------|---------|
+| **Toast** | 操作結果の一時的な通知（保存完了・送信完了など） | ✅ 3〜5秒 |
+| **Alert** | ページ上に残す恒久的な状態表示（エラー・警告・案内） | ❌ 手動で閉じる or 常時表示 |
+
+#### 選択系
+
+| コンポーネント | 選択肢の数 | 検索 | 用途 |
+|--------------|----------|------|------|
+| **Select** | 10個以下 | 不要 | 都道府県・カテゴリなど固定の選択肢 |
+| **Combobox** | 11個以上 | 必要 | ユーザー検索・タグ選択など |
+
+#### Button variant
+
+DESIGN.md の Button 仕様に準拠し、以下の基準で variant を選択する。
+
+| Variant | 使う場面 | 1画面あたりの数 |
+|---------|---------|--------------|
+| `default`（Primary） | ページの主要 CTA（送信・購入・次へ） | **1つまで** |
+| `secondary` | 副次的なアクション（戻る・キャンセル） | 制限なし |
+| `ghost` | ツールバー・テーブル内の補助操作 | 制限なし |
+| `destructive` | 削除など破壊的操作 | AlertDialog と必ず併用 |
+| `outline` | secondary より控えめな強調が必要な場面 | 制限なし |
+
+---
+
+### 4. カスタマイズポリシー
+
+#### 許可される改変
+
+- `globals.css` の CSS 変数（`--primary` など）の値変更
+- `cva` の `variants` オブジェクトへの新 variant 追加
+- デフォルト props の変更（例：`size` のデフォルト値変更）
+- `components/ui/` のコンポーネントを組み合わせた社内コンポーネントの作成
+
+#### 避けるべき改変
+
+- Radix Primitive のアクセシビリティ属性（`aria-*`、`role` など）の削除・変更
+- コンポーネントの DOM 構造の大幅な書き換え（アップデート追従が困難になる）
+- `components/ui/` 配下への独自コンポーネントの混在
+
+#### ディレクトリ構成
+
+```
+components/
+├── ui/          # shadcn/ui 本体（原則変更しない）
+│   ├── button.tsx
+│   ├── input.tsx
+│   └── ...
+├── custom/      # 独自拡張コンポーネント（詳細は §6 参照）
+│   ├── confirm-dialog.tsx
+│   ├── empty-state.tsx
+│   └── page-header.tsx
+└── patterns/    # 複数コンポーネントを組み合わせた標準パターン
+    ├── destructive-action.tsx
+    └── form-field-set.tsx
+```
+
+#### 新 variant を追加する場合のルール
+
+```tsx
+// components/ui/button.tsx 内の cva を拡張する
+const buttonVariants = cva(/* base */, {
+  variants: {
+    variant: {
+      default: "bg-primary text-primary-foreground ...",
+      secondary: "...",
+      // ✅ 新 variant はここに追加する
+      subtle: "bg-[#ebf1ff] text-primary hover:bg-primary/10",
+    },
+  },
+})
+```
+
+---
+
+### 5. 標準パターン
+
+#### フォームの標準構成
+
+**react-hook-form + zod + shadcn Form** を必ず使う。bare の `<input>` や独自バリデーションは禁止。
+
+```tsx
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import {
+  Form, FormControl, FormDescription,
+  FormField, FormItem, FormLabel, FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+
+const schema = z.object({
+  email: z.string().email("有効なメールアドレスを入力してください"),
+})
+
+export function SampleForm() {
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: { email: "" },
+  })
+
+  function onSubmit(values: z.infer<typeof schema>) {
+    // 送信処理
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>メールアドレス</FormLabel>
+              <FormControl>
+                <Input placeholder="you@example.com" {...field} />
+              </FormControl>
+              <FormDescription>登録済みのアドレスを入力してください</FormDescription>
+              <FormMessage /> {/* エラーはここに自動表示 */}
+            </FormItem>
+          )}
+        />
+        <Button type="submit">送信</Button>
+      </form>
+    </Form>
+  )
+}
+```
+
+#### 破壊的操作の標準フロー
+
+削除など破壊的操作は **必ず AlertDialog でラップする**。直接 `onClick` で処理を実行しない。
+
+```tsx
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel,
+  AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+export function DeleteAction({ onDelete }: { onDelete: () => void }) {
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        {/* Destructive variant はトリガーにのみ使用。Action ボタンは別途スタイリング */}
+        <Button variant="destructive" size="sm">削除</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
+        <AlertDialogDescription>
+          この操作は取り消せません。削除したデータは復元できません。
+        </AlertDialogDescription>
+        <AlertDialogFooter>
+          {/* Cancel を必ず左に配置（ヒックの法則・誤操作防止） */}
+          <AlertDialogCancel>キャンセル</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onDelete}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            削除する
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
+```
+
+---
+
+### 6. 独自コンポーネント仕様
+
+shadcn/ui にない、プロジェクト共通で使う UI を `components/custom/` に配置する。
+
+#### ConfirmDialog
+
+AlertDialog のラッパー。毎回ボイラープレートを書かないためのユーティリティ。
+
+**Props**
+
+| Prop | 型 | 必須 | 説明 |
+|------|----|------|------|
+| `title` | `string` | ✅ | ダイアログのタイトル |
+| `description` | `string` | ✅ | 操作の説明文 |
+| `onConfirm` | `() => void` | ✅ | 確認ボタンのハンドラ |
+| `confirmLabel` | `string` | — | 確認ボタンのラベル（デフォルト：「確認」） |
+| `variant` | `"default" \| "destructive"` | — | 確認ボタンの variant（デフォルト：`"default"`） |
+| `children` | `ReactNode` | ✅ | トリガー要素 |
+
+#### EmptyState
+
+一覧が空の時に表示するフォールバック UI。
+
+**Props**
+
+| Prop | 型 | 必須 | 説明 |
+|------|----|------|------|
+| `icon` | `ReactNode` | — | 上部に表示するアイコン |
+| `title` | `string` | ✅ | メインメッセージ |
+| `description` | `string` | — | サブメッセージ |
+| `action` | `ReactNode` | — | CTA ボタン（Button コンポーネントを渡す） |
+
+**使用例**
+```tsx
+<EmptyState
+  icon={<InboxIcon />}
+  title="データがありません"
+  description="新しいアイテムを追加してください"
+  action={<Button>追加する</Button>}
+/>
+```
+
+#### PageHeader
+
+ページ上部の共通レイアウト。タイトル・パンくず・アクションエリアを統一する。
+
+**Props**
+
+| Prop | 型 | 必須 | 説明 |
+|------|----|------|------|
+| `title` | `string` | ✅ | ページタイトル |
+| `breadcrumbs` | `{ label: string; href?: string }[]` | — | パンくずリスト |
+| `actions` | `ReactNode` | — | 右端のアクションボタン群 |
+
+**使用例**
+```tsx
+<PageHeader
+  title="ユーザー管理"
+  breadcrumbs={[{ label: "管理", href: "/admin" }, { label: "ユーザー" }]}
+  actions={<Button>新規追加</Button>}
+/>
+```
+
+#### DataTable
+
+TanStack Table + shadcn Table のラッパー。ソート・ページネーション・行選択を内包。
+
+**Props**
+
+| Prop | 型 | 必須 | 説明 |
+|------|----|------|------|
+| `columns` | `ColumnDef<T>[]` | ✅ | カラム定義（TanStack Table 準拠） |
+| `data` | `T[]` | ✅ | 表示するデータ |
+| `pagination` | `boolean` | — | ページネーションの表示（デフォルト：`true`） |
+| `selectable` | `boolean` | — | 行選択チェックボックスの表示 |
+| `onRowClick` | `(row: T) => void` | — | 行クリックのハンドラ |
+
+## 7. Accessibility
+
+### WCAG AA 準拠
+
+| 対象 | 最低コントラスト比 |
+|------|------------------|
+| 通常テキスト (18pt未満 / 太字14pt未満) | 4.5:1 |
+| 大テキスト (18pt以上 / 太字14pt以上) | 3.0:1 |
+| UI コンポーネント・グラフィック | 3.0:1 |

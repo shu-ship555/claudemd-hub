@@ -64,3 +64,16 @@ body {
 h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.02em;
 }
+
+::placeholder {
+  color: oklch(0.48 0 0);
+  opacity: 1;
+}
+
+@supports (color: oklch(0 0 0)) {
+  @media (prefers-color-scheme: light) {
+    ::placeholder {
+      color: oklch(0.62 0 0);
+    }
+  }
+}

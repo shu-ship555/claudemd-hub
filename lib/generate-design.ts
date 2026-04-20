@@ -1,5 +1,5 @@
 import { DesignConfig, designTemplate } from './design-template'
-import { SPACING_SCALES, CATEGORY_LABELS, DEFAULT_TEXT_STYLES, TEXT_STYLE_WEIGHTS } from './constants'
+import { SPACING_SCALES, CATEGORY_LABELS, DEFAULT_TEXT_STYLES, TEXT_STYLE_WEIGHTS, ERGONOMICS_DEFAULT_TEXT } from './constants'
 
 type SectionCfg = Record<string, unknown>
 
@@ -25,7 +25,11 @@ const SECTION_TITLES: Record<string, string> = {
   visualTheme: 'Visual Theme & Atmosphere',
   colorPalette: 'Color Palette & Roles',
   typography: 'Typography Rules',
+  icons: 'Icons',
   layout: 'Layout',
+  components: 'Components',
+  accessibility: 'Accessibility',
+  other: 'Other',
 }
 
 export function generateDesignMarkdown(config: DesignConfig): string {
@@ -65,8 +69,16 @@ function generateSectionContent(sectionId: string, cfg: SectionCfg): string {
       return renderColorPalette(cfg)
     case 'typography':
       return renderTypography(cfg)
+    case 'icons':
+      return renderIcons(cfg)
     case 'layout':
       return renderLayout(cfg)
+    case 'components':
+      return renderComponents(cfg)
+    case 'accessibility':
+      return renderAccessibility(cfg)
+    case 'other':
+      return renderOther(cfg)
     default:
       return ''
   }
@@ -234,6 +246,17 @@ function renderTypography(cfg: SectionCfg): string {
 
     text += `#### ${catLabel}\n\n`
 
+    const isCustom = cfg[`${cat}CustomEnabled`] as boolean
+    if (isCustom) {
+      const customStyles = str(cfg[`${cat}CustomStyles`]).trim()
+      if (customStyles) {
+        const lines = customStyles.split('\n').map(l => l.trim()).filter(Boolean)
+        for (const line of lines) {
+          text += `- ${line}\n`
+        }
+        text += '\n'
+      }
+    } else {
     const selectedStylesField = `${cat}SelectedStyles`
     const selectedStylesStr = str(cfg[selectedStylesField as keyof SectionCfg]).trim()
     const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
@@ -253,6 +276,7 @@ function renderTypography(cfg: SectionCfg): string {
         text += '\n'
       }
     }
+    }
 
     const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
     if (notes) {
@@ -267,6 +291,21 @@ function renderTypography(cfg: SectionCfg): string {
   }
 
   return text.trim() ? `${text}\n` : ''
+}
+
+function renderIcons(cfg: SectionCfg): string {
+  const library = str(cfg.iconLibrary).trim() || 'lucide-react'
+  let text = `- **Library**: \`${library}\`\n`
+
+  if (library === 'カスタム') {
+    const details = renderNotes(cfg.iconCustomDetails)
+    if (details) text += `\n${details}`
+  }
+
+  const notes = renderNotes(cfg.iconNotes)
+  if (notes) text += `\n**補足情報:**\n${notes}`
+
+  return text.trim()
 }
 
 function renderLayout(cfg: SectionCfg): string {
@@ -306,61 +345,110 @@ function renderLayout(cfg: SectionCfg): string {
   let text = `${bullets.join('\n')}\n\n`
 
   if (cfg.ergonomicsGuidance as boolean) {
-    text += `### 人間工学に基づく指示
-
-#### 1. 視覚的なバランスを整える「幾何学的・心理学的錯視」
-
-人間は物理的に正確な中心や直線を、必ずしも「正解」とは感じません。デザイナーの仕事は、数値を疑い、「目に正しく見えるよう」に数値を裏切ることです。
-
-**上方錯視（Vertical-Horizontal Illusion）**
-- 同じ長さの垂直線と水平線がある場合、垂直線の方が長く見える現象です。
-- 図形の垂直方向の中央は、実際よりも少し下にあるように感じられます。
-- デザインへの応用：UIやテキストを配置する際、幾何学的な中央よりもわずかに（要素の高さに対して4〜8%ほど）上に配置すると、視覚的に中央にどっしり構えて見えます。
-
-**面積模倣（外形による中心のズレ）**
-- 「再生ボタン（▶︎）」のような三角形を円や四角形の中央に置く際、幾何学的な中心に置くと左に寄って見えます。
-- デザインへの応用：重心位置を考慮し、**「視覚的な重心」**に合わせて右側に余白を多めに取ります。
-
-#### 2. 認知負荷を軽減する「ゲシュタルトの法則」
-
-ユーザーが画面を見た瞬間、要素をどう「グループ」として認識するかを制御します。
-
-**近接の法則（Proximity）**
-- 近いもの同士は関連があると感じます。
-- 関連するラベルと入力フォームは近づけ、別のセクションとは大きな余白（ホワイトスペース）で区切ります。
-
-**類同の法則（Similarity）**
-- 色や形が同じものは同じ機能を持つと認識します。
-- 「保存」と「削除」のボタンが同じ色だと誤操作を招くため、色で機能を区別します。
-
-**閉合の法則（Closure）**
-- 枠線がなくても、要素の配置によって「ひとかたまりの領域」を脳が補完します。
-- 過剰な線（罫線）を減らし、スッキリした画面を作るのに役立ちます。
-
-#### 3. 操作性を高める「運動機能の法則」
-
-デバイスを操作する際の身体的な制約や物理的な法則です。
-
-**フィッツの法則（Fitts's Law）**
-- ターゲットに到達するまでの時間は、ターゲットまでの距離と、ターゲットの大きさに依存します。
-- デザインへの応用：重要なアクション（コンバージョンボタンなど）は大きく、押しやすい位置に配置する。逆に、削除などの危険なボタンはあえて小さくしたり、離れた場所に置くことで誤操作を防ぎます。
-
-**ヒックの法則（Hick's Law）**
-- 選択肢の数が増えるほど、意思決定にかかる時間は対数的に増加します。
-- デザインへの応用：メニュー項目を増やしすぎない。複雑な登録フォームは、ステップごとに分割（ステップUI）して、1画面あたりの選択肢を減らします。
-
-#### 4. 視覚情報の優先順位「色の人間工学」
-
-**プルキンエ現象**
-- 暗い場所では青色が明るく見え、赤色が暗く沈んで見えます。
-- ナイトモードのデザインでは、色のコントラストに注意が必要です。
-
-**誘目性**
-- 赤や黄色は目を引きやすく、青や緑は落ち着きを与えます。
-- 警告には赤、進行には緑といった「色のメンタルモデル」を利用することで、説明がなくても伝わるデザインになります。
-
-`
+    const content = str(cfg.ergonomicsContent) || ERGONOMICS_DEFAULT_TEXT
+    text += content + '\n\n'
   }
 
   return text
+}
+
+const COMPONENT_SECTION_LABELS: Record<string, string> = {
+  purpose:       '目的と使い分け',
+  variants:      'バリアント',
+  sizes:         'サイズ',
+  states:        '状態',
+  anatomy:       '構造と寸法',
+  accessibility: 'アクセシビリティ要件',
+  dosDonts:      'Do / Don\'t',
+}
+
+const SHADCN_SECTION_LABELS: Record<string, string> = {
+  shadcnTokenMapping:        'デザイントークン CSS 変数マッピング',
+  shadcnComponentList:       '採用コンポーネント一覧',
+  shadcnUsageGuide:          '使い分けガイド',
+  shadcnCustomizationPolicy: 'カスタマイズポリシー',
+  shadcnStandardPatterns:    '標準パターン',
+  shadcnCustomComponents:    '独自コンポーネント仕様',
+}
+
+function renderComponents(cfg: SectionCfg): string {
+  if (cfg.useShadcn as boolean) {
+    let text = '> shadcn/ui を使用\n> コンポーネントの実装仕様は https://ui.shadcn.com/ を参照すること\n\n'
+    for (const [key, label] of Object.entries(SHADCN_SECTION_LABELS)) {
+      const value = str(cfg[key]).trim()
+      if (!value) continue
+      text += `### ${label}\n\n${value}\n\n`
+    }
+    return text.trim()
+  }
+
+  const elevation = str(cfg.elevation)
+  const bullets: string[] = []
+  if (elevation) bullets.push(`- Elevation: ${elevation}`)
+
+  let text = bullets.length > 0 ? `${bullets.join('\n')}\n\n` : ''
+
+  if (hasValue(cfg.componentNotes)) {
+    text += `${str(cfg.componentNotes).trim()}\n\n`
+  }
+
+  const items = (cfg.componentItems as unknown as Array<Record<string, string>>) ?? []
+  for (const item of items) {
+    const name = (item.name ?? '').trim()
+    if (!name) continue
+    text += `### ${name}\n\n`
+    for (const [key, label] of Object.entries(COMPONENT_SECTION_LABELS)) {
+      const value = (item[key] ?? '').trim()
+      if (!value) continue
+      text += `#### ${label}\n\n${value}\n\n`
+    }
+  }
+
+  return text.trim()
+}
+
+const WCAG_STANDARDS: Record<string, { text: string; largeText: string; ui: string }> = {
+  'AA':  { text: '4.5', largeText: '3.0', ui: '3.0' },
+  'AAA': { text: '7.0', largeText: '4.5', ui: '3.0' },
+}
+
+function renderAccessibility(cfg: SectionCfg): string {
+  const level = str(cfg.contrastLevel).trim() || 'AA'
+  let text = ''
+
+  const standards = WCAG_STANDARDS[level]
+  if (standards) {
+    text += `### WCAG ${level} 準拠\n\n`
+    text += `| 対象 | 最低コントラスト比 |\n`
+    text += `|------|------------------|\n`
+    text += `| 通常テキスト (18pt未満 / 太字14pt未満) | ${standards.text}:1 |\n`
+    text += `| 大テキスト (18pt以上 / 太字14pt以上) | ${standards.largeText}:1 |\n`
+    text += `| UI コンポーネント・グラフィック | ${standards.ui}:1 |\n\n`
+  } else {
+    // カスタム
+    const textContrast = str(cfg.textContrastMin).trim()
+    const largeTextContrast = str(cfg.largeTextContrastMin).trim()
+    const uiContrast = str(cfg.uiContrastMin).trim()
+
+    if (textContrast || largeTextContrast || uiContrast) {
+      text += `### コントラスト比の基準（カスタム）\n\n`
+      text += `| 対象 | 最低コントラスト比 |\n`
+      text += `|------|------------------|\n`
+      if (textContrast) text += `| 通常テキスト (18pt未満 / 太字14pt未満) | ${textContrast}:1 |\n`
+      if (largeTextContrast) text += `| 大テキスト (18pt以上 / 太字14pt以上) | ${largeTextContrast}:1 |\n`
+      if (uiContrast) text += `| UI コンポーネント・グラフィック | ${uiContrast}:1 |\n`
+      text += '\n'
+    }
+  }
+
+  const notes = renderNotes(cfg.accessibilityNotes)
+  if (notes) {
+    text += `### 補足情報\n\n${notes}\n`
+  }
+
+  return text.trim()
+}
+
+function renderOther(cfg: SectionCfg): string {
+  return renderNotes(cfg.otherContent)
 }
