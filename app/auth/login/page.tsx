@@ -2,18 +2,19 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { AuthCard } from '@/components/auth/auth-card'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthError } from '@/components/auth/auth-error'
-import { createClient } from '@/lib/supabase'
+import { LoadingButton } from '@/components/ui/loading-button'
+import { useFormState } from '@/lib/hooks/use-form-state'
+import { useSupabaseAuth } from '@/lib/hooks/use-supabase-auth'
 
 export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const { error, isLoading, setError, setIsLoading } = useFormState()
+  const { signInWithPassword } = useSupabaseAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -21,11 +22,7 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+      const { data, error } = await signInWithPassword(email, password)
 
       if (error) throw error
       if (!data.session) throw new Error('No session returned')
@@ -78,9 +75,9 @@ export default function LoginPage() {
           onChange={setPassword}
           disabled={isLoading}
         />
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? 'ログイン中...' : 'ログイン'}
-        </Button>
+        <LoadingButton type="submit" isLoading={isLoading} loadingText="ログイン中..." className="w-full">
+          ログイン
+        </LoadingButton>
       </form>
     </AuthCard>
   )

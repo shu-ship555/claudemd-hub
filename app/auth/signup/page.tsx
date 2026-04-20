@@ -2,19 +2,20 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { AuthCard } from '@/components/auth/auth-card'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthError } from '@/components/auth/auth-error'
-import { createClient } from '@/lib/supabase'
+import { LoadingButton } from '@/components/ui/loading-button'
+import { useFormState } from '@/lib/hooks/use-form-state'
+import { useSupabaseAuth } from '@/lib/hooks/use-supabase-auth'
 
 export default function SignupPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const { error, isLoading, setError, setIsLoading } = useFormState()
+  const { signUp } = useSupabaseAuth()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -28,8 +29,7 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signUp({ email, password })
+      const { error } = await signUp(email, password)
       if (error) throw error
       router.push('/auth/verify')
     } catch (err) {
@@ -73,9 +73,9 @@ export default function SignupPage() {
           onChange={setConfirmPassword}
           disabled={isLoading}
         />
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? '作成中...' : '登録する'}
-        </Button>
+        <LoadingButton type="submit" isLoading={isLoading} loadingText="作成中..." className="w-full">
+          登録する
+        </LoadingButton>
       </form>
     </AuthCard>
   )

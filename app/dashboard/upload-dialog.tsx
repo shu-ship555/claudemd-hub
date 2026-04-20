@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createConfigFile } from './actions'
+import { useFormState } from '@/lib/hooks/use-form-state'
+import { FormField } from '@/components/ui/form-field'
+import { LoadingButton } from '@/components/ui/loading-button'
 
 export default function UploadDialog() {
   const [open, setOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
+  const { isLoading, setIsLoading } = useFormState()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -46,16 +48,14 @@ export default function UploadDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">ファイル名</Label>
-            <Input
-              id="name"
-              placeholder="例: claude.md, .agentic.md"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={isLoading}
-            />
-          </div>
+          <FormField
+            id="name"
+            label="ファイル名"
+            placeholder="例: claude.md, .agentic.md"
+            value={name}
+            onChange={setName}
+            disabled={isLoading}
+          />
           <div className="space-y-2">
             <Label htmlFor="content">ファイル内容</Label>
             <textarea
@@ -76,9 +76,9 @@ export default function UploadDialog() {
             >
               キャンセル
             </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? '保存中...' : '保存'}
-            </Button>
+            <LoadingButton type="submit" isLoading={isLoading} loadingText="保存中...">
+              保存
+            </LoadingButton>
           </div>
         </form>
       </DialogContent>

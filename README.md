@@ -5,32 +5,70 @@ A modern Next.js application for managing Claude Code configuration files. Store
 ## 🚀 Tech Stack
 
 - **Framework**: [Next.js 16](https://nextjs.org) - App Router
-- **UI**: [shadcn/ui](https://ui.shadcn.com) + Tailwind CSS v4
+- **React**: React 19 with latest features
+- **UI Components**: [@base-ui/react](https://base-ui.com) + Custom components
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com) + CSS Variables
+- **Icons**: [lucide-react](https://lucide.dev)
 - **Database**: [Supabase](https://supabase.com) PostgreSQL
-- **Authentication**: Supabase Auth
+- **Authentication**: Supabase Auth (SSR-compatible)
 - **Hosting**: [Vercel](https://vercel.com)
-- **Theme**: Dark mode by default with [next-themes](https://github.com/pacocoursey/next-themes)
+- **Utilities**: `clsx`, `tailwind-merge`
 
 ## 📁 Project Structure
 
 ```
 ├── app/
-│   ├── page.tsx              # Landing page
-│   ├── layout.tsx            # Root layout with ThemeProvider
-│   ├── globals.css           # Theme tokens & global styles
+│   ├── page.tsx                    # Landing page
+│   ├── layout.tsx                  # Root layout
+│   ├── globals.css                 # Theme tokens & global styles
 │   ├── auth/
-│   │   ├── login/            # Login page
-│   │   ├── signup/           # Sign up page
-│   │   └── verify/           # Email verification (TODO)
-│   └── dashboard/            # Protected dashboard
-├── components/ui/            # shadcn/ui components
-├── src/
-│   ├── lib/
-│   │   ├── supabase.ts       # Client-side Supabase
-│   │   └── supabase-server.ts # Server-side Supabase
-│   └── providers.tsx         # React Providers (ThemeProvider)
-├── middleware.ts             # Request authentication checks
-├── vercel.ts                 # Vercel deployment config
+│   │   ├── login/page.tsx          # Login page
+│   │   ├── signup/page.tsx         # Sign up page
+│   │   └── verify/page.tsx         # Email verification
+│   ├── api/
+│   │   └── auth/sync/route.ts      # Auth sync endpoint
+│   └── dashboard/
+│       ├── page.tsx                # Design system editor
+│       ├── files/page.tsx          # File management
+│       ├── actions.ts              # Server actions
+│       ├── upload-dialog.tsx       # Upload form
+│       ├── config-list.tsx         # Config list
+│       └── dashboard-client.tsx    # Dashboard wrapper
+├── components/
+│   ├── ui/                         # Reusable UI components
+│   │   ├── button.tsx              # Base button
+│   │   ├── loading-button.tsx      # Loading button (NEW)
+│   │   ├── form-field.tsx          # Form field (NEW)
+│   │   ├── centered-card.tsx       # Centered card layout (NEW)
+│   │   ├── input.tsx
+│   │   ├── card.tsx
+│   │   ├── dialog.tsx
+│   │   └── ... (other UI components)
+│   ├── auth/                       # Auth-specific components
+│   ├── theme-preview/              # Design preview components
+│   ├── dashboard-header.tsx        # Dashboard header
+│   └── ... (other components)
+├── lib/
+│   ├── hooks/                      # Custom React hooks
+│   │   ├── use-form-state.ts       # Form state management (NEW)
+│   │   ├── use-supabase-auth.ts    # Supabase auth (NEW)
+│   │   ├── use-auth.ts
+│   │   ├── use-design-config.ts
+│   │   └── use-save-config-file.ts
+│   ├── supabase.ts                 # Supabase client
+│   ├── supabase-server.ts          # Supabase server
+│   ├── supabase-auth.ts
+│   ├── color-utils.ts              # Color conversion utilities (ENHANCED)
+│   ├── constants.ts
+│   ├── download.ts
+│   ├── utils.ts
+│   └── ... (other utilities)
+├── .claude/
+│   └── CLAUDE.md                   # Project guidelines
+├── DESIGN.md                       # Design system specification
+├── AGENTS.md                       # Agent configuration
+├── middleware.ts                   # Request authentication
+├── vercel.ts                       # Vercel config
 └── package.json
 ```
 
@@ -58,6 +96,34 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## 🏗️ Architecture & Reusable Components
+
+This project follows **DRY (Don't Repeat Yourself)** and **KISS (Keep It Simple, Stupid)** principles with shared components and hooks:
+
+### Custom Hooks
+- **`useFormState`** - Unified form state management (error, isLoading, setError, setIsLoading, clearError)
+- **`useSupabaseAuth`** - Centralized Supabase authentication methods (signInWithPassword, signUp, signOut)
+- **`useDesignConfig`** - Design system configuration state
+- **`useSaveConfigFile`** - Config file saving logic
+
+### Reusable Components
+- **`FormField`** - Label + Input combination (replaces manual `space-y-2` patterns)
+- **`LoadingButton`** - Button with loading state text (replaces repeated disabled + conditional rendering)
+- **`CenteredCard`** - Centered card layout wrapper (replaces repeated `min-h-screen flex items-center justify-center` patterns)
+- **`LoadingButton`** - Simplifies loading state UI
+
+### Utilities
+- **`color-utils.ts`** - Color conversion functions:
+  - `hexToHsl()` - Hex to HSL conversion
+  - `hslToHex()` - HSL to Hex conversion
+  - `getContrastRatio()` - WCAG contrast ratio calculation
+  - `getContrastLevel()` - Accessibility level determination
+
+### Styling
+- CSS variables defined in `app/globals.css` with Tailwind CSS v4 `@theme` block
+- Consistent spacing scale (8px base unit)
+- Design tokens for colors, typography, and layout
 
 ## 📋 Database Schema (TODO)
 
