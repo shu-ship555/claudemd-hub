@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Noto_Sans_JP } from "next/font/google";
+import { Inter, Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import { Providers } from "@/providers";
 import "./globals.css";
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "900"],
+});
 
 const notoSansJP = Noto_Sans_JP({
   variable: "--font-noto-sans-jp",
@@ -27,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="ja"
-      className={`${notoSansJP.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} ${notoSansJP.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">

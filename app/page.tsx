@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl">Claude Config Manager</CardTitle>
+      <Card className="w-full max-w-md shadow-md">
+        <CardHeader className="bg-primary-surface border-b border-primary/15 rounded-t-xl pb-5">
+          <CardTitle className="text-2xl text-primary">Claude Config Manager</CardTitle>
           <CardDescription>
             Claude Code の設定ファイルを管理・整理します
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-4 pt-5">
           <p className="text-sm text-muted-foreground">
             Claude Code の設定を保存・バージョン管理し、複数のマシン間で同期できます。
           </p>

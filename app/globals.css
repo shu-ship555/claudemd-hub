@@ -1,32 +1,33 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-noto-sans-jp), system-ui, sans-serif;
+  --font-sans: var(--font-inter), var(--font-noto-sans-jp), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
   /* ============================================================
      Light mode defaults (DESIGN.md準拠)
      ============================================================ */
-  --color-background:          oklch(1 0 0);           /* White     #ffffff */
-  --color-foreground:          oklch(0.27 0 0);         /* Gray 8    #404040 */
-  --color-card:                oklch(1 0 0);            /* White     #ffffff */
-  --color-card-foreground:     oklch(0.27 0 0);         /* Gray 8    #404040 */
+  --color-background:          oklch(0.975 0.008 265);  /* ~#f4f6ff – subtle blue-tinted page bg */
+  --color-foreground:          oklch(0.18 0 0);         /* Gray 9    #202020 – 12:1 on white */
+  --color-card:                oklch(1 0 0);            /* White     #ffffff – cards float on bg */
+  --color-card-foreground:     oklch(0.18 0 0);         /* Gray 9    #202020 */
   --color-popover:             oklch(1 0 0);            /* White     #ffffff */
-  --color-popover-foreground:  oklch(0.27 0 0);         /* Gray 8    #404040 */
+  --color-popover-foreground:  oklch(0.18 0 0);         /* Gray 9    #202020 */
 
   /* KeyColor */
   --color-primary:             oklch(0.514 0.241 264.4); /* Primary   #1a4fd6 */
   --color-primary-foreground:  oklch(1 0 0);             /* White     #ffffff */
+  --color-primary-surface:     oklch(0.945 0.024 265);   /* #ebf1ff  – CTA/link 背景として使用 */
 
   /* Secondary / Accent = Gray 1 */
   --color-secondary:           oklch(0.94 0 0);          /* Gray 1    #f0f0f0 */
-  --color-secondary-foreground: oklch(0.27 0 0);         /* Gray 8    #404040 */
-  --color-accent:              oklch(0.94 0 0);           /* Gray 1    #f0f0f0 */
-  --color-accent-foreground:   oklch(0.27 0 0);          /* Gray 8    #404040 */
+  --color-secondary-foreground: oklch(0.18 0 0);         /* Gray 9    #202020 */
+  --color-accent:              oklch(0.945 0.024 265);    /* primary-surface – blue accent hover */
+  --color-accent-foreground:   oklch(0.514 0.241 264.4); /* Primary   #1a4fd6 */
 
-  /* Muted */
+  /* Muted – WCAG AA準拠: 4.5:1以上確保のため Gray 7相当に変更 */
   --color-muted:               oklch(0.94 0 0);          /* Gray 1    #f0f0f0 */
-  --color-muted-foreground:    oklch(0.73 0 0);          /* Gray 5    #b0b0b0 */
+  --color-muted-foreground:    oklch(0.44 0 0);          /* ~#686868  4.8:1 on white */
 
   /* Semantic */
   --color-destructive:         oklch(0.52 0.18 25);      /* Error     #dc2626 */
@@ -37,8 +38,8 @@
   --color-warning-foreground:  oklch(1 0 0);             /* White     #ffffff */
 
   /* Border / Input / Ring */
-  --color-border:              oklch(0.89 0 0);          /* Gray 2    #e0e0e0 */
-  --color-input:               oklch(0.89 0 0);          /* Gray 2    #e0e0e0 */
+  --color-border:              oklch(0.84 0 0);          /* ~#d0d0d0  Gray 3 – より明確なボーダー */
+  --color-input:               oklch(0.84 0 0);          /* ~#d0d0d0  Gray 3 */
   --color-ring:                oklch(0.514 0.241 264.4); /* Primary   #1a4fd6 */
 
   /* Shape */
@@ -65,7 +66,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::placeholder {
-  color: oklch(0.62 0 0);
+  color: oklch(0.55 0 0); /* ~#777777 – 4.5:1 on white */
   opacity: 1;
 }
 
