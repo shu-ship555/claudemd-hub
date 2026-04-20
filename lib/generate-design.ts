@@ -232,13 +232,18 @@ function renderTypography(cfg: SectionCfg): string {
 
     text += `#### ${catLabel}\n\n`
 
+    const selectedStylesField = `${cat}SelectedStyles`
+    const selectedStylesStr = str(cfg[selectedStylesField as keyof SectionCfg]).trim()
+    const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
+
     const weights = TEXT_STYLE_WEIGHTS as readonly string[]
     for (const weight of weights) {
       const weightLabel = weight === 'B' ? 'Bold' : 'Normal'
       const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
-      if (styles.length > 0) {
+      const filteredStyles = selectedStyles.length > 0 ? styles.filter(s => selectedStyles.includes(s)) : styles
+      if (filteredStyles.length > 0) {
         text += `**${weightLabel}:**\n`
-        for (const style of styles) {
+        for (const style of filteredStyles) {
           const parsed = parseTextStyle(style)
           text += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight}\n`
         }

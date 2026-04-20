@@ -808,11 +808,26 @@ export default function DashboardPage() {
                                   <div className="grid grid-cols-2 gap-2 ml-2">
                                     {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
                                       const parsed = parseTextStyle(style)
+                                      const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
+                                      const selectedStyles = (tc[selectedStylesField as keyof typeof tc] as string)?.split(',') || []
+                                      const isSelected = selectedStyles.includes(style)
                                       return (
                                         <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
                                           <input
                                             type="checkbox"
-                                            defaultChecked
+                                            checked={isSelected}
+                                            onChange={(e) => {
+                                              const current = selectedStyles.filter(s => s.trim())
+                                              if (e.target.checked) {
+                                                if (!current.includes(style)) {
+                                                  current.push(style)
+                                                }
+                                              } else {
+                                                const idx = current.indexOf(style)
+                                                if (idx > -1) current.splice(idx, 1)
+                                              }
+                                              updateField('typography', selectedStylesField, current.join(','))
+                                            }}
                                             className="h-4 w-4 rounded border-input accent-primary"
                                           />
                                           <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}</span>
