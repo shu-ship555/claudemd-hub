@@ -3,7 +3,6 @@
 import { Sparkles, Palette, Type, LayoutGrid, Info } from 'lucide-react'
 import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
-import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS } from '@/lib/constants'
 import { downloadTextFile } from '@/lib/download'
@@ -13,20 +12,43 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { FieldLabel } from '@/components/ui/field-label'
-import { TabBar } from '@/components/ui/tab-bar'
 import { SectionCard } from '@/components/ui/section-card'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { THEME_PRESETS } from '@/lib/theme-presets'
-import { ThemePreview, type Colors } from '@/components/theme-preview'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import type { Colors } from '@/components/theme-preview'
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
 
-const PREVIEW_TABS = [
-  { key: 'markdown' as const, label: 'マークダウン' },
-  { key: 'component' as const, label: 'コンポーネント' },
-]
+const DEFAULT_PREVIEW = `# Design System
+
+## Overview
+A focused, minimal dark interface for a developer productivity tool.
+Clean lines, low visual noise, high information density.
+
+## Colors
+- **Primary** (#2665fd): CTAs, active states, key interactive elements
+- **Secondary** (#475569): Supporting UI, chips, secondary actions
+- **Surface** (#0b1326): Page backgrounds
+- **On-surface** (#dae2fd): Primary text on dark backgrounds
+- **Error** (#ffb4ab): Validation errors, destructive actions
+
+## Typography
+- **Headlines**: Inter, semi-bold
+- **Body**: Inter, regular, 14–16px
+- **Labels**: Inter, medium, 12px, uppercase for section headers
+
+## Components
+- **Buttons**: Rounded (8px), primary uses brand blue fill
+- **Inputs**: 1px border, subtle surface-variant background
+- **Cards**: No elevation, relies on border and background contrast
+
+## Do's and Don'ts
+- Do use the primary color sparingly, only for the most important action
+- Don't mix rounded and sharp corners in the same view
+- Do maintain 4:1 contrast ratio for all text
+`
 
 
 const KEY_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
@@ -159,14 +181,45 @@ export default function DashboardPage() {
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
   const { fileName, setFileName, isSaving, save } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
-  const [presetPreview, setPresetPreview] = useState<string | null>(null)
-  const [previewMode, setPreviewMode] = useState<'markdown' | 'component'>('markdown')
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
-  const { refA: formScrollRef, refB: previewScrollRef, handleAScroll, handleBScroll } =
-    useScrollSync<HTMLDivElement, HTMLTextAreaElement>()
+  const formScrollRef = useRef<HTMLDivElement>(null)
+  const previewScrollRef = useRef<HTMLTextAreaElement>(null)
 
   const isCustom = themeSelect === 'カスタム'
-  const displayPreview = presetPreview ?? preview
+
+  const scrollPreviewToSection = (sectionName: string) => {
+    if (!previewScrollRef.current) return
+    const currentPreview = !themeSelect ? DEFAULT_PREVIEW : (themeSelect === 'デフォルト' ? DEFAULT_PREVIEW : preview)
+    const lines = currentPreview.split('\n')
+    let targetLineIndex = -1
+
+    const sectionMap: Record<string, string> = {
+      visualTheme: '## 1. Visual Theme',
+      colorPalette: '## 2. Color Palette',
+      typography: '## 3. Typography',
+      layout: '## 4. Layout',
+    }
+
+    const sectionHeader = sectionMap[sectionName]
+    if (!sectionHeader) return
+
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].includes(sectionHeader)) {
+        targetLineIndex = i
+        break
+      }
+    }
+
+    if (targetLineIndex === -1) return
+
+    const targetText = lines.slice(0, targetLineIndex).join('\n')
+    const scrollPosition = targetText.length
+    previewScrollRef.current.scrollTop = (scrollPosition / currentPreview.length) * (previewScrollRef.current.scrollHeight - previewScrollRef.current.clientHeight)
+  }
+
+  const handleSectionClick = (sectionName: string) => {
+    scrollPreviewToSection(sectionName)
+  }
   const section = 'visualTheme'
   const v = config[section] ?? {}
   const tc = config['typography'] ?? {}
@@ -176,7 +229,6 @@ export default function DashboardPage() {
   const handleThemeChange = (val: string) => {
     setThemeSelect(val)
     if (val === 'カスタム') {
-      setPresetPreview(null)
       updateField(section, 'themeName', '')
       updateField(section, 'isCustomTheme', true)
       const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
@@ -205,10 +257,8 @@ export default function DashboardPage() {
         }
       })
     } else if (THEME_PRESETS[val]) {
-      setPresetPreview(THEME_PRESETS[val].content)
       updateField(section, 'themeName', val)
     } else {
-      setPresetPreview(null)
       updateField(section, 'themeName', '')
     }
   }
@@ -236,7 +286,6 @@ export default function DashboardPage() {
           <div
             ref={formScrollRef}
             className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto pr-4"
-            onScroll={handleAScroll}
           >
             {/* Standalone theme selector */}
             <div className="space-y-2">
@@ -267,6 +316,7 @@ export default function DashboardPage() {
                   label="ビジュアルテーマ"
                   description="ブランドの世界観・インスピレーション元・全体の雰囲気"
                   icon={Sparkles}
+                  onClick={() => handleSectionClick('visualTheme')}
                 >
                   <div className="space-y-2">
                     <FieldLabel requirement="optional">ビジュアル雰囲気の説明</FieldLabel>
@@ -293,6 +343,7 @@ export default function DashboardPage() {
                 <SectionCard
                   label="カラーパレット"
                   description="コンポーネントプレビューとマークダウンの両方に反映されます"
+                  onClick={() => handleSectionClick('colorPalette')}
                   icon={Palette}
                 >
                   <div className="space-y-8">
@@ -665,11 +716,11 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs font-medium text-muted-foreground">共通カラー</p>
+                        <p className="text-xs font-medium text-muted-foreground">グレースケール</p>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                           <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md px-3 py-2 shadow-md w-64 pointer-events-none">
-                            白から黒の10段階グレースケール。背景・サーフェス・ボーダー・テキストなど、UI全体の情報階層と視覚的な重みを表現するために使用する。
+                            白から黒の14段階グレースケール。背景・サーフェス・ボーダー・テキストなど、UI全体の情報階層と視覚的な重みを表現するために使用する。
                           </div>
                         </div>
                       </div>
@@ -741,6 +792,7 @@ export default function DashboardPage() {
                 {/* タイポグラフィ section */}
                 <SectionCard
                   label="タイポグラフィ"
+                  onClick={() => handleSectionClick('typography')}
                   description="欧文・和文フォントファミリー"
                   icon={Type}
                 >
@@ -897,6 +949,7 @@ export default function DashboardPage() {
                 {/* レイアウト section */}
                 <SectionCard
                   label="レイアウト"
+                  onClick={() => handleSectionClick('layout')}
                   description="スペーシングと角丸の設定"
                   icon={LayoutGrid}
                 >
@@ -1034,37 +1087,21 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <TabBar
-                items={PREVIEW_TABS}
-                value={previewMode}
-                onChange={setPreviewMode}
+              <Textarea
+                ref={previewScrollRef}
+                value={(() => {
+                  if (!themeSelect) return '# Design System Guidelines'
+                  if (themeSelect === 'デフォルト') return DEFAULT_PREVIEW
+                  return preview
+                })()}
+                readOnly
+                className="h-[calc(100vh-400px)] min-h-64 font-mono text-xs"
               />
-
-              {previewMode === 'markdown' ? (
-                <Textarea
-                  ref={previewScrollRef}
-                  value={displayPreview}
-                  readOnly
-                  className="h-[calc(100vh-480px)] min-h-64 font-mono text-xs"
-                  onScroll={handleBScroll}
-                />
-              ) : (
-                <ThemePreview
-                  theme={themeSelect}
-                  height="calc(100vh - 480px)"
-                  customColors={(cc.useSemanticColors as boolean) ?? true
-                    ? customColors
-                    : { ...customColors, success: LIGHT_COLORS.success, danger: LIGHT_COLORS.danger, warning: LIGHT_COLORS.warning }
-                  }
-                  fonts={{ latin: tc.latinFont as string, japanese: tc.japaneseFont as string }}
-                  layout={{ spacingBase: lc.spacingBase as string }}
-                />
-              )}
 
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => downloadTextFile(fileName, displayPreview)}
+                  onClick={() => downloadTextFile(fileName, preview)}
                   disabled={isSaving}
                   className="flex-1"
                 >
@@ -1073,7 +1110,7 @@ export default function DashboardPage() {
                 {!isAuthLoading && (
                   isLoggedIn ? (
                     <Button
-                      onClick={() => save(displayPreview)}
+                      onClick={() => save(preview)}
                       disabled={isSaving}
                       className="flex-1"
                     >
