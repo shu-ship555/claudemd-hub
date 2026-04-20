@@ -219,49 +219,39 @@ function renderTypography(cfg: SectionCfg): string {
   }
 
   const categories = ['dsp', 'std', 'dns', 'oln', 'mono'] as const
-  let hasTextStyles = false
+
+  text += `### Text Styles\n\n`
   for (const cat of categories) {
-    const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
-    if (notes) {
-      hasTextStyles = true
-      break
-    }
-  }
+    const catCapitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()
+    const catKey = catCapitalized as keyof typeof DEFAULT_TEXT_STYLES
+    const catLabel = CATEGORY_LABELS[catCapitalized] || cat.toUpperCase()
 
-  if (hasTextStyles) {
-    text += `### Text Styles\n\n`
-    for (const cat of categories) {
-      const catCapitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()
-      const catKey = catCapitalized as keyof typeof DEFAULT_TEXT_STYLES
-      const catLabel = CATEGORY_LABELS[catCapitalized] || cat.toUpperCase()
+    text += `#### ${catLabel}\n\n`
 
-      text += `#### ${catLabel}\n\n`
-
-      const weights = TEXT_STYLE_WEIGHTS as readonly string[]
-      for (const weight of weights) {
-        const weightLabel = weight === 'B' ? 'Bold' : 'Normal'
-        const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
-        if (styles.length > 0) {
-          text += `**${weightLabel}:**\n`
-          for (const style of styles) {
-            const parsed = parseTextStyle(style)
-            text += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight}\n`
-          }
-          text += '\n'
-        }
-      }
-
-      const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
-      if (notes) {
-        text += `**使い方:**\n`
-        const noteLines = notes.split('\n').filter(l => l.trim())
-        for (const line of noteLines) {
-          text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+    const weights = TEXT_STYLE_WEIGHTS as readonly string[]
+    for (const weight of weights) {
+      const weightLabel = weight === 'B' ? 'Bold' : 'Normal'
+      const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
+      if (styles.length > 0) {
+        text += `**${weightLabel}:**\n`
+        for (const style of styles) {
+          const parsed = parseTextStyle(style)
+          text += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight}\n`
         }
         text += '\n'
       }
+    }
+
+    const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
+    if (notes) {
+      text += `**使い方:**\n`
+      const noteLines = notes.split('\n').filter(l => l.trim())
+      for (const line of noteLines) {
+        text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+      }
       text += '\n'
     }
+    text += '\n'
   }
 
   return text.trim() ? `${text}\n` : ''
