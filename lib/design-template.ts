@@ -447,7 +447,7 @@ export const designTemplate: DesignSection[] = [
         id: 'ergonomicsGuidance',
         label: '人間工学に基づく指示を含める',
         requirement: 'optional',
-        default: false,
+        default: true,
       } as CheckboxField,
     ],
   },
