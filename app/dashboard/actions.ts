@@ -61,10 +61,25 @@ export async function createConfigFile(
   const user = await fetchSupabaseUser(accessToken)
   if (!user) throw new Error('Failed to get user')
 
+  // 同名ファイルが存在する場合は連番サフィックスを付与
+  const existingFiles = await getConfigFiles()
+  const existingNames = new Set(existingFiles.map((f) => f.name))
+
+  let uniqueName = name
+  if (existingNames.has(name)) {
+    const ext = name.includes('.') ? name.slice(name.lastIndexOf('.')) : ''
+    const base = name.includes('.') ? name.slice(0, name.lastIndexOf('.')) : name
+    let counter = 2
+    while (existingNames.has(`${base} (${counter})${ext}`)) {
+      counter++
+    }
+    uniqueName = `${base} (${counter})${ext}`
+  }
+
   const response = await fetch(CONFIG_FILES_URL(), {
     method: 'POST',
     headers: jsonHeaders(accessToken, true),
-    body: JSON.stringify({ user_id: user.id, name, content }),
+    body: JSON.stringify({ user_id: user.id, name: uniqueName, content }),
   })
 
   const data = await parseJsonResponse<ConfigFile>(response, 'Failed to create config file')

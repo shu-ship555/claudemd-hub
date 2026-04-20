@@ -39,7 +39,12 @@ export default async function FilesPage() {
                 Claude Code の設定ファイルを管理・同期します
               </CardDescription>
             </div>
-            <UploadDialog />
+            <div className="flex items-center gap-4">
+              <span className={`text-sm font-mono ${configs.length >= 10 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {configs.length}&nbsp;/&nbsp;10
+              </span>
+              <UploadDialog />
+            </div>
           </CardHeader>
           <CardContent>
             <ConfigList configs={configs} />

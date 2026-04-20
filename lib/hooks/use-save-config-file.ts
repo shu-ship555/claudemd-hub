@@ -1,16 +1,36 @@
 'use client'
 
-import { useState } from 'react'
-import { createConfigFile } from '@/app/dashboard/actions'
+import { useState, useEffect, useCallback } from 'react'
+import { createConfigFile, getConfigFiles } from '@/app/dashboard/actions'
 import { ERROR_MESSAGES } from '@/lib/constants'
+
+const MAX_FILES = 10
 
 export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
   const [fileName, setFileName] = useState(defaultFileName)
   const [isSaving, setIsSaving] = useState(false)
+  const [fileCount, setFileCount] = useState<number | null>(null)
+
+  const fetchCount = useCallback(async () => {
+    try {
+      const files = await getConfigFiles()
+      setFileCount(files.length)
+    } catch {
+      // 未ログイン時はカウント不可能
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchCount()
+  }, [fetchCount])
 
   const save = async (content: string) => {
     if (!fileName.trim()) {
       alert(ERROR_MESSAGES.FILE_NAME_REQUIRED)
+      return
+    }
+    if (fileCount !== null && fileCount >= MAX_FILES) {
+      alert(ERROR_MESSAGES.SAVE_LIMIT_REACHED)
       return
     }
     setIsSaving(true)
@@ -18,6 +38,7 @@ export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
       await createConfigFile(fileName, content)
       alert(ERROR_MESSAGES.SAVE_SUCCESS)
       setFileName(defaultFileName)
+      await fetchCount()
     } catch (error) {
       console.error('Save error:', error)
       alert(ERROR_MESSAGES.SAVE_FAILED)
@@ -26,5 +47,5 @@ export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
     }
   }
 
-  return { fileName, setFileName, isSaving, save }
+  return { fileName, setFileName, isSaving, save, fileCount, maxFiles: MAX_FILES }
 }

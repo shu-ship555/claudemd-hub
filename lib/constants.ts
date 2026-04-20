@@ -112,6 +112,7 @@ export const ERROR_MESSAGES = {
   FILE_NAME_REQUIRED: 'ファイル名を入力してください',
   SAVE_SUCCESS: 'DESIGN.md を保存しました',
   SAVE_FAILED: '保存に失敗しました',
+  SAVE_LIMIT_REACHED: '保存上限に達しました。ファイル一覧から不要なファイルを削除してください。',
 }
 
 export const LIGHT_COLORS = {

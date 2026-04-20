@@ -156,7 +156,7 @@ function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) 
 export default function DashboardPage() {
   const { config, preview, updateField, batchUpdate } = useDesignConfig()
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
-  const { fileName, setFileName, isSaving, save } = useSaveConfigFile('DESIGN.md')
+  const { fileName, setFileName, isSaving, save, fileCount, maxFiles } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
   const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS)
@@ -299,7 +299,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader title="DESIGN.md Generator" subtitle="カスタム設計ガイドラインを生成して保存します" />
+      <DashboardHeader title="DESIGN.md Generator" subtitle="Claudeに読み込ませるDESIGN.mdを生成するためのツールです" />
 
       <main className="max-w-7xl mx-auto px-6 pt-11 pb-12">
         <div className="grid gap-12 lg:grid-cols-2">
@@ -1436,7 +1436,16 @@ export default function DashboardPage() {
           <div className="space-y-5">
             <div className="lg:sticky lg:top-20 space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="filename">ファイル名</Label>
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="filename">ファイル名</Label>
+                  {fileCount !== null && (
+                    <span className={`text-xs font-mono ${
+                      fileCount >= maxFiles ? 'text-danger' : 'text-muted-foreground'
+                    }`}>
+                      {fileCount} / {maxFiles}
+                    </span>
+                  )}
+                </div>
                 <Input
                   id="filename"
                   placeholder="DESIGN.md"
@@ -1460,7 +1469,7 @@ export default function DashboardPage() {
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  onClick={() => downloadTextFile(fileName, preview)}
+                  onClick={() => downloadTextFile(fileName, !themeSelect ? '# Design System Guidelines' : themeSelect === 'デフォルト' ? DEFAULT_PREVIEW : preview)}
                   disabled={isSaving}
                   className="flex-1"
                 >
@@ -1469,7 +1478,7 @@ export default function DashboardPage() {
                 {!isAuthLoading && (
                   isLoggedIn ? (
                     <Button
-                      onClick={() => save(preview)}
+                      onClick={() => save(!themeSelect ? '# Design System Guidelines' : themeSelect === 'デフォルト' ? DEFAULT_PREVIEW : preview)}
                       disabled={isSaving}
                       className="flex-1"
                     >
