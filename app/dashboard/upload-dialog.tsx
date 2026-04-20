@@ -6,8 +6,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from '@/components/ui/label'
 import { createConfigFile } from './actions'
 import { useFormState } from '@/lib/hooks/use-form-state'
-import { FormField } from '@/components/ui/form-field'
-import { LoadingButton } from '@/components/ui/loading-button'
+import { FormField } from '@/components/custom/form-field'
+import { LoadingButton } from '@/components/custom/loading-button'
 
 export default function UploadDialog() {
   const [open, setOpen] = useState(false)
@@ -39,7 +39,9 @@ export default function UploadDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button>設定ファイルをアップロード</Button>} />
+      <DialogTrigger asChild>
+        <Button>設定ファイルをアップロード</Button>
+      </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>新しい設定ファイル</DialogTitle>

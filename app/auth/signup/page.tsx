@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { AuthCard } from '@/components/auth/auth-card'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthError } from '@/components/auth/auth-error'
-import { LoadingButton } from '@/components/ui/loading-button'
+import { LoadingButton } from '@/components/custom/loading-button'
 import { useFormState } from '@/lib/hooks/use-form-state'
 import { useSupabaseAuth } from '@/lib/hooks/use-supabase-auth'
 

@@ -4,7 +4,6 @@
 ## Design Enforcement
 - UIの実装や修正を行う際は、必ずプロジェクトルートにある `DESIGN.md` を参照してください。
 - `DESIGN.md` に定義されているカラーパレット、タイポグラフィ、スペーシングの規則を逸脱しないでください。
-- コンポーネントの実装には、`@base-ui/react` をプリミティブとして活用し、一貫したアクセシビリティと挙動を担保してください。
 
 ## Framework & Library
 - **Core**: Next.js 16 (App Router), React 19

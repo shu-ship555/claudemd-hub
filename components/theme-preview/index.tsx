@@ -2,7 +2,7 @@
 
 import { Moon, Sun } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { TabBar } from '@/components/ui/tab-bar'
+import { TabBar } from '@/components/patterns/tab-bar'
 import { LIGHT_COLORS } from '@/lib/constants'
 
 const GOOGLE_FONTS_FAMILIES: Record<string, string> = {

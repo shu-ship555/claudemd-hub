@@ -21,8 +21,12 @@ export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
   }, [])
 
   useEffect(() => {
-    fetchCount()
-  }, [fetchCount])
+    let cancelled = false
+    getConfigFiles()
+      .then((files) => { if (!cancelled) setFileCount(files.length) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [])
 
   const save = async (content: string) => {
     if (!fileName.trim()) {
