@@ -60,8 +60,9 @@ export type Colors = {
   secondary: string; tertiary: string
   text: string; muted: string; success: string; warning: string
   danger: string; orange: string; info: string
-  gray0: string; gray1: string; gray2: string; gray3: string; gray4: string
+  white: string; gray1: string; gray2: string; gray3: string; gray4: string
   gray5: string; gray6: string; gray7: string; gray8: string; gray9: string
+  gray10: string; gray11: string; gray12: string; black: string
 }
 
 const DARK: Colors = {
@@ -69,8 +70,9 @@ const DARK: Colors = {
   secondary: '#3b65ce', tertiary: '#0d38a5',
   text: '#dae2fd', muted: '#7a90c4', success: '#4ade80', warning: '#fbbf24',
   danger: '#ffb4ab', orange: '#fb923c', info: '#38bdf8',
-  gray0: '#ffffff', gray1: '#e3e3e3', gray2: '#c7c7c7', gray3: '#ababab', gray4: '#8f8f8f',
-  gray5: '#737373', gray6: '#575757', gray7: '#3b3b3b', gray8: '#1f1f1f', gray9: '#000000',
+  white: '#ffffff', gray1: '#f0f0f0', gray2: '#e0e0e0', gray3: '#d0d0d0', gray4: '#c0c0c0',
+  gray5: '#b0b0b0', gray6: '#808080', gray7: '#606060', gray8: '#404040', gray9: '#202020',
+  gray10: '#101010', gray11: '#050505', gray12: '#010101', black: '#000000',
 }
 
 const LIGHT: Colors = LIGHT_COLORS

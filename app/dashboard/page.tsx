@@ -5,7 +5,7 @@ import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
-import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS } from '@/lib/constants'
+import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES } from '@/lib/constants'
 import { downloadTextFile } from '@/lib/download'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -37,7 +37,7 @@ const KEY_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
 ]
 
 const COMMON_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
-  { key: 'gray0', label: 'White' },
+  { key: 'white', label: 'White' },
   { key: 'gray1', label: 'Gray 1' },
   { key: 'gray2', label: 'Gray 2' },
   { key: 'gray3', label: 'Gray 3' },
@@ -46,7 +46,11 @@ const COMMON_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
   { key: 'gray6', label: 'Gray 6' },
   { key: 'gray7', label: 'Gray 7' },
   { key: 'gray8', label: 'Gray 8' },
-  { key: 'gray9', label: 'Black' },
+  { key: 'gray9', label: 'Gray 9' },
+  { key: 'gray10', label: 'Gray 10' },
+  { key: 'gray11', label: 'Gray 11' },
+  { key: 'gray12', label: 'Gray 12' },
+  { key: 'black', label: 'Black' },
 ]
 
 function hexToHsl(hex: string): [number, number, number] {
@@ -112,22 +116,25 @@ const SEMANTIC_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
   { key: 'warning', label: '警告' },
 ]
 
-function colorsToConfigPatch(colors: Colors) {
+function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) {
   return {
     colorPalette: {
       enabled: true,
       primaryCtaColor: colors.primary,
       secondaryCtaColor: colors.secondary,
       tertiaryCtaColor: colors.tertiary,
-      gray0: colors.gray0, gray1: colors.gray1, gray2: colors.gray2,
+      white: colors.white, gray1: colors.gray1, gray2: colors.gray2,
       gray3: colors.gray3, gray4: colors.gray4, gray5: colors.gray5,
       gray6: colors.gray6, gray7: colors.gray7, gray8: colors.gray8,
-      gray9: colors.gray9,
+      gray9: colors.gray9, gray10: colors.gray10, gray11: colors.gray11,
+      gray12: colors.gray12, black: colors.black,
       primaryTextColor: colors.text,
       primarySurfaceColor: colors.bg,
-      successColor: colors.success,
-      warningColor: colors.warning,
-      errorColor: colors.danger,
+      ...(useSemanticColors ? {
+        successColor: colors.success,
+        warningColor: colors.warning,
+        errorColor: colors.danger,
+      } : {}),
       semanticColor: colors.info,
     },
   }
@@ -157,8 +164,9 @@ export default function DashboardPage() {
     if (val === 'カスタム') {
       setPresetPreview(null)
       updateField(section, 'themeName', '')
+      const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
       batchUpdate((prev) => {
-        const patch = colorsToConfigPatch(customColors)
+        const patch = colorsToConfigPatch(customColors, useSemanticColors)
         const prevPalette = prev.colorPalette ?? {}
         const prevTheme = prev.visualTheme ?? {}
         return {
@@ -193,8 +201,9 @@ export default function DashboardPage() {
   const handleColorChange = (key: keyof Colors, value: string) => {
     const next = { ...customColors, [key]: value }
     setCustomColors(next)
+    const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
     batchUpdate((prev) => {
-      const patch = colorsToConfigPatch(next)
+      const patch = colorsToConfigPatch(next, useSemanticColors)
       return {
         ...prev,
         colorPalette: { ...prev.colorPalette, ...patch.colorPalette },
@@ -271,7 +280,7 @@ export default function DashboardPage() {
                   description="コンポーネントプレビューとマークダウンの両方に反映されます"
                   icon={Palette}
                 >
-                  <div className="space-y-4">
+                  <div className="space-y-8">
                     <div className="space-y-1">
                       <div className="flex items-center gap-1">
                         <p className="text-xs font-medium text-muted-foreground">キーカラー</p>
@@ -282,32 +291,107 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </div>
-                      <input
-                        type="range"
-                        min={0}
-                        max={359}
-                        value={hexToHsl(customColors.primary)[0]}
-                        onChange={(e) => {
-                          const hue = Number(e.target.value)
-                          const baseHue = hexToHsl(customColors.primary)[0]
-                          const diff = hue - baseHue
-                          const next = { ...customColors }
-                          for (const { key } of KEY_COLOR_FIELDS) {
-                            const [h, s, l] = hexToHsl(customColors[key])
-                            next[key] = hslToHex((h + diff + 360) % 360, s, l)
-                          }
-                          setCustomColors(next)
-                          batchUpdate((prev) => {
-                            const patch = colorsToConfigPatch(next)
-                            return {
-                              ...prev,
-                              colorPalette: { ...prev.colorPalette, ...patch.colorPalette },
-                            }
-                          })
-                        }}
-                        className="w-full h-2 rounded-full appearance-none cursor-pointer"
-                        style={{ background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
-                      />
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">色相</span>
+                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[0]}°</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={359}
+                            value={hexToHsl(customColors.primary)[0]}
+                            onChange={(e) => {
+                              const hue = Number(e.target.value)
+                              const baseHue = hexToHsl(customColors.primary)[0]
+                              const diff = hue - baseHue
+                              const next = { ...customColors }
+                              for (const { key } of KEY_COLOR_FIELDS) {
+                                const [h, s, l] = hexToHsl(customColors[key])
+                                next[key] = hslToHex((h + diff + 360) % 360, s, l)
+                              }
+                              setCustomColors(next)
+                              const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
+                              batchUpdate((prev) => {
+                                const patch = colorsToConfigPatch(next, useSemanticColors)
+                                return {
+                                  ...prev,
+                                  colorPalette: { ...prev.colorPalette, ...patch.colorPalette },
+                                }
+                              })
+                            }}
+                            className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                            style={{ background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">彩度</span>
+                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[1]}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={hexToHsl(customColors.primary)[1]}
+                            onChange={(e) => {
+                              const sat = Number(e.target.value)
+                              const baseSat = hexToHsl(customColors.primary)[1]
+                              const diff = sat - baseSat
+                              const next = { ...customColors }
+                              for (const { key } of KEY_COLOR_FIELDS) {
+                                const [h, s, l] = hexToHsl(customColors[key])
+                                next[key] = hslToHex(h, Math.max(0, Math.min(100, s + diff)), l)
+                              }
+                              setCustomColors(next)
+                              const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
+                              batchUpdate((prev) => {
+                                const patch = colorsToConfigPatch(next, useSemanticColors)
+                                return {
+                                  ...prev,
+                                  colorPalette: { ...prev.colorPalette, ...patch.colorPalette },
+                                }
+                              })
+                            }}
+                            className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                            style={{ background: `linear-gradient(to right, hsl(${hexToHsl(customColors.primary)[0]}, 0%, 50%), hsl(${hexToHsl(customColors.primary)[0]}, 100%, 50%))` }}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">明度</span>
+                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[2]}%</span>
+                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={hexToHsl(customColors.primary)[2]}
+                            onChange={(e) => {
+                              const light = Number(e.target.value)
+                              const baseLight = hexToHsl(customColors.primary)[2]
+                              const diff = light - baseLight
+                              const next = { ...customColors }
+                              for (const { key } of KEY_COLOR_FIELDS) {
+                                const [h, s, l] = hexToHsl(customColors[key])
+                                next[key] = hslToHex(h, s, Math.max(0, Math.min(100, l + diff)))
+                              }
+                              setCustomColors(next)
+                              const useSemanticColors = (cc.useSemanticColors as boolean) ?? true
+                              batchUpdate((prev) => {
+                                const patch = colorsToConfigPatch(next, useSemanticColors)
+                                return {
+                                  ...prev,
+                                  colorPalette: { ...prev.colorPalette, ...patch.colorPalette },
+                                }
+                              })
+                            }}
+                            className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                            style={{ background: `linear-gradient(to right, #000, hsl(${hexToHsl(customColors.primary)[0]}, ${hexToHsl(customColors.primary)[1]}%, 50%), #fff)` }}
+                          />
+                        </div>
+                      </div>
                       <div className="grid grid-cols-2 gap-3 mt-4">
                         {KEY_COLOR_FIELDS.map(({ key, label }) => {
                           const showContrast = key !== 'bg'
@@ -339,6 +423,230 @@ export default function DashboardPage() {
                         onChange={(e) => updateField('colorPalette', 'keyColorNotes', e.target.value)}
                         className="mt-1 min-h-20 text-xs"
                       />
+
+                      {(((cc.additionalKeyColorSets as any) || []).map((set: any, idx: number) => (
+                        <div key={idx} className="mt-6 pt-6 border-t space-y-4">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-foreground">セット {idx + 2}</p>
+                            <button
+                              onClick={() => {
+                                const next = ((cc.additionalKeyColorSets as any) || []).filter((_: any, i: number) => i !== idx)
+                                updateField('colorPalette', 'additionalKeyColorSets', next)
+                              }}
+                              className="text-xs px-2 py-1 rounded border border-dashed border-muted-foreground text-muted-foreground hover:border-danger hover:text-danger"
+                            >
+                              削除
+                            </button>
+                          </div>
+                          <div className="space-y-4">
+                            <div className="space-y-4">
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-muted-foreground">色相</span>
+                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[0]}°</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={359}
+                                  value={hexToHsl(set.primaryColor)[0]}
+                                  onChange={(e) => {
+                                    const hue = Number(e.target.value)
+                                    const baseHue = hexToHsl(set.primaryColor)[0]
+                                    const diff = hue - baseHue
+                                    const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                    next[idx] = {
+                                      ...next[idx],
+                                      primaryColor: hslToHex((hexToHsl(set.primaryColor)[0] + diff + 360) % 360, hexToHsl(set.primaryColor)[1], hexToHsl(set.primaryColor)[2]),
+                                      secondaryColor: hslToHex((hexToHsl(set.secondaryColor)[0] + diff + 360) % 360, hexToHsl(set.secondaryColor)[1], hexToHsl(set.secondaryColor)[2]),
+                                      tertiaryColor: hslToHex((hexToHsl(set.tertiaryColor)[0] + diff + 360) % 360, hexToHsl(set.tertiaryColor)[1], hexToHsl(set.tertiaryColor)[2]),
+                                      bgColor: hslToHex((hexToHsl(set.bgColor)[0] + diff + 360) % 360, hexToHsl(set.bgColor)[1], hexToHsl(set.bgColor)[2]),
+                                    }
+                                    updateField('colorPalette', 'additionalKeyColorSets', next)
+                                  }}
+                                  className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                                  style={{ background: 'linear-gradient(to right, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)' }}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-muted-foreground">彩度</span>
+                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[1]}%</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={100}
+                                  value={hexToHsl(set.primaryColor)[1]}
+                                  onChange={(e) => {
+                                    const sat = Number(e.target.value)
+                                    const baseSat = hexToHsl(set.primaryColor)[1]
+                                    const diff = sat - baseSat
+                                    const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                    next[idx] = {
+                                      ...next[idx],
+                                      primaryColor: hslToHex(hexToHsl(set.primaryColor)[0], Math.max(0, Math.min(100, hexToHsl(set.primaryColor)[1] + diff)), hexToHsl(set.primaryColor)[2]),
+                                      secondaryColor: hslToHex(hexToHsl(set.secondaryColor)[0], Math.max(0, Math.min(100, hexToHsl(set.secondaryColor)[1] + diff)), hexToHsl(set.secondaryColor)[2]),
+                                      tertiaryColor: hslToHex(hexToHsl(set.tertiaryColor)[0], Math.max(0, Math.min(100, hexToHsl(set.tertiaryColor)[1] + diff)), hexToHsl(set.tertiaryColor)[2]),
+                                      bgColor: hslToHex(hexToHsl(set.bgColor)[0], Math.max(0, Math.min(100, hexToHsl(set.bgColor)[1] + diff)), hexToHsl(set.bgColor)[2]),
+                                    }
+                                    updateField('colorPalette', 'additionalKeyColorSets', next)
+                                  }}
+                                  className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                                  style={{ background: `linear-gradient(to right, hsl(${hexToHsl(set.primaryColor)[0]}, 0%, 50%), hsl(${hexToHsl(set.primaryColor)[0]}, 100%, 50%))` }}
+                                />
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[10px] text-muted-foreground">明度</span>
+                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[2]}%</span>
+                                </div>
+                                <input
+                                  type="range"
+                                  min={0}
+                                  max={100}
+                                  value={hexToHsl(set.primaryColor)[2]}
+                                  onChange={(e) => {
+                                    const light = Number(e.target.value)
+                                    const baseLight = hexToHsl(set.primaryColor)[2]
+                                    const diff = light - baseLight
+                                    const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                    next[idx] = {
+                                      ...next[idx],
+                                      primaryColor: hslToHex(hexToHsl(set.primaryColor)[0], hexToHsl(set.primaryColor)[1], Math.max(0, Math.min(100, hexToHsl(set.primaryColor)[2] + diff))),
+                                      secondaryColor: hslToHex(hexToHsl(set.secondaryColor)[0], hexToHsl(set.secondaryColor)[1], Math.max(0, Math.min(100, hexToHsl(set.secondaryColor)[2] + diff))),
+                                      tertiaryColor: hslToHex(hexToHsl(set.tertiaryColor)[0], hexToHsl(set.tertiaryColor)[1], Math.max(0, Math.min(100, hexToHsl(set.tertiaryColor)[2] + diff))),
+                                      bgColor: hslToHex(hexToHsl(set.bgColor)[0], hexToHsl(set.bgColor)[1], Math.max(0, Math.min(100, hexToHsl(set.bgColor)[2] + diff))),
+                                    }
+                                    updateField('colorPalette', 'additionalKeyColorSets', next)
+                                  }}
+                                  className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                                  style={{ background: `linear-gradient(to right, #000, hsl(${hexToHsl(set.primaryColor)[0]}, ${hexToHsl(set.primaryColor)[1]}%, 50%), #fff)` }}
+                                />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              {(() => {
+                                const primaryRatio = getContrastRatio(set.primaryColor, set.bgColor)
+                                const primaryLevel = getContrastLevel('primary', primaryRatio)
+                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success/15 text-success' : primaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                return (
+                                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input
+                                      type="color"
+                                      value={set.primaryColor}
+                                      onChange={(e) => {
+                                        const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                        next[idx] = { ...next[idx], primaryColor: e.target.value }
+                                        updateField('colorPalette', 'additionalKeyColorSets', next)
+                                      }}
+                                      className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                                    />
+                                    <span className="text-muted-foreground">プライマリ</span>
+                                    <span className="ml-auto font-mono text-xs text-muted-foreground">{set.primaryColor}</span>
+                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${primaryBadgeClass}`}>
+                                      {primaryRatio}:1
+                                    </span>
+                                  </label>
+                                )
+                              })()}
+                              {(() => {
+                                const secondaryRatio = getContrastRatio(set.secondaryColor, set.bgColor)
+                                const secondaryLevel = getContrastLevel('secondary', secondaryRatio)
+                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success/15 text-success' : secondaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                return (
+                                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input
+                                      type="color"
+                                      value={set.secondaryColor}
+                                      onChange={(e) => {
+                                        const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                        next[idx] = { ...next[idx], secondaryColor: e.target.value }
+                                        updateField('colorPalette', 'additionalKeyColorSets', next)
+                                      }}
+                                      className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                                    />
+                                    <span className="text-muted-foreground">セカンダリ</span>
+                                    <span className="ml-auto font-mono text-xs text-muted-foreground">{set.secondaryColor}</span>
+                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${secondaryBadgeClass}`}>
+                                      {secondaryRatio}:1
+                                    </span>
+                                  </label>
+                                )
+                              })()}
+                              {(() => {
+                                const tertiaryRatio = getContrastRatio(set.tertiaryColor, set.bgColor)
+                                const tertiaryLevel = getContrastLevel('tertiary', tertiaryRatio)
+                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success/15 text-success' : tertiaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-danger/15 text-danger'
+                                return (
+                                  <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                    <input
+                                      type="color"
+                                      value={set.tertiaryColor}
+                                      onChange={(e) => {
+                                        const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                        next[idx] = { ...next[idx], tertiaryColor: e.target.value }
+                                        updateField('colorPalette', 'additionalKeyColorSets', next)
+                                      }}
+                                      className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                                    />
+                                    <span className="text-muted-foreground">ターシャリ</span>
+                                    <span className="ml-auto font-mono text-xs text-muted-foreground">{set.tertiaryColor}</span>
+                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${tertiaryBadgeClass}`}>
+                                      {tertiaryRatio}:1
+                                    </span>
+                                  </label>
+                                )
+                              })()}
+                              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                                <input
+                                  type="color"
+                                  value={set.bgColor}
+                                  onChange={(e) => {
+                                    const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                    next[idx] = { ...next[idx], bgColor: e.target.value }
+                                    updateField('colorPalette', 'additionalKeyColorSets', next)
+                                  }}
+                                  className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                                />
+                                <span className="text-muted-foreground">バックグラウンド</span>
+                                <span className="ml-auto font-mono text-xs text-muted-foreground">{set.bgColor}</span>
+                              </label>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-foreground">この色セットの使い方</p>
+                            <Textarea
+                              value={set.notes ?? ''}
+                              onChange={(e) => {
+                                const next = [...((cc.additionalKeyColorSets as any) || [])]
+                                next[idx] = { ...next[idx], notes: e.target.value }
+                                updateField('colorPalette', 'additionalKeyColorSets', next)
+                              }}
+                              className="min-h-20 text-xs"
+                            />
+                          </div>
+                        </div>
+                      )))}
+
+                      {(((cc.additionalKeyColorSets as any) || []).length < 3) && (
+                        <button
+                          onClick={() => {
+                            const next = [...((cc.additionalKeyColorSets as any) || [])]
+                            next.push({
+                              primaryColor: customColors.primary,
+                              secondaryColor: customColors.secondary,
+                              tertiaryColor: customColors.tertiary,
+                              bgColor: customColors.bg,
+                              notes: '',
+                            })
+                            updateField('colorPalette', 'additionalKeyColorSets', next)
+                          }}
+                          className="mt-4 w-full py-2 rounded border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground"
+                        >
+                          + セットを追加
+                        </button>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-1">
@@ -372,8 +680,16 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-1">
-                        <p className="text-xs font-medium text-muted-foreground">セマンティックカラー</p>
+                      <div className="flex items-center gap-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={(cc.useSemanticColors as boolean) ?? true}
+                            onChange={(e) => updateField('colorPalette', 'useSemanticColors', e.target.checked)}
+                            className="h-4 w-4 rounded border-input accent-primary"
+                          />
+                          <p className="text-xs font-medium text-muted-foreground">セマンティックカラー</p>
+                        </label>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                           <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md px-3 py-2 shadow-md w-64 pointer-events-none">
@@ -381,26 +697,28 @@ export default function DashboardPage() {
                           </div>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        {SEMANTIC_COLOR_FIELDS.map(({ key, label }) => (
-                          <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
-                            <input
-                              type="color"
-                              value={customColors[key]}
-                              onChange={(e) => handleColorChange(key, e.target.value)}
-                              className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
-                            />
-                            <span className="text-muted-foreground">{label}</span>
-                            <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
-                          </label>
-                        ))}
+                      <div className={!((cc.useSemanticColors as boolean) ?? true) ? 'opacity-50 pointer-events-none' : ''}>
+                        <div className="grid grid-cols-2 gap-3">
+                          {SEMANTIC_COLOR_FIELDS.map(({ key, label }) => (
+                            <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
+                              <input
+                                type="color"
+                                value={customColors[key]}
+                                onChange={(e) => handleColorChange(key, e.target.value)}
+                                className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5"
+                              />
+                              <span className="text-muted-foreground">{label}</span>
+                              <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
+                            </label>
+                          ))}
+                        </div>
+                        <p className="mt-3 text-xs font-medium text-foreground">セマンティックカラーの使い方</p>
+                        <Textarea
+                          value={(cc.semanticColorNotes as string) ?? ''}
+                          onChange={(e) => updateField('colorPalette', 'semanticColorNotes', e.target.value)}
+                          className="mt-1 min-h-20 text-xs"
+                        />
                       </div>
-                      <p className="mt-3 text-xs font-medium text-foreground">セマンティックカラーの使い方</p>
-                      <Textarea
-                        value={(cc.semanticColorNotes as string) ?? ''}
-                        onChange={(e) => updateField('colorPalette', 'semanticColorNotes', e.target.value)}
-                        className="mt-1 min-h-20 text-xs"
-                      />
                     </div>
                   </div>
                 </SectionCard>
@@ -423,7 +741,15 @@ export default function DashboardPage() {
                         {LATIN_FONTS.map((f) => (
                           <option key={f} value={f}>{f}</option>
                         ))}
+                        <option value="custom">カスタム</option>
                       </select>
+                      {(tc.latinFont as string) === 'custom' && (
+                        <Input
+                          placeholder="フォント名を入力"
+                          value={(tc.latinFontCustom as string) ?? ''}
+                          onChange={(e) => updateField('typography', 'latinFontCustom', e.target.value)}
+                        />
+                      )}
                     </div>
 
                     <div className="space-y-1.5">
@@ -437,7 +763,62 @@ export default function DashboardPage() {
                         {JAPANESE_FONTS.map((f) => (
                           <option key={f} value={f}>{f}</option>
                         ))}
+                        <option value="custom">カスタム</option>
                       </select>
+                      {(tc.japaneseFont as string) === 'custom' && (
+                        <Input
+                          placeholder="フォント名を入力"
+                          value={(tc.japaneseFontCustom as string) ?? ''}
+                          onChange={(e) => updateField('typography', 'japaneseFontCustom', e.target.value)}
+                        />
+                      )}
+                    </div>
+
+                    <div className="space-y-4 mt-6 pt-6 border-t">
+                      <p className="text-xs font-medium text-foreground">テキストスタイル</p>
+                      <div className="space-y-8">
+                        {TEXT_STYLE_CATEGORIES.map((category) => {
+                          const notesFieldMap: Record<string, string> = {
+                            dsp: 'dspNotes',
+                            std: 'stdNotes',
+                            dns: 'dnsNotes',
+                            oln: 'olnNotes',
+                            mono: 'monoNotes',
+                          }
+                          const notesField = notesFieldMap[category.toLowerCase()]
+                          return (
+                            <div key={category} className="space-y-3 pb-6 border-b last:border-b-0">
+                              <p className="text-xs font-medium text-foreground">{category}</p>
+                              {TEXT_STYLE_WEIGHTS.map((weight) => (
+                                <div key={`${category}-${weight}`} className="space-y-2">
+                                  <p className="text-[10px] text-muted-foreground ml-2">{weight === 'B' ? 'Bold' : 'Normal'}</p>
+                                  <div className="grid grid-cols-2 gap-2 ml-2">
+                                    {DEFAULT_TEXT_STYLES[category][weight].map((style) => (
+                                      <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
+                                        <input
+                                          type="checkbox"
+                                          defaultChecked
+                                          className="h-4 w-4 rounded border-input accent-primary"
+                                        />
+                                        <span className="text-muted-foreground font-mono text-xs">{category}-{style}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                </div>
+                              ))}
+                              <div className="space-y-2 mt-4">
+                                <p className="text-xs font-medium text-foreground">{category}の使い方</p>
+                                <Textarea
+                                  value={(tc[notesField as keyof typeof tc] as string) ?? ''}
+                                  onChange={(e) => updateField('typography', notesField, e.target.value)}
+                                  className="min-h-16 text-xs"
+                                  placeholder={`${category}テキストスタイルの使用例や説明を入力してください`}
+                                />
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
                     </div>
                   </div>
                 </SectionCard>
@@ -460,22 +841,47 @@ export default function DashboardPage() {
                         {SPACING_BASE_OPTIONS.map((o) => (
                           <option key={o} value={o}>{o}</option>
                         ))}
+                        <option value="custom">カスタム</option>
                       </select>
+                      {(lc.spacingBase as string) === 'custom' && (
+                        <Textarea
+                          placeholder="カンマまたは改行で区切ってください"
+                          defaultValue="1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 48, 56, 64, 80, 128, 160, 240, 320, 480, 640, 960, 1920"
+                          onChange={(e) => updateField('layout', 'spacingBaseCustom', e.target.value)}
+                          className="min-h-24 text-xs"
+                        />
+                      )}
                     </div>
 
-                    {(lc.spacingBase as string) && SPACING_SCALES[lc.spacingBase as string] && (
+                    {(lc.spacingBase as string) && (lc.spacingBase as string) !== 'custom' && SPACING_SCALES[lc.spacingBase as string] && (
                       <div className="space-y-1.5">
                         <p className="text-xs text-muted-foreground">Spacing Scale</p>
                         <div className="rounded-md border border-input bg-muted/40 p-3 space-y-1 max-h-48 overflow-y-auto">
-                          {SPACING_SCALES[lc.spacingBase as string].map((val) => {
-                            const barWidth = Math.round(Math.log2(val + 1) / Math.log2(1921) * 100)
-                            return (
-                              <div key={val} className="flex items-center gap-2">
-                                <div className="bg-primary/70 rounded-sm shrink-0" style={{ width: barWidth, height: 5 }} />
-                                <span className="text-xs text-muted-foreground">{val}px</span>
-                              </div>
-                            )
-                          })}
+                          {(() => {
+                            let scale: number[] = []
+                            if ((lc.spacingBase as string) === 'custom') {
+                              const customStr = (lc.spacingBaseCustom as string) || ''
+                              scale = customStr
+                                .split(/[,\n]/)
+                                .map(v => v.trim())
+                                .filter(v => v && !isNaN(Number(v)))
+                                .map(Number)
+                                .sort((a, b) => a - b)
+                            } else {
+                              scale = SPACING_SCALES[lc.spacingBase as string] || []
+                            }
+                            return scale.map((val) => {
+                              const barWidth = val <= 24
+                                ? Math.round((val / 24) * 20)
+                                : Math.round(20 + ((val - 24) / 1896) * 80)
+                              return (
+                                <div key={val} className="flex items-center gap-2">
+                                  <div className="bg-primary/70 rounded-sm shrink-0" style={{ width: `${barWidth}%`, height: 5 }} />
+                                  <span className="text-xs text-muted-foreground">{val}px</span>
+                                </div>
+                              )
+                            })
+                          })()}
                         </div>
                       </div>
                     )}
@@ -527,7 +933,10 @@ export default function DashboardPage() {
                 <ThemePreview
                   theme={themeSelect}
                   height="calc(100vh - 480px)"
-                  customColors={customColors}
+                  customColors={(cc.useSemanticColors as boolean) ?? true
+                    ? customColors
+                    : { ...customColors, success: LIGHT_COLORS.success, danger: LIGHT_COLORS.danger, warning: LIGHT_COLORS.warning }
+                  }
                   fonts={{ latin: tc.latinFont as string, japanese: tc.japaneseFont as string }}
                   layout={{ spacingBase: lc.spacingBase as string, useCircleRadius: lc.useCircleRadius as boolean }}
                 />

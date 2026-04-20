@@ -133,16 +133,34 @@ function renderNotes(raw: unknown): string {
 
 function renderColorPalette(cfg: SectionCfg): string {
   let text = ''
-  text += renderColorGroup('Primary', [
+  const primaryItems: Array<[string, unknown]> = [
     ['Primary', cfg.primaryCtaColor],
     ['Secondary', cfg.secondaryCtaColor],
     ['Tertiary', cfg.tertiaryCtaColor],
     ['Primary surface', cfg.primarySurfaceColor],
-  ])
+  ]
+  const customKeyColors = (cfg.customKeyColors as Array<{ name: string; color: string }>) || []
+  for (const item of customKeyColors) {
+    primaryItems.push([item.name, item.color])
+  }
+  text += renderColorGroup('KeyColor', primaryItems)
   const keyNotes = renderNotes(cfg.keyColorNotes)
   if (keyNotes) text += `#### キーカラーの使い方\n${keyNotes}\n`
+
+  const additionalSets = (cfg.additionalKeyColorSets as Array<{ primaryColor: string; secondaryColor: string; tertiaryColor: string; bgColor: string; notes: string }>) || []
+  for (let i = 0; i < additionalSets.length; i++) {
+    const set = additionalSets[i]
+    text += renderColorGroup(`KeyColor (Set ${i + 2})`, [
+      ['Primary', set.primaryColor],
+      ['Secondary', set.secondaryColor],
+      ['Tertiary', set.tertiaryColor],
+      ['Primary surface', set.bgColor],
+    ])
+    const setNotes = renderNotes(set.notes)
+    if (setNotes) text += `#### セット ${i + 2} の使い方\n${setNotes}\n`
+  }
   text += renderColorGroup('Grayscale', [
-    ['White', cfg.gray0],
+    ['White', cfg.white],
     ['Gray 1', cfg.gray1],
     ['Gray 2', cfg.gray2],
     ['Gray 3', cfg.gray3],
@@ -151,30 +169,71 @@ function renderColorPalette(cfg: SectionCfg): string {
     ['Gray 6', cfg.gray6],
     ['Gray 7', cfg.gray7],
     ['Gray 8', cfg.gray8],
-    ['Black', cfg.gray9],
+    ['Gray 9', cfg.gray9],
+    ['Gray 10', cfg.gray10],
+    ['Gray 11', cfg.gray11],
+    ['Gray 12', cfg.gray12],
+    ['Black', cfg.black],
   ])
   const commonNotes = renderNotes(cfg.commonColorNotes)
   if (commonNotes) text += `#### グレースケールの使い方\n${commonNotes}\n`
-  text += renderColorGroup('Semantic', [
-    ['Success', cfg.successColor],
-    ['Error', cfg.errorColor],
-    ['Warning', cfg.warningColor],
-    ['Weak text', cfg.weakTextColor],
-  ])
-  const semanticNotes = renderNotes(cfg.semanticColorNotes)
-  if (semanticNotes) text += `#### セマンティックカラーの使い方\n${semanticNotes}\n`
+  if ((cfg.useSemanticColors as boolean) ?? true) {
+    text += renderColorGroup('Semantic', [
+      ['Success', cfg.successColor],
+      ['Error', cfg.errorColor],
+      ['Warning', cfg.warningColor],
+      ['Weak text', cfg.weakTextColor],
+    ])
+    const semanticNotes = renderNotes(cfg.semanticColorNotes)
+    if (semanticNotes) text += `#### セマンティックカラーの使い方\n${semanticNotes}\n`
+  }
   return text
 }
 
 function renderTypography(cfg: SectionCfg): string {
-  const latin = str(cfg.latinFont).trim()
-  const japanese = str(cfg.japaneseFont).trim()
-  if (!latin && !japanese) return ''
+  const latinFont = str(cfg.latinFont).trim()
+  const latinCustom = str(cfg.latinFontCustom).trim()
+  const latin = latinFont === 'custom' ? latinCustom : latinFont
 
-  let text = `### Font Families\n`
-  if (latin) text += `- **Latin**: \`${latin}\`\n`
-  if (japanese) text += `- **Japanese**: \`${japanese}\`\n`
-  return `${text}\n`
+  const japaneseFont = str(cfg.japaneseFont).trim()
+  const japaneseCustom = str(cfg.japaneseFontCustom).trim()
+  const japanese = japaneseFont === 'custom' ? japaneseCustom : japaneseFont
+
+  let text = ''
+  if (latin || japanese) {
+    text += `### Font Families\n`
+    if (latin) text += `- **Latin**: \`${latin}\`\n`
+    if (japanese) text += `- **Japanese**: \`${japanese}\`\n`
+    text += '\n'
+  }
+
+  const categories = ['dsp', 'std', 'dns', 'oln', 'mono'] as const
+  let hasTextStyles = false
+  for (const cat of categories) {
+    const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
+    if (notes) {
+      hasTextStyles = true
+      break
+    }
+  }
+
+  if (hasTextStyles) {
+    text += `### Text Styles\n`
+    for (const cat of categories) {
+      const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
+      if (notes) {
+        const label = cat.toUpperCase()
+        text += `#### ${label}\n`
+        const noteLines = notes.split('\n').filter(l => l.trim())
+        for (const line of noteLines) {
+          text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+        }
+        text += '\n'
+      }
+    }
+  }
+
+  return text.trim() ? `${text}\n` : ''
 }
 
 function renderLayout(cfg: SectionCfg): string {
