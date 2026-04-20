@@ -50,30 +50,6 @@
   --radius-xl: calc(var(--radius) * 2);
 }
 
-/* ============================================================
-   Dark mode overrides
-   ============================================================ */
-@supports (color: oklch(0 0 0)) {
-  @media (prefers-color-scheme: dark) {
-    @theme inline {
-      --color-background:          oklch(0.08 0.004 270);
-      --color-foreground:          oklch(0.97 0 0);
-      --color-card:                oklch(0.12 0.004 272);
-      --color-card-foreground:     oklch(0.97 0 0);
-      --color-popover:             oklch(0.16 0.006 272);
-      --color-popover-foreground:  oklch(0.97 0 0);
-      --color-secondary:           oklch(0.18 0.003 272);
-      --color-secondary-foreground: oklch(0.97 0 0);
-      --color-accent:              oklch(0.18 0.003 272);
-      --color-accent-foreground:   oklch(0.97 0 0);
-      --color-muted:               oklch(0.16 0.004 272);
-      --color-muted-foreground:    oklch(0.72 0 0);
-      --color-border:              oklch(0.28 0.005 272);
-      --color-input:               oklch(0.28 0.005 272);
-    }
-  }
-}
-
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -93,10 +69,3 @@ h1, h2, h3, h4, h5, h6 {
   opacity: 1;
 }
 
-@supports (color: oklch(0 0 0)) {
-  @media (prefers-color-scheme: dark) {
-    ::placeholder {
-      color: oklch(0.48 0 0);
-    }
-  }
-}
