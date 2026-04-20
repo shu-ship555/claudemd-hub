@@ -1,10 +1,21 @@
 import { DesignConfig, designTemplate } from './design-template'
-import { SPACING_SCALES, CATEGORY_LABELS } from './constants'
+import { SPACING_SCALES, CATEGORY_LABELS, DEFAULT_TEXT_STYLES, TEXT_STYLE_WEIGHTS } from './constants'
 
 type SectionCfg = Record<string, unknown>
 
 function str(value: unknown): string {
   return typeof value === 'string' ? value : ''
+}
+
+function parseTextStyle(style: string): { fontSize: string; weight: string; lineHeight: string } {
+  const match = style.match(/^(\d+)([BN])-(\d+)$/)
+  if (!match) return { fontSize: '', weight: '', lineHeight: '' }
+  const [, fontSize, weight, lineHeight] = match
+  return {
+    fontSize: `${fontSize}px`,
+    weight: weight === 'B' ? 'Bold' : 'Normal',
+    lineHeight: lineHeight,
+  }
 }
 
 const SECTION_TITLES: Record<string, string> = {
@@ -208,30 +219,39 @@ function renderTypography(cfg: SectionCfg): string {
   }
 
   const categories = ['dsp', 'std', 'dns', 'oln', 'mono'] as const
-  let hasTextStyles = false
-  for (const cat of categories) {
-    const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
-    if (notes) {
-      hasTextStyles = true
-      break
-    }
-  }
 
-  if (hasTextStyles) {
-    text += `### Text Styles\n`
-    for (const cat of categories) {
-      const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
-      if (notes) {
-        const catUpperCase = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase() as keyof typeof CATEGORY_LABELS
-        const label = CATEGORY_LABELS[catUpperCase] || cat.toUpperCase()
-        text += `#### ${label}\n`
-        const noteLines = notes.split('\n').filter(l => l.trim())
-        for (const line of noteLines) {
-          text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+  text += `### Text Styles\n\n`
+  for (const cat of categories) {
+    const catCapitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()
+    const catKey = catCapitalized as keyof typeof DEFAULT_TEXT_STYLES
+    const catLabel = CATEGORY_LABELS[catCapitalized] || cat.toUpperCase()
+
+    text += `#### ${catLabel}\n\n`
+
+    const weights = TEXT_STYLE_WEIGHTS as readonly string[]
+    for (const weight of weights) {
+      const weightLabel = weight === 'B' ? 'Bold' : 'Normal'
+      const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
+      if (styles.length > 0) {
+        text += `**${weightLabel}:**\n`
+        for (const style of styles) {
+          const parsed = parseTextStyle(style)
+          text += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight}\n`
         }
         text += '\n'
       }
     }
+
+    const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
+    if (notes) {
+      text += `**使い方:**\n`
+      const noteLines = notes.split('\n').filter(l => l.trim())
+      for (const line of noteLines) {
+        text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+      }
+      text += '\n'
+    }
+    text += '\n'
   }
 
   return text.trim() ? `${text}\n` : ''
