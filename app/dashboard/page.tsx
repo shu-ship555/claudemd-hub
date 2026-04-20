@@ -116,6 +116,17 @@ const SEMANTIC_COLOR_FIELDS: { key: keyof Colors; label: string }[] = [
   { key: 'warning', label: '警告' },
 ]
 
+function parseTextStyle(style: string): { fontSize: string; weight: string; lineHeight: string } {
+  const match = style.match(/^(\d+)([BN])-(\d+)$/)
+  if (!match) return { fontSize: '', weight: '', lineHeight: '' }
+  const [, fontSize, weight, lineHeight] = match
+  return {
+    fontSize: `${fontSize}px`,
+    weight: weight === 'B' ? 'Bold' : 'Normal',
+    lineHeight: lineHeight,
+  }
+}
+
 function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) {
   return {
     colorPalette: {
@@ -793,16 +804,19 @@ export default function DashboardPage() {
                                 <div key={`${category}-${weight}`} className="space-y-2">
                                   <p className="text-[10px] text-muted-foreground ml-2">{weight === 'B' ? 'Bold' : 'Normal'}</p>
                                   <div className="grid grid-cols-2 gap-2 ml-2">
-                                    {DEFAULT_TEXT_STYLES[category][weight].map((style) => (
-                                      <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
-                                        <input
-                                          type="checkbox"
-                                          defaultChecked
-                                          className="h-4 w-4 rounded border-input accent-primary"
-                                        />
-                                        <span className="text-muted-foreground font-mono text-xs">{category}-{style}</span>
-                                      </label>
-                                    ))}
+                                    {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
+                                      const parsed = parseTextStyle(style)
+                                      return (
+                                        <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
+                                          <input
+                                            type="checkbox"
+                                            defaultChecked
+                                            className="h-4 w-4 rounded border-input accent-primary"
+                                          />
+                                          <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}</span>
+                                        </label>
+                                      )
+                                    })}
                                   </div>
                                 </div>
                               ))}
