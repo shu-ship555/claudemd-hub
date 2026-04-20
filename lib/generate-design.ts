@@ -1,5 +1,5 @@
 import { DesignConfig, designTemplate } from './design-template'
-import { SPACING_SCALES } from './constants'
+import { SPACING_SCALES, CATEGORY_LABELS } from './constants'
 
 type SectionCfg = Record<string, unknown>
 
@@ -222,7 +222,8 @@ function renderTypography(cfg: SectionCfg): string {
     for (const cat of categories) {
       const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
       if (notes) {
-        const label = cat.toUpperCase()
+        const catUpperCase = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase() as keyof typeof CATEGORY_LABELS
+        const label = CATEGORY_LABELS[catUpperCase] || cat.toUpperCase()
         text += `#### ${label}\n`
         const noteLines = notes.split('\n').filter(l => l.trim())
         for (const line of noteLines) {

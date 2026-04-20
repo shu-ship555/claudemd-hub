@@ -44,6 +44,14 @@ export const LIGHT_COLORS = {
 export const TEXT_STYLE_CATEGORIES = ['Dsp', 'Std', 'Dns', 'Oln', 'Mono'] as const
 export const TEXT_STYLE_WEIGHTS = ['B', 'N'] as const
 
+export const CATEGORY_LABELS: Record<string, string> = {
+  'Dsp': '見出し',
+  'Std': '本文',
+  'Dns': '本文（表示情報量を優先）',
+  'Oln': 'UIテキスト',
+  'Mono': 'コードテキスト',
+}
+
 export const DEFAULT_TEXT_STYLES: Record<string, Record<string, string[]>> = {
   Dsp: {
     B: ['64B-140', '57B-140', '48B-140'],

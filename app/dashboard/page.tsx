@@ -5,7 +5,7 @@ import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useScrollSync } from '@/lib/hooks/use-scroll-sync'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
-import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES } from '@/lib/constants'
+import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS } from '@/lib/constants'
 import { downloadTextFile } from '@/lib/download'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { Button } from '@/components/ui/button'
@@ -797,9 +797,10 @@ export default function DashboardPage() {
                             mono: 'monoNotes',
                           }
                           const notesField = notesFieldMap[category.toLowerCase()]
+                          const categoryLabel = CATEGORY_LABELS[category]
                           return (
                             <div key={category} className="space-y-3 pb-6 border-b last:border-b-0">
-                              <p className="text-xs font-medium text-foreground">{category}</p>
+                              <p className="text-xs font-medium text-foreground">{categoryLabel}</p>
                               {TEXT_STYLE_WEIGHTS.map((weight) => (
                                 <div key={`${category}-${weight}`} className="space-y-2">
                                   <p className="text-[10px] text-muted-foreground ml-2">{weight === 'B' ? 'Bold' : 'Normal'}</p>
@@ -821,12 +822,12 @@ export default function DashboardPage() {
                                 </div>
                               ))}
                               <div className="space-y-2 mt-4">
-                                <p className="text-xs font-medium text-foreground">{category}の使い方</p>
+                                <p className="text-xs font-medium text-foreground">{categoryLabel}の使い方</p>
                                 <Textarea
                                   value={(tc[notesField as keyof typeof tc] as string) ?? ''}
                                   onChange={(e) => updateField('typography', notesField, e.target.value)}
                                   className="min-h-16 text-xs"
-                                  placeholder={`${category}テキストスタイルの使用例や説明を入力してください`}
+                                  placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
                                 />
                               </div>
                             </div>
