@@ -810,15 +810,15 @@ export default function DashboardPage() {
                                       const parsed = parseTextStyle(style)
                                       const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
                                       const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)?.trim()
-                                      const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : DEFAULT_TEXT_STYLES[category][weight]
-                                      const isSelected = selectedStyles.includes(style)
+                                      const savedSelection = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
+                                      const isSelected = !savedSelection.length || savedSelection.includes(style)
                                       return (
                                         <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
                                           <input
                                             type="checkbox"
                                             checked={isSelected}
                                             onChange={(e) => {
-                                              const current = selectedStyles.filter(s => s.trim())
+                                              const current = savedSelection.filter((s: string) => s.trim())
                                               if (e.target.checked) {
                                                 if (!current.includes(style)) {
                                                   current.push(style)
