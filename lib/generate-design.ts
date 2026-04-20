@@ -27,11 +27,11 @@ const SECTION_TITLES: Record<string, string> = {
 
 export function generateDesignMarkdown(config: DesignConfig): string {
   const themeName = str(config.visualTheme?.themeName).trim()
-  const title = themeName
-    ? `# Design System Inspired by ${themeName}`
-    : '# Design System Guidelines'
 
-  let markdown = `${title}\n\n`
+  let markdown = ''
+  if (themeName) {
+    markdown = `# Design System Inspired by ${themeName}\n\n`
+  }
 
   let index = 0
   for (const section of designTemplate) {
