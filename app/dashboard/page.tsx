@@ -809,7 +809,8 @@ export default function DashboardPage() {
                                     {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
                                       const parsed = parseTextStyle(style)
                                       const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
-                                      const selectedStyles = (tc[selectedStylesField as keyof typeof tc] as string)?.split(',') || []
+                                      const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)?.trim()
+                                      const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : DEFAULT_TEXT_STYLES[category][weight]
                                       const isSelected = selectedStyles.includes(style)
                                       return (
                                         <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
