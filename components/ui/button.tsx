@@ -5,19 +5,19 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm leading-[120%] tracking-[0.04em] font-bold whitespace-nowrap transition-all duration-ui outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-lg text-sm leading-[120%] tracking-[0.04em] font-bold whitespace-nowrap transition-all duration-ui outline-none select-none focus-visible:ring-3 focus-visible:ring-ring active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-[#3b65ce]",
+        default: "bg-primary text-primary-foreground hover:bg-[#3b65ce] focus-visible:border focus-visible:border-ring",
         outline:
-          "bg-muted text-foreground hover:bg-secondary",
+          "border border-border bg-muted text-foreground hover:bg-secondary focus-visible:border-ring",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-accent",
+          "border border-border bg-secondary text-secondary-foreground hover:bg-accent focus-visible:border-ring",
         ghost:
-          "hover:bg-muted hover:text-foreground",
+          "hover:bg-muted hover:text-foreground focus-visible:border focus-visible:border-ring",
         destructive:
-          "bg-muted text-destructive hover:bg-secondary focus-visible:border-destructive focus-visible:ring-destructive",
+          "border border-border bg-muted text-destructive hover:bg-secondary focus-visible:border-destructive focus-visible:ring-destructive",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
