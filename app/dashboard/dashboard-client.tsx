@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase'
 
 export default function DashboardClient() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleLogout = async () => {
@@ -15,7 +13,7 @@ export default function DashboardClient() {
       const supabase = createClient()
       await supabase.auth.signOut()
       document.cookie = 'sb-user-email=; Max-Age=0; path=/'
-      router.push('/')
+      window.location.href = '/'
     } catch (error) {
       console.error('Logout error:', error)
     } finally {
@@ -24,7 +22,7 @@ export default function DashboardClient() {
   }
 
   return (
-    <Button variant="outline" onClick={handleLogout} disabled={isLoading}>
+    <Button size="xs" onClick={handleLogout} disabled={isLoading}>
       {isLoading ? 'ログアウト中...' : 'ログアウト'}
     </Button>
   )

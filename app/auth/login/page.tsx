@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { AuthCard } from '@/components/auth/auth-card'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthError } from '@/components/auth/auth-error'
@@ -10,7 +9,6 @@ import { useFormState } from '@/lib/hooks/use-form-state'
 import { useSupabaseAuth } from '@/lib/hooks/use-supabase-auth'
 
 export default function LoginPage() {
-  const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { error, isLoading, setError, setIsLoading } = useFormState()
@@ -40,8 +38,7 @@ export default function LoginPage() {
         throw new Error('Failed to sync session')
       }
 
-      router.refresh()
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
