@@ -2,7 +2,6 @@
 'use client'
 
 import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes } from 'lucide-react'
-import { DashboardHeader } from '@/components/dashboard-header'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from '@/lib/constants'
@@ -298,10 +297,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader title="DESIGN.md Generator" subtitle="Claudeに読み込ませるDESIGN.mdを生成するためのツールです" />
+    <>
+      <div className="lg:hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-background gap-3 px-8 text-center">
+        <p className="text-sm font-medium text-foreground">PC でご覧ください</p>
+        <p className="text-xs text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
+      </div>
 
-      <main className="max-w-7xl mx-auto px-6 pt-10 pb-12">
+      <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
         <div className="grid gap-12 lg:grid-cols-2">
           {/* Form Section */}
           <div
@@ -310,7 +312,7 @@ export default function DashboardPage() {
           >
             {/* Standalone theme selector */}
             <div className="space-y-2">
-              <FieldLabel requirement="required">テーマ名 / インスピレーション元</FieldLabel>
+              <FieldLabel requirement="required">ドキュメントタイトル</FieldLabel>
               <select
                 value={themeSelect}
                 onChange={(e) => handleThemeChange(e.target.value)}
@@ -323,7 +325,7 @@ export default function DashboardPage() {
               </select>
               {isCustom && (
                 <Input
-                  placeholder="ブランド名を入力"
+                  placeholder="例: Airtable Design System Guidelines"
                   value={(v.themeName as string) ?? ''}
                   onChange={(e) => updateField(section, 'themeName', e.target.value)}
                 />
@@ -350,13 +352,14 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <FieldLabel>主要な特徴（1行1項目）</FieldLabel>
+                    <FieldLabel>主要な特徴</FieldLabel>
                     <Textarea
                       placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
                       value={(v.keyCharacteristics as string) ?? ''}
                       onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
-                      className="min-h-40"
+                      className="min-h-40 mb-1"
                     />
+                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
 
@@ -373,7 +376,7 @@ export default function DashboardPage() {
                         <p className="text-xs font-medium text-muted-foreground">キーカラー</p>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md px-3 py-2 shadow-md w-64 pointer-events-none">
+                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
                             プライマリ（CTA・リンク）、セカンダリ（副次的UI・同色相で明度高）、ターシャリ（セカンダリの逆明度）、背景色の4色。セカンダリ・ターシャリは背景色との対比3:1以上、テキスト使用時は4.5:1以上が必要。
                           </div>
                         </div>
@@ -484,7 +487,7 @@ export default function DashboardPage() {
                           const showContrast = key !== 'bg'
                           const ratio = showContrast ? getContrastRatio(customColors[key], customColors.bg) : null
                           const level = ratio !== null ? getContrastLevel(key, ratio) : null
-                          const badgeClass = level === 'aa' ? 'bg-success/15 text-success' : level === 'aa-ui' ? 'bg-warning/15 text-warning' : level === 'fail' ? 'bg-destructive/15 text-destructive' : ''
+                          const badgeClass = level === 'aa' ? 'bg-success text-success-foreground' : level === 'aa-ui' ? 'bg-warning text-warning-foreground' : level === 'fail' ? 'bg-destructive text-destructive-foreground' : ''
                           return (
                             <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
                               <input
@@ -508,8 +511,9 @@ export default function DashboardPage() {
                       <Textarea
                         value={(cc.keyColorNotes as string) ?? ''}
                         onChange={(e) => updateField('colorPalette', 'keyColorNotes', e.target.value)}
-                        className="mt-1 min-h-20 text-xs"
+                        className="mt-1 min-h-20 text-xs mb-1"
                       />
+                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
 
                       {(((cc.additionalKeyColorSets as any) || []).map((set: any, idx: number) => (
                         <div key={idx} className="mt-6 pt-6 border-t space-y-4">
@@ -616,7 +620,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const primaryRatio = getContrastRatio(set.primaryColor, set.bgColor)
                                 const primaryLevel = getContrastLevel('primary', primaryRatio)
-                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success/15 text-success' : primaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
+                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success text-success-foreground' : primaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -640,7 +644,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const secondaryRatio = getContrastRatio(set.secondaryColor, set.bgColor)
                                 const secondaryLevel = getContrastLevel('secondary', secondaryRatio)
-                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success/15 text-success' : secondaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
+                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success text-success-foreground' : secondaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -664,7 +668,7 @@ export default function DashboardPage() {
                               {(() => {
                                 const tertiaryRatio = getContrastRatio(set.tertiaryColor, set.bgColor)
                                 const tertiaryLevel = getContrastLevel('tertiary', tertiaryRatio)
-                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success/15 text-success' : tertiaryLevel === 'aa-ui' ? 'bg-warning/15 text-warning' : 'bg-destructive/15 text-destructive'
+                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success text-success-foreground' : tertiaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -710,8 +714,9 @@ export default function DashboardPage() {
                                 next[idx] = { ...next[idx], notes: e.target.value }
                                 updateField('colorPalette', 'additionalKeyColorSets', next)
                               }}
-                              className="min-h-20 text-xs"
+                              className="min-h-20 text-xs mb-1"
                             />
+                            <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         </div>
                       )))}
@@ -740,7 +745,7 @@ export default function DashboardPage() {
                         <p className="text-xs font-medium text-muted-foreground">グレースケール</p>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md px-3 py-2 shadow-md w-64 pointer-events-none">
+                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
                             白から黒の14段階グレースケール。背景・サーフェス・ボーダー・テキストなど、UI全体の情報階層と視覚的な重みを表現するために使用する。
                           </div>
                         </div>
@@ -763,8 +768,9 @@ export default function DashboardPage() {
                       <Textarea
                         value={(cc.commonColorNotes as string) ?? ''}
                         onChange={(e) => updateField('colorPalette', 'commonColorNotes', e.target.value)}
-                        className="mt-1 min-h-20 text-xs"
+                        className="mt-1 min-h-20 text-xs mb-1"
                       />
+                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -779,7 +785,7 @@ export default function DashboardPage() {
                         </label>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md px-3 py-2 shadow-md w-64 pointer-events-none">
+                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
                             成功・エラー・警告の状態を伝えるフィードバック色。操作結果や注意喚起など、意味を持つ状態表現に限定して使用し、装飾目的には使わない。
                           </div>
                         </div>
@@ -803,8 +809,9 @@ export default function DashboardPage() {
                         <Textarea
                           value={(cc.semanticColorNotes as string) ?? ''}
                           onChange={(e) => updateField('colorPalette', 'semanticColorNotes', e.target.value)}
-                          className="mt-1 min-h-20 text-xs"
+                          className="mt-1 min-h-20 text-xs mb-1"
                         />
+                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     </div>
                   </div>
@@ -896,9 +903,9 @@ export default function DashboardPage() {
                                     value={(tc[customStylesField as keyof typeof tc] as string) ?? ''}
                                     onChange={(e) => updateField('typography', customStylesField, e.target.value)}
                                     placeholder={`例: 64px | Bold | 140% | -0.01em\n48px | Bold | 140% | -0.01em\n32px | Normal | 150% | 0em`}
-                                    className="min-h-28 text-xs font-mono"
+                                    className="min-h-28 text-xs font-mono mb-1"
                                   />
-                                  <p className="text-[10px] text-muted-foreground">→ 1行1スタイルで入力してください。改行すると箇条書きに出力されます。</p>
+                                  <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                                 </div>
                               ) : null}
                               <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
@@ -981,9 +988,10 @@ export default function DashboardPage() {
                                 <Textarea
                                   value={(tc[notesField as keyof typeof tc] as string) ?? ''}
                                   onChange={(e) => updateField('typography', notesField, e.target.value)}
-                                  className="min-h-16 text-xs"
+                                  className="min-h-16 text-xs mb-1"
                                   placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
                                 />
+                                <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                               </div>
                               </div>
                             </div>
@@ -1021,9 +1029,9 @@ export default function DashboardPage() {
                           value={(ic.iconCustomDetails as string) ?? ''}
                           onChange={(e) => updateField('icons', 'iconCustomDetails', e.target.value)}
                           placeholder={`例: SVGアイコンは public/icons/ 配下に格納\nコンポーネントは components/icons/ で管理\nサイズ: 16px / 20px / 24px の 3展開\nアイコン色は CSS 変数で制御`}
-                          className="min-h-28 text-sm"
+                          className="min-h-28 text-sm mb-1"
                         />
-                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
+                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     )}
 
@@ -1033,9 +1041,9 @@ export default function DashboardPage() {
                         value={(ic.iconNotes as string) ?? ''}
                         onChange={(e) => updateField('icons', 'iconNotes', e.target.value)}
                         placeholder={`例: アイコンは必ず aria-hidden="true" を付与する\nデフォルトサイズは 20px\nテキストと併用するときは gap-2 で配置`}
-                        className="min-h-20 text-sm"
+                        className="min-h-20 text-sm mb-1"
                       />
-                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
+                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1086,7 +1094,7 @@ export default function DashboardPage() {
                     {(lc.spacingBase as string) && (lc.spacingBase as string) !== 'custom' && SPACING_SCALES[lc.spacingBase as string] && (
                       <div className="space-y-1.5">
                         <p className="text-xs text-muted-foreground">Spacing Scale</p>
-                        <div className="rounded-md border border-input bg-muted/40 p-3 space-y-1 max-h-48 overflow-y-auto">
+                        <div className="rounded-md border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
                           {(() => {
                             let scale: number[] = []
                             if ((lc.spacingBase as string) === 'custom') {
@@ -1106,7 +1114,7 @@ export default function DashboardPage() {
                                 : Math.round(20 + ((val - 24) / 1896) * 80)
                               return (
                                 <div key={val} className="flex items-center gap-2">
-                                  <div className="bg-primary/70 rounded-sm shrink-0" style={{ width: `${barWidth}%`, height: 5 }} />
+                                  <div className="bg-primary rounded-sm shrink-0" style={{ width: `${barWidth}%`, height: 5 }} />
                                   <span className="text-xs text-muted-foreground">{val}px</span>
                                 </div>
                               )
@@ -1126,7 +1134,7 @@ export default function DashboardPage() {
                           { key: 'xl' as const, label: 'xl' },
                           { key: '2xl' as const, label: '2xl' },
                         ].map(({ key, label }) => (
-                          <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-muted/20 p-2">
+                          <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-background p-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -1201,8 +1209,9 @@ export default function DashboardPage() {
                               value={(cmp[id] as string) ?? ''}
                               onChange={(e) => updateField('components', id, e.target.value)}
                               placeholder={placeholder}
-                              className="min-h-24 text-sm"
+                              className="min-h-24 text-sm mb-1"
                             />
+                            <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         ))}
                       </div>
@@ -1228,8 +1237,9 @@ export default function DashboardPage() {
                             value={(cmp.componentNotes as string) ?? ''}
                             onChange={(e) => updateField('components', 'componentNotes', e.target.value)}
                             placeholder="例: ボタンはprimary colorで塗りつぶし、カードはborderのみでelevationなし"
-                            className="min-h-16 text-sm"
+                            className="min-h-16 text-sm mb-1"
                           />
+                          <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                         </div>
 
                         <div className="border-t pt-4 space-y-3">
@@ -1238,7 +1248,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={addComponentItem}
-                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary/5"
+                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary-surface"
                             >
                               <Plus className="size-3" />
                               追加
@@ -1255,7 +1265,7 @@ export default function DashboardPage() {
                             const isOpen = openComponentIds.has(item.id)
                             return (
                               <div key={item.id} className="rounded-md border border-input overflow-hidden">
-                                <div className="flex items-center gap-2 px-3 py-2 bg-muted/30">
+                                <div className="flex items-center gap-2 px-3 py-2 bg-background">
                                   <button
                                     type="button"
                                     onClick={() => toggleComponentOpen(item.id)}
@@ -1288,8 +1298,9 @@ export default function DashboardPage() {
                                           value={item[id]}
                                           onChange={(e) => updateComponentItem(item.id, id, e.target.value)}
                                           placeholder={placeholder}
-                                          className="min-h-16 text-xs font-mono"
+                                          className="min-h-16 text-xs font-mono mb-1"
                                         />
+                                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                                       </div>
                                     ))}
                                   </div>
@@ -1355,7 +1366,7 @@ export default function DashboardPage() {
                       <p className="text-xs font-medium text-foreground">コントラスト比の基準</p>
 
                       {((ac.contrastLevel as string) ?? 'AA') !== 'カスタム' ? (
-                        <div className="rounded-md border border-input bg-muted/20 p-3 space-y-2">
+                        <div className="rounded-md border border-input bg-muted p-3 space-y-2">
                           {([
                             { label: '通常テキスト（18pt未満 / 太字14pt未満）', aa: '4.5', aaa: '7.0' },
                             { label: '大テキスト（18pt以上 / 太字14pt以上）', aa: '3.0', aaa: '4.5' },
@@ -1405,8 +1416,9 @@ export default function DashboardPage() {
                         value={(ac.accessibilityNotes as string) ?? ''}
                         onChange={(e) => updateField('accessibility', 'accessibilityNotes', e.target.value)}
                         placeholder={`例: ダークモード時は別途コントラスト検証を行う\nスクリーンリーダー対応（aria属性必須）\nprefers-reduced-motion を尊重する`}
-                        className="min-h-24 text-sm"
+                        className="min-h-24 text-sm mb-1"
                       />
+                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1423,9 +1435,9 @@ export default function DashboardPage() {
                       value={(oc.otherContent as string) ?? ''}
                       onChange={(e) => updateField('other', 'otherContent', e.target.value)}
                       placeholder="上記セクション以外に記載したい内容を自由に入力してください"
-                      className="min-h-40 text-sm"
+                      className="min-h-40 text-sm mb-1"
                     />
-                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます。</p>
+                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
               </>
@@ -1498,6 +1510,6 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
-    </div>
+    </>
   )
 }

@@ -14,7 +14,7 @@ interface TabBarProps<T extends string> {
 
 export function TabBar<T extends string>({ items, value, onChange, className }: TabBarProps<T>) {
   return (
-    <div className={cn('flex gap-1 p-1 rounded-lg bg-muted/40 border border-border', className)}>
+    <div className={cn('flex gap-1 p-1 rounded-lg bg-muted border border-border', className)}>
       {items.map(({ key, label }) => (
         <button
           key={key}
@@ -23,7 +23,7 @@ export function TabBar<T extends string>({ items, value, onChange, className }: 
           className={cn(
             'flex-1 text-xs py-1.5 rounded-md font-medium transition-colors',
             value === key
-              ? 'bg-card text-foreground shadow-sm'
+              ? 'bg-card text-foreground border border-border'
               : 'text-muted-foreground hover:text-foreground'
           )}
         >

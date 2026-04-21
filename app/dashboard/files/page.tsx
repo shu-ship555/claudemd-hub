@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { DashboardHeader } from '@/components/dashboard-header'
 import UploadDialog from '../upload-dialog'
 import ConfigList from '../config-list'
 import { getConfigFiles, type ConfigFile } from '../actions'
@@ -28,9 +27,7 @@ export default async function FilesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <DashboardHeader title="設定ファイル管理" subtitle="Claude Code の設定ファイルを管理・同期します" />
-      <main className="max-w-7xl mx-auto px-4 pt-8 pb-8">
+    <main className="w-full max-w-7xl mx-auto px-4 pt-8 pb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-4">
             <div>
@@ -50,7 +47,6 @@ export default async function FilesPage() {
             <ConfigList configs={configs} />
           </CardContent>
         </Card>
-      </main>
-    </div>
+    </main>
   )
 }

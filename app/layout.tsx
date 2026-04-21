@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist_Mono, Noto_Sans_JP } from "next/font/google";
 import { Providers } from "@/providers";
+import { DashboardHeader } from "@/components/dashboard-header";
 import "./globals.css";
 
 const inter = Inter({
@@ -37,7 +38,10 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <Providers>{children}</Providers>
+        <Providers>
+          <DashboardHeader title="Claude Config Manager" />
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { createConfigFile, getConfigFiles } from '@/app/dashboard/actions'
+import { useAuth } from '@/lib/hooks/use-auth'
 import { ERROR_MESSAGES } from '@/lib/constants'
 
 const MAX_FILES = 10
@@ -10,23 +11,26 @@ export function useSaveConfigFile(defaultFileName = 'DESIGN.md') {
   const [fileName, setFileName] = useState(defaultFileName)
   const [isSaving, setIsSaving] = useState(false)
   const [fileCount, setFileCount] = useState<number | null>(null)
+  const { isLoggedIn } = useAuth()
 
   const fetchCount = useCallback(async () => {
+    if (!isLoggedIn) return
     try {
       const files = await getConfigFiles()
       setFileCount(files.length)
     } catch {
-      // 未ログイン時はカウント不可能
+      // ignore
     }
-  }, [])
+  }, [isLoggedIn])
 
   useEffect(() => {
+    if (!isLoggedIn) return
     let cancelled = false
     getConfigFiles()
       .then((files) => { if (!cancelled) setFileCount(files.length) })
       .catch(() => {})
     return () => { cancelled = true }
-  }, [])
+  }, [isLoggedIn])
 
   const save = async (content: string) => {
     if (!fileName.trim()) {

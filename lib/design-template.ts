@@ -128,7 +128,7 @@ export const designTemplate: DesignSection[] = [
       {
         type: 'textarea',
         id: 'keyCharacteristics',
-        label: '主要な特徴（1行1項目）',
+        label: '主要な特徴',
         requirement: 'optional',
         placeholder:
           '例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ',
