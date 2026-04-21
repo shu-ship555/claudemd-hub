@@ -21,7 +21,7 @@ export function TabBar<T extends string>({ items, value, onChange, className }: 
           type="button"
           onClick={() => onChange(key)}
           className={cn(
-            'flex-1 text-xs py-1.5 rounded-md font-medium transition-colors',
+            'flex-1 text-xs leading-[120%] tracking-[0.04em] py-1.5 rounded-md font-bold transition-colors duration-ui',
             value === key
               ? 'bg-card text-foreground border border-border'
               : 'text-muted-foreground hover:text-foreground'

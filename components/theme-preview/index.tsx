@@ -88,7 +88,7 @@ function DefaultAtom({ c, sp }: PreviewProps) {
   return (
     <div className="space-y-6 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Colors</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Colors</p>
         <div className="flex flex-wrap" style={{ gap }}>
           {[
             { name: 'Primary', color: c.primary },
@@ -102,14 +102,14 @@ function DefaultAtom({ c, sp }: PreviewProps) {
           ].map(({ name, color }) => (
             <div key={name} className="flex flex-col items-center gap-1">
               <div className="w-9 h-9" style={{ background: color, borderRadius: brad }} />
-              <span className="text-[10px]" style={{ color: c.muted }}>{name}</span>
+              <span className="text-[10px] leading-[120%] tracking-[0.04em]" style={{ color: c.muted }}>{name}</span>
             </div>
           ))}
         </div>
       </section>
 
       <section className="space-y-1">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Typography</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Typography</p>
         <p className="font-bold" style={{ fontSize: 18, color: c.text }}>Design System デザインシステム</p>
         <p className="font-bold font-mono" style={{ fontSize: 20, color: c.text }}>1,234.56</p>
         <p style={{ fontSize: 14, color: c.text }}>Body text — 本文テキスト 14px</p>
@@ -118,23 +118,23 @@ function DefaultAtom({ c, sp }: PreviewProps) {
       </section>
 
       <section className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Buttons</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Buttons</p>
         <div className="flex flex-wrap" style={{ gap }}>
-          <button className="text-sm font-medium" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Primary</button>
-          <button className="text-sm font-medium" style={{ background: 'transparent', border: `1px solid ${c.border}`, color: c.text, padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Secondary</button>
-          <button className="text-sm font-medium opacity-40 cursor-not-allowed" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Disabled</button>
+          <button className="text-sm font-bold" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Primary</button>
+          <button className="text-sm font-bold" style={{ background: 'transparent', border: `1px solid ${c.border}`, color: c.text, padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Secondary</button>
+          <button className="text-sm font-bold opacity-40 cursor-not-allowed" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.75}px ${sp * 2}px`, borderRadius: sp }}>Disabled</button>
         </div>
       </section>
 
       <section className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Badges</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Badges</p>
         <div className="flex flex-wrap" style={{ gap }}>
           {[
             { label: 'Success', bg: `${c.success}22`, color: c.success },
             { label: 'Warning', bg: `${c.warning}22`, color: c.warning },
             { label: 'Danger', bg: `${c.danger}22`, color: c.danger },
           ].map(({ label, bg, color }) => (
-            <span key={label} className="text-xs font-medium" style={{ background: bg, color, padding: `${sp * 0.25}px ${sp}px`, borderRadius: sp }}>
+            <span key={label} className="text-xs font-bold" style={{ background: bg, color, padding: `${sp * 0.25}px ${sp}px`, borderRadius: sp }}>
               {label}
             </span>
           ))}
@@ -150,16 +150,16 @@ function DefaultModule({ c, sp }: PreviewProps) {
   return (
     <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Form Field</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Form Field</p>
         <div className="space-y-1">
-          <label className="text-sm font-medium" style={{ color: c.text }}>Email</label>
+          <label className="text-sm font-bold" style={{ color: c.text }}>Email</label>
           <input readOnly defaultValue="user@example.com" className="w-full text-sm outline-none"
             style={{ background: c.surface, border: `1px solid ${c.border}`, color: c.text, padding: `${sp}px ${sp * 1.5}px`, borderRadius: sp }} />
         </div>
       </section>
 
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Stat Cards</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Stat Cards</p>
         <div className="grid grid-cols-3" style={{ gap: sp }}>
           {[
             { label: 'Sets', value: '12', color: c.primary },
@@ -175,7 +175,7 @@ function DefaultModule({ c, sp }: PreviewProps) {
       </section>
 
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Alert</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Alert</p>
         <div className="flex items-start" style={{ gap: sp, background: `${c.primary}22`, border: `1px solid ${c.primary}44`, padding: `${sp}px ${sp * 1.5}px`, borderRadius: sp }}>
           <span style={{ color: c.primary, fontSize: 14 }}>ℹ</span>
           <p className="text-sm" style={{ color: c.text }}>Synced 3 minutes ago</p>
@@ -184,10 +184,10 @@ function DefaultModule({ c, sp }: PreviewProps) {
 
       {/* circle prop used for badge-style chip */}
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Tags</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Tags</p>
         <div className="flex flex-wrap" style={{ gap: sp * 0.5 }}>
           {['Design', 'System', 'UI/UX'].map((t) => (
-            <span key={t} className="text-xs font-medium" style={{ background: `${c.primary}18`, color: c.primary, padding: `${sp * 0.25}px ${sp}px`, borderRadius: brad }}>{t}</span>
+            <span key={t} className="text-xs font-bold" style={{ background: `${c.primary}18`, color: c.primary, padding: `${sp * 0.25}px ${sp}px`, borderRadius: brad }}>{t}</span>
           ))}
         </div>
       </section>
@@ -200,10 +200,10 @@ function DefaultComponent({ c, sp }: PreviewProps) {
   return (
     <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Data Card</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Data Card</p>
         <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${c.border}`, borderRadius: sp }}>
           <div className="flex items-center justify-between" style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp}px ${sp * 2}px` }}>
-            <span className="text-sm font-semibold" style={{ color: c.text }}>Workout Log</span>
+            <span className="text-sm font-bold" style={{ color: c.text }}>Workout Log</span>
             <button className="text-xs" style={{ background: c.primary, color: '#fff', padding: `${sp * 0.5}px ${sp * 1.25}px`, borderRadius: sp * 0.75 }}>+ Add</button>
           </div>
           {[
@@ -226,10 +226,10 @@ function DefaultComponent({ c, sp }: PreviewProps) {
       </section>
 
       <section className="space-y-1.5">
-        <p className="text-xs font-medium uppercase tracking-wider" style={{ color: c.muted }}>Navigation</p>
+        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Navigation</p>
         <div className="flex" style={{ gap: sp * 0.5, padding: sp * 0.5, background: c.surface, border: `1px solid ${c.border}`, borderRadius: sp }}>
           {['Dashboard', 'History', 'Profile'].map((item, i) => (
-            <button key={item} className="flex-1 text-xs font-medium" style={{ ...(i === 0 ? { background: c.primary, color: '#fff' } : { color: c.muted }), padding: `${sp * 0.5}px 0`, borderRadius: sp * 0.75 }}>
+            <button key={item} className="flex-1 text-xs font-bold" style={{ ...(i === 0 ? { background: c.primary, color: '#fff' } : { color: c.muted }), padding: `${sp * 0.5}px 0`, borderRadius: sp * 0.75 }}>
               {item}
             </button>
           ))}
@@ -269,7 +269,7 @@ function DefaultTemplate({ c, sp }: PreviewProps) {
 
         <div className="overflow-hidden" style={{ border: `1px solid ${c.border}`, borderRadius: sp }}>
           <div style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 1.5}px` }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: c.muted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recent</span>
+            <span style={{ fontSize: 12, fontWeight: 700, color: c.muted, textTransform: 'uppercase', letterSpacing: '0.04em', lineHeight: 1.2 }}>Recent</span>
           </div>
           {['Bench Press — 4×8', 'Squat — 3×10', 'Pull-up — 3×6'].map((item) => (
             <div key={item} className="flex items-center justify-between" style={{ borderBottom: `1px solid ${c.border}`, padding: `${sp * 0.75}px ${sp * 1.5}px` }}>
@@ -333,7 +333,7 @@ export function ThemePreview({ theme, height = '400px', customColors, fonts, lay
           <button
             type="button"
             onClick={() => setIsDark((d) => !d)}
-            className="p-1.5 rounded-md border border-border bg-card hover:bg-muted transition-colors shrink-0"
+            className="p-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors duration-ui shrink-0"
             title={isDark ? 'ライトモードに切り替え' : 'ダークモードに切り替え'}
           >
             {isDark ? <Sun className="h-3.5 w-3.5 text-muted-foreground" /> : <Moon className="h-3.5 w-3.5 text-muted-foreground" />}
@@ -342,7 +342,7 @@ export function ThemePreview({ theme, height = '400px', customColors, fonts, lay
       </div>
 
       {/* Disclaimer — スクロール対象外・固定 */}
-      <p className="shrink-0 text-[11px] text-muted-foreground leading-relaxed">
+      <p className="shrink-0 text-xs text-muted-foreground leading-[170%] tracking-[0.06em]">
         ※ このプレビューはイメージです。実際に生成されるコンポーネントと異なる場合があります。
       </p>
 

@@ -65,127 +65,92 @@
 #### 見出し
 
 **Black:**
-- 64px | Black | 140% | -0.01em
-- 48px | Black | 140% | -0.01em
-- 40px | Black | 140% | 0.00em
-- 32px | Black | 150% | 0.00em
-- 24px | Black | 150% | 0.00em
+- 64px | Black | 140% | 0.00em
+- 48px | Black | 140% | 0.01em
+- 40px | Black | 140% | 0.02em
+- 32px | Black | 150% | 0.02em
+- 24px | Black | 150% | 0.02em
 
 **Bold:**
-- 64px | Bold | 140% | -0.01em
-- 48px | Bold | 140% | -0.01em
-- 40px | Bold | 140% | 0.00em
-- 32px | Bold | 150% | 0.00em
-- 24px | Bold | 150% | 0.00em
+- 64px | Bold | 140% | 0.00em
+- 48px | Bold | 140% | 0.01em
+- 40px | Bold | 140% | 0.02em
+- 32px | Bold | 150% | 0.02em
+- 24px | Bold | 150% | 0.02em
 
 **Normal:**
-- 64px | Normal | 140% | -0.01em
-- 48px | Normal | 140% | -0.01em
-- 40px | Normal | 140% | 0.00em
-- 32px | Normal | 150% | 0.00em
-- 24px | Normal | 150% | 0.00em
+- 64px | Normal | 140% | 0.01em
+- 48px | Normal | 140% | 0.01em
+- 40px | Normal | 140% | 0.02em
+- 32px | Normal | 150% | 0.02em
+- 24px | Normal | 150% | 0.02em
 
 **使い方:**
-- サイトのメインタイトルやセクション見出しに使用します
+- サイトのメインタイトルやセクション見出しに使用します。大きなサイズでも窮屈さを感じさせないよう、微細な余白を持たせています。
 
 
 #### 本文
 
 **Black:**
-- 24px | Black | 150% | 0.00em
-- 20px | Black | 150% | 0.00em
-- 16px | Black | 160% | 0.00em
-- 14px | Black | 160% | 0.00em
-- 12px | Black | 170% | 0.02em
+- 24px | Black | 150% | 0.04em
+- 20px | Black | 150% | 0.04em
+- 16px | Black | 160% | 0.04em
+- 14px | Black | 160% | 0.06em
+- 12px | Black | 170% | 0.06em
 
 **Bold:**
-- 24px | Bold | 150% | 0.00em
-- 20px | Bold | 150% | 0.00em
-- 16px | Bold | 160% | 0.00em
-- 14px | Bold | 160% | 0.00em
-- 12px | Bold | 170% | 0.02em
+- 24px | Bold | 150% | 0.04em
+- 20px | Bold | 150% | 0.04em
+- 16px | Bold | 160% | 0.04em
+- 14px | Bold | 160% | 0.06em
+- 12px | Bold | 170% | 0.06em
 
 **Normal:**
-- 24px | Normal | 150% | 0.00em
-- 20px | Normal | 150% | 0.00em
-- 16px | Normal | 160% | 0.00em
-- 14px | Normal | 160% | 0.00em
-- 12px | Normal | 170% | 0.02em
+- 24px | Normal | 150% | 0.04em
+- 20px | Normal | 150% | 0.04em
+- 16px | Normal | 160% | 0.04em
+- 14px | Normal | 160% | 0.06em
+- 12px | Normal | 170% | 0.06em
 
 **使い方:**
-- 通常の本文テキストや説明文に使用します
+- 通常の本文テキスト。長文でも目が疲れにくいよう、文字間に呼吸をさせる設定にしています。
 
 
 #### 本文（表示情報量を優先）
 
-**Black:**
-- 16px | Black | 130% | 0.00em
-- 16px | Black | 120% | 0.00em
-- 14px | Black | 130% | 0.01em
-- 14px | Black | 120% | 0.01em
-- 12px | Black | 130% | 0.02em
-
-**Bold:**
-- 16px | Bold | 130% | 0.00em
-- 16px | Bold | 120% | 0.00em
-- 14px | Bold | 130% | 0.01em
-- 14px | Bold | 120% | 0.01em
-- 12px | Bold | 130% | 0.02em
-
-**Normal:**
-- 16px | Normal | 130% | 0.00em
-- 16px | Normal | 120% | 0.00em
-- 14px | Normal | 130% | 0.01em
-- 14px | Normal | 120% | 0.01em
-- 12px | Normal | 130% | 0.02em
+**Black / Bold / Normal:**
+- 16px | 130% | 0.03em
+- 16px | 120% | 0.02em
+- 14px | 130% | 0.04em
+- 14px | 120% | 0.04em
+- 12px | 130% | 0.04em
 
 **使い方:**
-- 情報密度を優先する場面で、限られたスペースに多くの情報を表示します
+- 情報密度を優先する場面。行間（line-height）が狭いため、文字間を少し広げることで可読性を担保しています。
 
 
 #### UIテキスト
 
-**Black:**
-- 16px | Black | 100% | 0.02em
-- 14px | Black | 100% | 0.02em
-- 12px | Black | 100% | 0.03em
-- 10px | Black | 100% | 0.05em
-
-**Bold:**
-- 16px | Bold | 100% | 0.02em
-- 14px | Bold | 100% | 0.02em
-- 12px | Bold | 100% | 0.03em
-- 10px | Bold | 100% | 0.05em
-
-**Normal:**
-- 16px | Normal | 100% | 0.02em
-- 14px | Normal | 100% | 0.02em
-- 12px | Normal | 100% | 0.03em
-- 10px | Normal | 100% | 0.05em
+**Black / Bold / Normal:**
+- 16px | 120% | 0.04em
+- 14px | 120% | 0.04em
+- 12px | 120% | 0.04em
+- 10px | 120% | 0.04em
 
 **使い方:**
-- ボタンやラベルなど、UI要素内のテキストに使用します
+- ボタンやラベル。ベタ打ち（100%）を避け、認識しやすさを優先。特に10pxなどの最小サイズは文字間を広く取っています。
 
 
 #### コードテキスト
 
-**Black:**
-- 16px | Black | 150% | 0.00em
-- 14px | Black | 150% | 0.00em
-- 12px | Black | 150% | 0.00em
-- 10px | Black | 150% | 0.00em
+**Black / Bold / Normal:**
+- 16px | 150% | 0.02em
+- 14px | 150% | 0.02em
+- 12px | 150% | 0.04em
+- 10px | 150% | 0.04em
 
-**Bold:**
-- 16px | Bold | 150% | 0.00em
-- 14px | Bold | 150% | 0.00em
-- 12px | Bold | 150% | 0.00em
-- 10px | Bold | 150% | 0.00em
-
-**Normal:**
-- 16px | Normal | 150% | 0.00em
-- 14px | Normal | 150% | 0.00em
-- 12px | Normal | 150% | 0.00em
-- 10px | Normal | 150% | 0.00em
+**使い方:**
+- 等幅フォントの特性を活かしつつ、シンボル記号などが判別しやすい適度なゆとりを持たせています。
 
 **使い方:**
 - preタグとcodeタグとのテキストに使用します

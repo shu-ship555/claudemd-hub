@@ -512,6 +512,14 @@ export const designTemplate: DesignSection[] = [
     fields: [
       {
         type: 'select',
+        id: 'roundness',
+        label: 'ラウンドネス（丸み）',
+        requirement: 'optional',
+        options: ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'],
+        default: 'md',
+      } as SelectField,
+      {
+        type: 'select',
         id: 'elevation',
         label: 'エレベーション（シャドウ）',
         requirement: 'optional',

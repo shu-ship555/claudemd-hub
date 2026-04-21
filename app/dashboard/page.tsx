@@ -17,7 +17,7 @@ import { Switch } from '@/components/ui/switch'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { THEME_PRESETS } from '@/lib/theme-presets'
-import { hexToHsl, hslToHex, getContrastRatio, getContrastLevel } from '@/lib/color-utils'
+import { hexToHsl, hslToHex, getContrastRatio } from '@/lib/color-utils'
 import { useState, useRef, useEffect } from 'react'
 import type { Colors } from '@/components/theme-preview'
 
@@ -158,6 +158,7 @@ export default function DashboardPage() {
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
+  const [keyColorStandard, setKeyColorStandard] = useState<'A' | 'AA' | 'AAA' | 'none'>('AA')
   const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS)
   const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set())
   const formScrollRef = useRef<HTMLDivElement>(null)
@@ -299,8 +300,8 @@ export default function DashboardPage() {
   return (
     <>
       <div className="lg:hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-background gap-3 px-8 text-center">
-        <p className="text-sm font-medium text-foreground">PC でご覧ください</p>
-        <p className="text-xs text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
+        <p className="text-sm leading-[120%] tracking-[0.06em] font-bold text-foreground">PC でご覧ください</p>
+        <p className="text-xs leading-[170%] tracking-[0.06em] text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
       </div>
 
       <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
@@ -312,11 +313,11 @@ export default function DashboardPage() {
           >
             {/* Standalone theme selector */}
             <div className="space-y-2">
-              <FieldLabel requirement="required">ドキュメントタイトル</FieldLabel>
+              <FieldLabel requirement="required">DESIGN.mdの種類</FieldLabel>
               <select
                 value={themeSelect}
                 onChange={(e) => handleThemeChange(e.target.value)}
-                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
               >
                 <option value="">選択してください</option>
                 {THEME_OPTIONS.map((opt) => (
@@ -351,7 +352,7 @@ export default function DashboardPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <FieldLabel>主要な特徴</FieldLabel>
                     <Textarea
                       placeholder={'例:\n白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ'}
@@ -359,7 +360,7 @@ export default function DashboardPage() {
                       onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
                       className="min-h-40 mb-1"
                     />
-                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
 
@@ -372,20 +373,32 @@ export default function DashboardPage() {
                 >
                   <div className="space-y-8">
                     <div className="space-y-1">
-                      <div className="flex items-center gap-1">
-                        <p className="text-xs font-medium text-muted-foreground">キーカラー</p>
-                        <div className="relative group">
-                          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
-                            プライマリ（CTA・リンク）、セカンダリ（副次的UI・同色相で明度高）、ターシャリ（セカンダリの逆明度）、背景色の4色。セカンダリ・ターシャリは背景色との対比3:1以上、テキスト使用時は4.5:1以上が必要。
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">キーカラー</p>
+                          <div className="relative group">
+                            <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                            <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs leading-[170%] tracking-[0.06em] rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
+                              プライマリ（CTA・リンク）、セカンダリ（副次的UI・同色相で明度高）、ターシャリ（セカンダリの逆明度）、背景色の4色。セカンダリ・ターシャリは背景色との対比3:1以上、テキスト使用時は4.5:1以上が必要。
+                            </div>
                           </div>
                         </div>
+                        <select
+                          value={keyColorStandard}
+                          onChange={(e) => setKeyColorStandard(e.target.value as 'A' | 'AA' | 'AAA' | 'none')}
+                          className="ml-auto rounded border border-input bg-transparent px-2 py-0.5 text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground"
+                        >
+                          <option value="A">WCAG A</option>
+                          <option value="AA">WCAG AA</option>
+                          <option value="AAA">WCAG AAA</option>
+                          <option value="none">なし</option>
+                        </select>
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">色相</span>
-                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[0]}°</span>
+                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
+                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[0]}°</span>
                           </div>
                           <input
                             type="range"
@@ -417,8 +430,8 @@ export default function DashboardPage() {
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">彩度</span>
-                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[1]}%</span>
+                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
+                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[1]}%</span>
                           </div>
                           <input
                             type="range"
@@ -450,8 +463,8 @@ export default function DashboardPage() {
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">明度</span>
-                            <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[2]}%</span>
+                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
+                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[2]}%</span>
                           </div>
                           <input
                             type="range"
@@ -486,8 +499,12 @@ export default function DashboardPage() {
                         {KEY_COLOR_FIELDS.map(({ key, label }) => {
                           const showContrast = key !== 'bg'
                           const ratio = showContrast ? getContrastRatio(customColors[key], customColors.bg) : null
-                          const level = ratio !== null ? getContrastLevel(key, ratio) : null
-                          const badgeClass = level === 'aa' ? 'bg-success text-success-foreground' : level === 'aa-ui' ? 'bg-warning text-warning-foreground' : level === 'fail' ? 'bg-destructive text-destructive-foreground' : ''
+                          const getBadgeClass = (r: number): string => {
+                            if (keyColorStandard === 'A') return r >= 3.0 ? 'bg-success text-success-foreground' : 'bg-destructive text-destructive-foreground'
+                            if (keyColorStandard === 'AA') return r >= 4.5 ? 'bg-success text-success-foreground' : r >= 3.0 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                            if (keyColorStandard === 'AAA') return r >= 7.0 ? 'bg-success text-success-foreground' : r >= 4.5 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                            return ''
+                          }
                           return (
                             <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
                               <input
@@ -498,8 +515,8 @@ export default function DashboardPage() {
                               />
                               <span className="text-muted-foreground">{label}</span>
                               <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
-                              {ratio !== null && (
-                                <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${badgeClass}`}>
+                              {ratio !== null && keyColorStandard !== 'none' && (
+                                <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getBadgeClass(ratio)}`}>
                                   {ratio}:1
                                 </span>
                               )}
@@ -507,24 +524,24 @@ export default function DashboardPage() {
                           )
                         })}
                       </div>
-                      <p className="mt-3 text-xs font-medium text-foreground">キーカラーの使い方</p>
+                      <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">キーカラーの使い方</p>
                       <Textarea
                         value={(cc.keyColorNotes as string) ?? ''}
                         onChange={(e) => updateField('colorPalette', 'keyColorNotes', e.target.value)}
-                        className="mt-1 min-h-20 text-xs mb-1"
+                        className="mt-1 min-h-20 text-xs mb-1.5"
                       />
-                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
 
                       {(((cc.additionalKeyColorSets as any) || []).map((set: any, idx: number) => (
                         <div key={idx} className="mt-6 pt-6 border-t space-y-4">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs font-medium text-foreground">セット {idx + 2}</p>
+                            <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セット {idx + 2}</p>
                             <button
                               onClick={() => {
                                 const next = ((cc.additionalKeyColorSets as any) || []).filter((_: any, i: number) => i !== idx)
                                 updateField('colorPalette', 'additionalKeyColorSets', next)
                               }}
-                              className="text-xs px-2 py-1 rounded border border-dashed border-muted-foreground text-muted-foreground hover:border-destructive hover:text-destructive"
+                              className="text-xs px-2 py-1 rounded border border-dashed border-muted-foreground text-muted-foreground hover:border-destructive hover:text-destructive transition-colors duration-ui"
                             >
                               削除
                             </button>
@@ -533,8 +550,8 @@ export default function DashboardPage() {
                             <div className="space-y-4">
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] text-muted-foreground">色相</span>
-                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[0]}°</span>
+                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
+                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[0]}°</span>
                                 </div>
                                 <input
                                   type="range"
@@ -561,8 +578,8 @@ export default function DashboardPage() {
                               </div>
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] text-muted-foreground">彩度</span>
-                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[1]}%</span>
+                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
+                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[1]}%</span>
                                 </div>
                                 <input
                                   type="range"
@@ -589,8 +606,8 @@ export default function DashboardPage() {
                               </div>
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] text-muted-foreground">明度</span>
-                                  <span className="text-[10px] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[2]}%</span>
+                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
+                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[2]}%</span>
                                 </div>
                                 <input
                                   type="range"
@@ -619,8 +636,12 @@ export default function DashboardPage() {
                             <div className="grid grid-cols-2 gap-3">
                               {(() => {
                                 const primaryRatio = getContrastRatio(set.primaryColor, set.bgColor)
-                                const primaryLevel = getContrastLevel('primary', primaryRatio)
-                                const primaryBadgeClass = primaryLevel === 'aa' ? 'bg-success text-success-foreground' : primaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                const getSetBadgeClass = (r: number): string => {
+                                  if (keyColorStandard === 'A') return r >= 3.0 ? 'bg-success text-success-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AA') return r >= 4.5 ? 'bg-success text-success-foreground' : r >= 3.0 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AAA') return r >= 7.0 ? 'bg-success text-success-foreground' : r >= 4.5 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  return ''
+                                }
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -635,16 +656,22 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">プライマリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.primaryColor}</span>
-                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${primaryBadgeClass}`}>
-                                      {primaryRatio}:1
-                                    </span>
+                                    {keyColorStandard !== 'none' && (
+                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(primaryRatio)}`}>
+                                        {primaryRatio}:1
+                                      </span>
+                                    )}
                                   </label>
                                 )
                               })()}
                               {(() => {
                                 const secondaryRatio = getContrastRatio(set.secondaryColor, set.bgColor)
-                                const secondaryLevel = getContrastLevel('secondary', secondaryRatio)
-                                const secondaryBadgeClass = secondaryLevel === 'aa' ? 'bg-success text-success-foreground' : secondaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                const getSetBadgeClass = (r: number): string => {
+                                  if (keyColorStandard === 'A') return r >= 3.0 ? 'bg-success text-success-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AA') return r >= 4.5 ? 'bg-success text-success-foreground' : r >= 3.0 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AAA') return r >= 7.0 ? 'bg-success text-success-foreground' : r >= 4.5 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  return ''
+                                }
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -659,16 +686,22 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">セカンダリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.secondaryColor}</span>
-                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${secondaryBadgeClass}`}>
-                                      {secondaryRatio}:1
-                                    </span>
+                                    {keyColorStandard !== 'none' && (
+                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(secondaryRatio)}`}>
+                                        {secondaryRatio}:1
+                                      </span>
+                                    )}
                                   </label>
                                 )
                               })()}
                               {(() => {
                                 const tertiaryRatio = getContrastRatio(set.tertiaryColor, set.bgColor)
-                                const tertiaryLevel = getContrastLevel('tertiary', tertiaryRatio)
-                                const tertiaryBadgeClass = tertiaryLevel === 'aa' ? 'bg-success text-success-foreground' : tertiaryLevel === 'aa-ui' ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                const getSetBadgeClass = (r: number): string => {
+                                  if (keyColorStandard === 'A') return r >= 3.0 ? 'bg-success text-success-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AA') return r >= 4.5 ? 'bg-success text-success-foreground' : r >= 3.0 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  if (keyColorStandard === 'AAA') return r >= 7.0 ? 'bg-success text-success-foreground' : r >= 4.5 ? 'bg-warning text-warning-foreground' : 'bg-destructive text-destructive-foreground'
+                                  return ''
+                                }
                                 return (
                                   <label className="flex items-center gap-2 text-sm cursor-pointer">
                                     <input
@@ -683,9 +716,11 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">ターシャリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.tertiaryColor}</span>
-                                    <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${tertiaryBadgeClass}`}>
-                                      {tertiaryRatio}:1
-                                    </span>
+                                    {keyColorStandard !== 'none' && (
+                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(tertiaryRatio)}`}>
+                                        {tertiaryRatio}:1
+                                      </span>
+                                    )}
                                   </label>
                                 )
                               })()}
@@ -706,7 +741,7 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <p className="text-xs font-medium text-foreground">この色セットの使い方</p>
+                            <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">この色セットの使い方</p>
                             <Textarea
                               value={set.notes ?? ''}
                               onChange={(e) => {
@@ -714,9 +749,9 @@ export default function DashboardPage() {
                                 next[idx] = { ...next[idx], notes: e.target.value }
                                 updateField('colorPalette', 'additionalKeyColorSets', next)
                               }}
-                              className="min-h-20 text-xs mb-1"
+                              className="min-h-20 text-xs mb-1.5"
                             />
-                            <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                            <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         </div>
                       )))}
@@ -734,7 +769,7 @@ export default function DashboardPage() {
                             })
                             updateField('colorPalette', 'additionalKeyColorSets', next)
                           }}
-                          className="mt-4 w-full py-2 rounded border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground"
+                          className="mt-4 w-full py-2 rounded border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground transition-colors duration-ui"
                         >
                           + セットを追加
                         </button>
@@ -742,10 +777,10 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs font-medium text-muted-foreground">グレースケール</p>
+                        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">グレースケール</p>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
+                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs leading-[170%] tracking-[0.06em] rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
                             白から黒の14段階グレースケール。背景・サーフェス・ボーダー・テキストなど、UI全体の情報階層と視覚的な重みを表現するために使用する。
                           </div>
                         </div>
@@ -764,13 +799,13 @@ export default function DashboardPage() {
                           </label>
                         ))}
                       </div>
-                      <p className="mt-3 text-xs font-medium text-foreground">グレースケールの使い方</p>
+                      <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">グレースケールの使い方</p>
                       <Textarea
                         value={(cc.commonColorNotes as string) ?? ''}
                         onChange={(e) => updateField('colorPalette', 'commonColorNotes', e.target.value)}
-                        className="mt-1 min-h-20 text-xs mb-1"
+                        className="mt-1 min-h-20 text-xs mb-1.5"
                       />
-                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -781,11 +816,11 @@ export default function DashboardPage() {
                             onChange={(e) => updateField('colorPalette', 'useSemanticColors', e.target.checked)}
                             className="h-4 w-4 rounded border-input accent-primary"
                           />
-                          <p className="text-xs font-medium text-muted-foreground">セマンティックカラー</p>
+                          <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラー</p>
                         </label>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
+                          <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs leading-[170%] tracking-[0.06em] rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
                             成功・エラー・警告の状態を伝えるフィードバック色。操作結果や注意喚起など、意味を持つ状態表現に限定して使用し、装飾目的には使わない。
                           </div>
                         </div>
@@ -805,13 +840,13 @@ export default function DashboardPage() {
                             </label>
                           ))}
                         </div>
-                        <p className="mt-3 text-xs font-medium text-foreground">セマンティックカラーの使い方</p>
+                        <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラーの使い方</p>
                         <Textarea
                           value={(cc.semanticColorNotes as string) ?? ''}
                           onChange={(e) => updateField('colorPalette', 'semanticColorNotes', e.target.value)}
-                          className="mt-1 min-h-20 text-xs mb-1"
+                          className="mt-1 min-h-20 text-xs mb-1.5"
                         />
-                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                        <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     </div>
                   </div>
@@ -830,7 +865,7 @@ export default function DashboardPage() {
                       <select
                         value={(tc.latinFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'latinFont', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {LATIN_FONTS.map((f) => (
@@ -852,7 +887,7 @@ export default function DashboardPage() {
                       <select
                         value={(tc.japaneseFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'japaneseFont', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {JAPANESE_FONTS.map((f) => (
@@ -870,7 +905,7 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="space-y-4 mt-6 pt-6 border-t">
-                      <p className="text-xs font-medium text-foreground">テキストスタイル</p>
+                      <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">テキストスタイル</p>
                       <div className="space-y-8">
                         {TEXT_STYLE_CATEGORIES.map((category) => {
                           const notesFieldMap: Record<string, string> = {
@@ -888,7 +923,7 @@ export default function DashboardPage() {
                           return (
                             <div key={category} className="space-y-3 pb-6 border-b last:border-b-0">
                               <div className="flex items-center justify-between">
-                                <p className="text-xs font-medium text-foreground">{categoryLabel}</p>
+                                <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}</p>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                   <span className="text-xs text-muted-foreground">自分で設定する</span>
                                   <Switch
@@ -898,14 +933,14 @@ export default function DashboardPage() {
                                 </label>
                               </div>
                               {isCustom ? (
-                                <div className="space-y-2">
+                                <div className="space-y-1.5">
                                   <Textarea
                                     value={(tc[customStylesField as keyof typeof tc] as string) ?? ''}
                                     onChange={(e) => updateField('typography', customStylesField, e.target.value)}
                                     placeholder={`例: 64px | Bold | 140% | -0.01em\n48px | Bold | 140% | -0.01em\n32px | Normal | 150% | 0em`}
                                     className="min-h-28 text-xs font-mono mb-1"
                                   />
-                                  <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                                 </div>
                               ) : null}
                               <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
@@ -921,7 +956,7 @@ export default function DashboardPage() {
                                 return (
                                 <div key={`${category}-${weight}`} className="space-y-2">
                                   <div className="flex items-center justify-between">
-                                    <p className="text-[10px] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
+                                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
                                     <input
                                       type="checkbox"
                                       checked={allSelected}
@@ -983,15 +1018,15 @@ export default function DashboardPage() {
                                 )
                               })}
                               </div>
-                              <div className="space-y-2 mt-4">
-                                <p className="text-xs font-medium text-foreground">{categoryLabel}の使い方</p>
+                              <div className="space-y-1.5 mt-4">
+                                <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}の使い方</p>
                                 <Textarea
                                   value={(tc[notesField as keyof typeof tc] as string) ?? ''}
                                   onChange={(e) => updateField('typography', notesField, e.target.value)}
                                   className="min-h-16 text-xs mb-1"
                                   placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
                                 />
-                                <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                                <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                               </div>
                               </div>
                             </div>
@@ -1015,7 +1050,7 @@ export default function DashboardPage() {
                       <select
                         value={(ic.iconLibrary as string) ?? 'lucide-react'}
                         onChange={(e) => updateField('icons', 'iconLibrary', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="lucide-react">Lucide React</option>
                         <option value="カスタム">カスタム</option>
@@ -1031,7 +1066,7 @@ export default function DashboardPage() {
                           placeholder={`例: SVGアイコンは public/icons/ 配下に格納\nコンポーネントは components/icons/ で管理\nサイズ: 16px / 20px / 24px の 3展開\nアイコン色は CSS 変数で制御`}
                           className="min-h-28 text-sm mb-1"
                         />
-                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                        <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     )}
 
@@ -1043,7 +1078,7 @@ export default function DashboardPage() {
                         placeholder={`例: アイコンは必ず aria-hidden="true" を付与する\nデフォルトサイズは 20px\nテキストと併用するときは gap-2 で配置`}
                         className="min-h-20 text-sm mb-1"
                       />
-                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1061,7 +1096,7 @@ export default function DashboardPage() {
                       <select
                         value={(lc.layoutType as string) ?? 'liquid'}
                         onChange={(e) => updateField('layout', 'layoutType', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="liquid">リキッド（流動的）</option>
                         <option value="solid">ソリッド（固定幅）</option>
@@ -1073,7 +1108,7 @@ export default function DashboardPage() {
                       <select
                         value={(lc.spacingBase as string) ?? ''}
                         onChange={(e) => updateField('layout', 'spacingBase', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {SPACING_BASE_OPTIONS.map((o) => (
@@ -1094,7 +1129,7 @@ export default function DashboardPage() {
                     {(lc.spacingBase as string) && (lc.spacingBase as string) !== 'custom' && SPACING_SCALES[lc.spacingBase as string] && (
                       <div className="space-y-1.5">
                         <p className="text-xs text-muted-foreground">Spacing Scale</p>
-                        <div className="rounded-md border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
+                        <div className="rounded-lg border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
                           {(() => {
                             let scale: number[] = []
                             if ((lc.spacingBase as string) === 'custom') {
@@ -1109,11 +1144,9 @@ export default function DashboardPage() {
                               scale = SPACING_SCALES[lc.spacingBase as string] || []
                             }
                             return scale.map((val) => {
-                              const barWidth = val <= 24
-                                ? Math.round((val / 24) * 20)
-                                : Math.round(20 + ((val - 24) / 1896) * 80)
+                              const barWidth = Math.max(1, Math.sqrt(val / 1920) * 85)
                               return (
-                                <div key={val} className="flex items-center gap-2">
+                                <div key={val} className="flex items-center gap-1.5">
                                   <div className="bg-primary rounded-sm shrink-0" style={{ width: `${barWidth}%`, height: 5 }} />
                                   <span className="text-xs text-muted-foreground">{val}px</span>
                                 </div>
@@ -1125,7 +1158,7 @@ export default function DashboardPage() {
                     )}
 
                     <div className="border-t pt-4">
-                      <p className="text-xs font-medium text-foreground mb-3">ブレイクポイント</p>
+                      <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground mb-3">ブレイクポイント</p>
                       <div className="grid grid-cols-2 gap-3">
                         {[
                           { key: 'sm' as const, label: 'sm' },
@@ -1134,7 +1167,7 @@ export default function DashboardPage() {
                           { key: 'xl' as const, label: 'xl' },
                           { key: '2xl' as const, label: '2xl' },
                         ].map(({ key, label }) => (
-                          <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-background p-2">
+                          <div key={key} className="flex items-center gap-2 rounded-lg border border-input bg-background p-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -1211,7 +1244,7 @@ export default function DashboardPage() {
                               placeholder={placeholder}
                               className="min-h-24 text-sm mb-1"
                             />
-                            <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                            <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         ))}
                       </div>
@@ -1219,11 +1252,24 @@ export default function DashboardPage() {
                       /* 独自コンポーネントモード */
                       <>
                         <div className="space-y-1.5">
+                          <FieldLabel>ラウンドネス（丸み）</FieldLabel>
+                          <select
+                            value={(cmp.roundness as string) ?? 'md'}
+                            onChange={(e) => updateField('components', 'roundness', e.target.value)}
+                            className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                          >
+                            {['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map((v) => (
+                              <option key={v} value={v}>{v}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="space-y-1.5">
                           <FieldLabel>エレベーション（シャドウ）</FieldLabel>
                           <select
                             value={(cmp.elevation as string) ?? 'md'}
                             onChange={(e) => updateField('components', 'elevation', e.target.value)}
-                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                            className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                           >
                             {['none', 'sm', 'md', 'lg'].map((v) => (
                               <option key={v} value={v}>{v}</option>
@@ -1239,16 +1285,16 @@ export default function DashboardPage() {
                             placeholder="例: ボタンはprimary colorで塗りつぶし、カードはborderのみでelevationなし"
                             className="min-h-16 text-sm mb-1"
                           />
-                          <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                          <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                         </div>
 
                         <div className="border-t pt-4 space-y-3">
                           <div className="flex items-center justify-between">
-                            <p className="text-xs font-medium text-foreground">コンポーネント定義</p>
+                            <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コンポーネント定義</p>
                             <button
                               type="button"
                               onClick={addComponentItem}
-                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary-surface"
+                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-dashed border-primary text-primary hover:bg-primary-surface transition-colors duration-ui"
                             >
                               <Plus className="size-3" />
                               追加
@@ -1264,7 +1310,7 @@ export default function DashboardPage() {
                           {componentItems.map((item) => {
                             const isOpen = openComponentIds.has(item.id)
                             return (
-                              <div key={item.id} className="rounded-md border border-input overflow-hidden">
+                              <div key={item.id} className="rounded-lg border border-input overflow-hidden">
                                 <div className="flex items-center gap-2 px-3 py-2 bg-background">
                                   <button
                                     type="button"
@@ -1283,7 +1329,7 @@ export default function DashboardPage() {
                                   <button
                                     type="button"
                                     onClick={() => removeComponentItem(item.id)}
-                                    className="text-muted-foreground hover:text-destructive shrink-0"
+                                    className="text-muted-foreground hover:text-destructive shrink-0 transition-colors duration-ui"
                                   >
                                     <Trash2 className="size-3.5" />
                                   </button>
@@ -1292,15 +1338,14 @@ export default function DashboardPage() {
                                 {isOpen && (
                                   <div className="p-3 space-y-3">
                                     {COMPONENT_FIELDS.map(({ id, label, placeholder }) => (
-                                      <div key={id} className="space-y-1">
-                                        <p className="text-xs font-medium text-foreground">{label}</p>
+                                      <div key={id} className="space-y-1.5">
+                                        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{label}</p>
                                         <Textarea
                                           value={item[id]}
                                           onChange={(e) => updateComponentItem(item.id, id, e.target.value)}
                                           placeholder={placeholder}
                                           className="min-h-16 text-xs font-mono mb-1"
                                         />
-                                        <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                                       </div>
                                     ))}
                                   </div>
@@ -1328,7 +1373,18 @@ export default function DashboardPage() {
                         value={(ac.contrastLevel as string) ?? 'AA'}
                         onChange={(e) => {
                           const val = e.target.value
-                          if (val === 'AA') {
+                          if (val === 'A') {
+                            batchUpdate((prev) => ({
+                              ...prev,
+                              accessibility: {
+                                ...(prev.accessibility ?? {}),
+                                contrastLevel: val,
+                                textContrastMin: '3.0',
+                                largeTextContrastMin: '3.0',
+                                uiContrastMin: '3.0',
+                              },
+                            }))
+                          } else if (val === 'AA') {
                             batchUpdate((prev) => ({
                               ...prev,
                               accessibility: {
@@ -1354,30 +1410,31 @@ export default function DashboardPage() {
                             updateField('accessibility', 'contrastLevel', val)
                           }
                         }}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                       >
-                        <option value="AA">WCAG AA（最低基準・4.5:1）</option>
+                        <option value="A">WCAG A（最低基準・3:1）</option>
+                        <option value="AA">WCAG AA（推奨基準・4.5:1）</option>
                         <option value="AAA">WCAG AAA（最高基準・7:1）</option>
                         <option value="カスタム">カスタム</option>
                       </select>
                     </div>
 
                     <div className="space-y-2">
-                      <p className="text-xs font-medium text-foreground">コントラスト比の基準</p>
+                      <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コントラスト比の基準</p>
 
                       {((ac.contrastLevel as string) ?? 'AA') !== 'カスタム' ? (
-                        <div className="rounded-md border border-input bg-muted p-3 space-y-2">
+                        <div className="rounded-lg border border-input bg-muted p-3 space-y-2">
                           {([
-                            { label: '通常テキスト（18pt未満 / 太字14pt未満）', aa: '4.5', aaa: '7.0' },
-                            { label: '大テキスト（18pt以上 / 太字14pt以上）', aa: '3.0', aaa: '4.5' },
-                            { label: 'UIコンポーネント・グラフィック', aa: '3.0', aaa: '3.0' },
-                          ] as const).map(({ label, aa, aaa }) => {
+                            { label: '通常テキスト（18pt未満 / 太字14pt未満）', a: '3.0', aa: '4.5', aaa: '7.0' },
+                            { label: '大テキスト（18pt以上 / 太字14pt以上）', a: '3.0', aa: '3.0', aaa: '4.5' },
+                            { label: 'UIコンポーネント・グラフィック', a: '3.0', aa: '3.0', aaa: '3.0' },
+                          ] as const).map(({ label, a, aa, aaa }) => {
                             const level = (ac.contrastLevel as string) ?? 'AA'
-                            const value = level === 'AAA' ? aaa : aa
+                            const value = level === 'AAA' ? aaa : level === 'A' ? a : aa
                             return (
                               <div key={label} className="flex items-center justify-between">
                                 <span className="text-xs text-muted-foreground">{label}</span>
-                                <span className="font-mono text-xs font-medium text-foreground">{value}:1</span>
+                                <span className="font-mono text-xs leading-[120%] tracking-[0.04em] font-bold text-muted-foreground">{value}:1</span>
                               </div>
                             )
                           })}
@@ -1418,7 +1475,7 @@ export default function DashboardPage() {
                         placeholder={`例: ダークモード時は別途コントラスト検証を行う\nスクリーンリーダー対応（aria属性必須）\nprefers-reduced-motion を尊重する`}
                         className="min-h-24 text-sm mb-1"
                       />
-                      <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1437,7 +1494,7 @@ export default function DashboardPage() {
                       placeholder="上記セクション以外に記載したい内容を自由に入力してください"
                       className="min-h-40 text-sm mb-1"
                     />
-                    <p className="text-[10px] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
               </>
@@ -1482,7 +1539,7 @@ export default function DashboardPage() {
                 <Button
                   variant="outline"
                   onClick={() => downloadTextFile(fileName, !themeSelect ? '# Design System Guidelines' : themeSelect === 'デフォルト' ? DEFAULT_PREVIEW : preview)}
-                  disabled={isSaving}
+                  disabled={isSaving || !themeSelect}
                   className="flex-1"
                 >
                   ダウンロード
@@ -1491,7 +1548,7 @@ export default function DashboardPage() {
                   isLoggedIn ? (
                     <Button
                       onClick={() => save(!themeSelect ? '# Design System Guidelines' : themeSelect === 'デフォルト' ? DEFAULT_PREVIEW : preview)}
-                      disabled={isSaving}
+                      disabled={isSaving || !themeSelect}
                       className="flex-1"
                     >
                       {isSaving ? '保存中...' : '保存'}
@@ -1499,7 +1556,7 @@ export default function DashboardPage() {
                   ) : (
                     <a
                       href="/auth/login"
-                      className={cn(buttonVariants({ variant: 'outline' }), 'flex-1 justify-center')}
+                      className={cn(buttonVariants({ variant: 'default' }), 'flex-1 justify-center', !themeSelect && 'pointer-events-none opacity-50')}
                     >
                       ログインして保存
                     </a>

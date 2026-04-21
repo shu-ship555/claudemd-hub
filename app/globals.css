@@ -20,7 +20,7 @@
   --color-primary-surface:     oklch(0.945 0.024 265);   /* #ebf1ff  – CTA/link 背景として使用 */
 
   /* Secondary / Accent = Gray 1 */
-  --color-secondary:           oklch(0.94 0 0);          /* Gray 1    #f0f0f0 */
+  --color-secondary:           oklch(0.92 0 0);          /* ~#ebebeb */
   --color-secondary-foreground: oklch(0.18 0 0);         /* Gray 9    #202020 */
   --color-accent:              oklch(0.945 0.024 265);    /* primary-surface – blue accent hover */
   --color-accent-foreground:   oklch(0.514 0.241 264.4); /* Primary   #1a4fd6 */
@@ -38,8 +38,8 @@
   --color-warning-foreground:  oklch(1 0 0);             /* White     #ffffff */
 
   /* Border / Input / Ring */
-  --color-border:              oklch(0.84 0 0);          /* ~#d0d0d0  Gray 3 – より明確なボーダー */
-  --color-input:               oklch(0.84 0 0);          /* ~#d0d0d0  Gray 3 */
+  --color-border:              oklch(0.886 0 0);         /* #e0e0e0   Gray 2 */
+  --color-input:               oklch(0.886 0 0);         /* #e0e0e0   Gray 2 */
   --color-ring:                oklch(0.514 0.241 264.4); /* Primary   #1a4fd6 */
 
   /* Shape */
@@ -49,6 +49,13 @@
   --radius-md: calc(var(--radius) * 1);
   --radius-lg: calc(var(--radius) * 1.5);
   --radius-xl: calc(var(--radius) * 2);
+
+  /* Transition */
+  --transition-duration-ui: 150ms;                       /* ホバー/インタラクション共通 duration */
+}
+
+*, *::before, *::after {
+  border-color: var(--color-border);
 }
 
 html {
@@ -58,16 +65,14 @@ html {
 
 body {
   line-height: 1.47;
-  letter-spacing: -0.01em;
   font-feature-settings: "palt";
 }
 
 h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.02em;
+  letter-spacing: 0em;
 }
 
 ::placeholder {
   color: oklch(0.55 0 0); /* ~#777777 – 4.5:1 on white */
   opacity: 1;
 }
-

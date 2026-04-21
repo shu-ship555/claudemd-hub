@@ -380,8 +380,10 @@ function renderComponents(cfg: SectionCfg): string {
     return text.trim()
   }
 
+  const roundness = str(cfg.roundness)
   const elevation = str(cfg.elevation)
   const bullets: string[] = []
+  if (roundness) bullets.push(`- Roundness: ${roundness}`)
   if (elevation) bullets.push(`- Elevation: ${elevation}`)
 
   let text = bullets.length > 0 ? `${bullets.join('\n')}\n\n` : ''
