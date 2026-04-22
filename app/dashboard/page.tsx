@@ -855,7 +855,7 @@ export default function DashboardPage() {
                             })
                             updateField('colorPalette', 'additionalKeyColorSets', next)
                           }}
-                          className="mt-4 w-full py-2 rounded-full border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground transition-colors duration-ui"
+                          className="mt-4 w-full py-2 rounded-md border border-dashed border-muted-foreground text-foreground text-sm hover:border-foreground hover:text-muted-foreground transition-colors duration-ui"
                         >
                           + セットを追加
                         </button>
