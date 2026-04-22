@@ -32,7 +32,10 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
         </div>
         <nav className="flex items-center gap-5">
           <a href="/dashboard" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
-            ジェネレーター
+            DESIGN.md
+          </a>
+          <a href="/dashboard/agent" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
+            AGENT.md
           </a>
           {isLoggedIn && (
             <a href="/dashboard/files" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">

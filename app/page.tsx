@@ -18,6 +18,11 @@ export default function Home() {
               DESIGN.md を生成する
             </Button>
           </Link>
+          <Link href="/dashboard/agent">
+            <Button variant="outline" className="w-full">
+              AGENT.md を生成する
+            </Button>
+          </Link>
           <p className="text-sm text-muted-foreground">
             アカウントをお持ちの方は{' '}
             <Link href="/auth/login" className="font-medium text-primary hover:underline">
