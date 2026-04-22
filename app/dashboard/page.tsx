@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { FieldLabel } from '@/components/custom/field-label'
 import { SectionCard } from '@/components/custom/section-card'
 import { Switch } from '@/components/ui/switch'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { THEME_PRESETS } from '@/lib/theme-presets'
@@ -34,35 +35,35 @@ type ComponentItem = {
 }
 
 const COMPONENT_FIELDS: { id: keyof Omit<ComponentItem, 'id' | 'name'>; label: string; placeholder: string }[] = [
-  { id: 'purpose',       label: '① 目的と使い分け',        placeholder: '例: Primary Button は1画面に1つ\n破壊的操作には Destructive variant を使う' },
-  { id: 'variants',      label: '② バリアント',            placeholder: '例: Primary / Secondary / Ghost / Destructive\nそれぞれの用途を記述' },
-  { id: 'sizes',         label: '③ サイズ',               placeholder: '例: Small (h-6, px-2) / Medium (h-8, px-3) / Large (h-10, px-4)\n各文脈での使い分けも記述' },
-  { id: 'states',        label: '④ 状態',                 placeholder: '例: Default / Hover / Active / Focus / Disabled / Loading\n各状態の色・境界線・透明度を明示' },
-  { id: 'anatomy',       label: '⑤ 構造と寸法',            placeholder: '例: アイコン + ラベル、間隔8px\n左右パディング16px、高さ40px、border-radius 8px' },
-  { id: 'accessibility', label: '⑥ アクセシビリティ要件',   placeholder: '例: aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px' },
-  { id: 'dosDonts',      label: '⑦ Do / Don\'t',          placeholder: 'Do: Primary Button は1画面に1つ\nDon\'t: Primary Button を並べない' },
+  { id: 'purpose', label: '① 目的と使い分け', placeholder: '例: Primary Button は1画面に1つ\n破壊的操作には Destructive variant を使う' },
+  { id: 'variants', label: '② バリアント', placeholder: '例: Primary / Secondary / Ghost / Destructive\nそれぞれの用途を記述' },
+  { id: 'sizes', label: '③ サイズ', placeholder: '例: Small (h-6, px-2) / Medium (h-8, px-3) / Large (h-10, px-4)\n各文脈での使い分けも記述' },
+  { id: 'states', label: '④ 状態', placeholder: '例: Default / Hover / Active / Focus / Disabled / Loading\n各状態の色・境界線・透明度を明示' },
+  { id: 'anatomy', label: '⑤ 構造と寸法', placeholder: '例: アイコン + ラベル、間隔8px\n左右パディング16px、高さ40px、border-radius 8px' },
+  { id: 'accessibility', label: '⑥ アクセシビリティ要件', placeholder: '例: aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px' },
+  { id: 'dosDonts', label: '⑦ Do / Don\'t', placeholder: 'Do: Primary Button は1画面に1つ\nDon\'t: Primary Button を並べない' },
 ]
 
 const SHADCN_FIELDS: { id: string; label: string; placeholder: string }[] = [
-  { id: 'shadcnTokenMapping',          label: '① デザイントークン CSS 変数マッピング', placeholder: '例: --primary → hsl(var(--blue-600))\n--radius → 0.5rem' },
-  { id: 'shadcnComponentList',         label: '② 採用コンポーネント一覧',            placeholder: '例: Button, Dialog, Select, Toast, Form...' },
-  { id: 'shadcnUsageGuide',            label: '③ 使い分けガイド',                  placeholder: '例:\n- オーバーレイ: Dialog（確認）/ Sheet（サイドパネル）\n- 通知: Toast（一時）/ Alert（常設）\n- 選択: Select（6項目以上）/ RadioGroup（5項目以下）\n- Button variant: default / destructive / outline / ghost / link' },
-  { id: 'shadcnCustomizationPolicy',   label: '④ カスタマイズポリシー',              placeholder: '例:\n許可: CSS変数の上書き、className追加\n禁止: コンポーネント内部DOMの直接編集\nディレクトリ: components/ui/（自動生成）, components/custom/（独自）' },
-  { id: 'shadcnStandardPatterns',      label: '⑤ 標準パターン',                    placeholder: '例:\nForm: react-hook-form + zod + FormField\n破壊的操作フロー: 操作ボタン → AlertDialog（確認）→ Toast（結果）' },
-  { id: 'shadcnCustomComponents',      label: '⑥ 独自コンポーネント仕様',            placeholder: '例: shadcn/ui にない独自コンポーネントの仕様を記述' },
+  { id: 'shadcnTokenMapping', label: '① デザイントークン CSS 変数マッピング', placeholder: '例: --primary → hsl(var(--blue-600))\n--radius → 0.5rem' },
+  { id: 'shadcnComponentList', label: '② 採用コンポーネント一覧', placeholder: '例: Button, Dialog, Select, Toast, Form...' },
+  { id: 'shadcnUsageGuide', label: '③ 使い分けガイド', placeholder: '例:\n- オーバーレイ: Dialog（確認）/ Sheet（サイドパネル）\n- 通知: Toast（一時）/ Alert（常設）\n- 選択: Select（6項目以上）/ RadioGroup（5項目以下）\n- Button variant: default / destructive / outline / ghost / link' },
+  { id: 'shadcnCustomizationPolicy', label: '④ カスタマイズポリシー', placeholder: '例:\n許可: CSS変数の上書き、className追加\n禁止: コンポーネント内部DOMの直接編集\nディレクトリ: components/ui/（自動生成）, components/custom/（独自）' },
+  { id: 'shadcnStandardPatterns', label: '⑤ 標準パターン', placeholder: '例:\nForm: react-hook-form + zod + FormField\n破壊的操作フロー: 操作ボタン → AlertDialog（確認）→ Toast（結果）' },
+  { id: 'shadcnCustomComponents', label: '⑥ 独自コンポーネント仕様', placeholder: '例: shadcn/ui にない独自コンポーネントの仕様を記述' },
 ]
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
 
 const WIZARD_STEPS = [
-  { id: 'visualTheme',   label: 'ビジュアルテーマ', icon: Sparkles },
-  { id: 'colorPalette',  label: 'カラーパレット',   icon: Palette },
-  { id: 'typography',    label: 'タイポグラフィ',   icon: Type },
-  { id: 'icons',         label: 'アイコン',         icon: Shapes },
-  { id: 'layout',        label: 'レイアウト',       icon: LayoutGrid },
-  { id: 'components',    label: 'コンポーネント',   icon: Layers },
+  { id: 'visualTheme', label: 'ビジュアルテーマ', icon: Sparkles },
+  { id: 'colorPalette', label: 'カラーパレット', icon: Palette },
+  { id: 'typography', label: 'タイポグラフィ', icon: Type },
+  { id: 'icons', label: 'アイコン', icon: Shapes },
+  { id: 'layout', label: 'レイアウト', icon: LayoutGrid },
+  { id: 'components', label: 'コンポーネント', icon: Layers },
   { id: 'accessibility', label: 'アクセシビリティ', icon: Eye },
-  { id: 'other',         label: 'その他',           icon: FileText },
+  { id: 'other', label: 'その他', icon: FileText },
 ] as const
 
 const DEFAULT_PREVIEW = `# Design System
@@ -166,7 +167,7 @@ function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) 
 export default function DashboardPage() {
   const { config, preview, updateField, batchUpdate } = useDesignConfig()
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
-  const { fileName, setFileName, isSaving, save, fileCount, maxFiles } = useSaveConfigFile('DESIGN.md')
+  const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile('DESIGN.md')
   const [themeSelect, setThemeSelect] = useState('')
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS)
   const [keyColorStandard, setKeyColorStandard] = useState<'A' | 'AA' | 'AAA' | 'none'>('AA')
@@ -178,7 +179,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     batchUpdate((prev) => ({ ...prev, components: { ...prev.components, componentItems: DEFAULT_COMPONENT_ITEMS as any } }))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const previewScrollRef = useRef<HTMLTextAreaElement>(null)
 
@@ -389,21 +390,21 @@ export default function DashboardPage() {
           {/* Form Section */}
           <div
             ref={formScrollRef}
-            className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto pr-4"
+            className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto px-4 -mx-4"
           >
             {/* Standalone theme selector */}
             <div className="space-y-2">
               <FieldLabel requirement="required">DESIGN.mdの種類</FieldLabel>
-              <select
-                value={themeSelect}
-                onChange={(e) => handleThemeChange(e.target.value)}
-                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-              >
-                <option value="">選択してください</option>
-                {THEME_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <Select value={themeSelect || undefined} onValueChange={handleThemeChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {THEME_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {isCustom && (
@@ -467,16 +468,17 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         </div>
-                        <select
-                          value={keyColorStandard}
-                          onChange={(e) => setKeyColorStandard(e.target.value as 'A' | 'AA' | 'AAA' | 'none')}
-                          className="ml-auto rounded border border-input bg-transparent px-2 py-0.5 text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground"
-                        >
-                          <option value="A">WCAG A</option>
-                          <option value="AA">WCAG AA</option>
-                          <option value="AAA">WCAG AAA</option>
-                          <option value="none">なし</option>
-                        </select>
+                        <Select value={keyColorStandard} onValueChange={(v) => setKeyColorStandard(v as 'A' | 'AA' | 'AAA' | 'none')}>
+                          <SelectTrigger size="sm" className="ml-auto w-auto text-2xs text-muted-foreground">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="A">WCAG A</SelectItem>
+                            <SelectItem value="AA">WCAG AA</SelectItem>
+                            <SelectItem value="AAA">WCAG AAA</SelectItem>
+                            <SelectItem value="none">なし</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <div className="space-y-4">
                         <div className="space-y-1">
@@ -853,7 +855,7 @@ export default function DashboardPage() {
                             })
                             updateField('colorPalette', 'additionalKeyColorSets', next)
                           }}
-                          className="mt-4 w-full py-2 rounded border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground transition-colors duration-ui"
+                          className="mt-4 w-full py-2 rounded-full border border-dashed border-muted-foreground text-muted-foreground text-sm hover:border-foreground hover:text-foreground transition-colors duration-ui"
                         >
                           + セットを追加
                         </button>
@@ -947,17 +949,17 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>欧文フォント</FieldLabel>
-                      <select
-                        value={(tc.latinFont as string) ?? ''}
-                        onChange={(e) => updateField('typography', 'latinFont', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                      >
-                        <option value="">未指定</option>
-                        {LATIN_FONTS.map((f) => (
-                          <option key={f} value={f}>{f}</option>
-                        ))}
-                        <option value="custom">カスタム</option>
-                      </select>
+                      <Select value={(tc.latinFont as string) || undefined} onValueChange={(v) => updateField('typography', 'latinFont', v)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="未指定" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {LATIN_FONTS.map((f) => (
+                            <SelectItem key={f} value={f}>{f}</SelectItem>
+                          ))}
+                          <SelectItem value="custom">カスタム</SelectItem>
+                        </SelectContent>
+                      </Select>
                       {(tc.latinFont as string) === 'custom' && (
                         <Input
                           placeholder="フォント名を入力"
@@ -969,17 +971,17 @@ export default function DashboardPage() {
 
                     <div className="space-y-1.5">
                       <FieldLabel>和文フォント</FieldLabel>
-                      <select
-                        value={(tc.japaneseFont as string) ?? ''}
-                        onChange={(e) => updateField('typography', 'japaneseFont', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                      >
-                        <option value="">未指定</option>
-                        {JAPANESE_FONTS.map((f) => (
-                          <option key={f} value={f}>{f}</option>
-                        ))}
-                        <option value="custom">カスタム</option>
-                      </select>
+                      <Select value={(tc.japaneseFont as string) || undefined} onValueChange={(v) => updateField('typography', 'japaneseFont', v)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="未指定" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {JAPANESE_FONTS.map((f) => (
+                            <SelectItem key={f} value={f}>{f}</SelectItem>
+                          ))}
+                          <SelectItem value="custom">カスタム</SelectItem>
+                        </SelectContent>
+                      </Select>
                       {(tc.japaneseFont as string) === 'custom' && (
                         <Input
                           placeholder="フォント名を入力"
@@ -1029,90 +1031,90 @@ export default function DashboardPage() {
                                 </div>
                               ) : null}
                               <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
-                              <div className="space-y-8">
-                              {TEXT_STYLE_WEIGHTS.map((weight) => {
-                                const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
-                                const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
-                                const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
-                                const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
-                                const weightStyles = DEFAULT_TEXT_STYLES[category][weight] || []
-                                const allSelected = isUnset ? true : (weightStyles.length > 0 && weightStyles.every(s => savedSelection.includes(s)))
-                                const someSelected = isUnset ? true : weightStyles.some(s => savedSelection.includes(s))
-                                return (
-                                <div key={`${category}-${weight}`} className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
-                                    <input
-                                      type="checkbox"
-                                      checked={allSelected}
-                                      ref={(el) => {
-                                        if (el && someSelected && !allSelected) el.indeterminate = true
-                                      }}
-                                      onChange={(e) => {
-                                        const current = savedSelection.filter((s: string) => s.trim())
-                                        if (e.target.checked) {
-                                          for (const style of weightStyles) {
-                                            if (!current.includes(style)) {
-                                              current.push(style)
-                                            }
-                                          }
-                                        } else {
-                                          for (const style of weightStyles) {
-                                            const idx = current.indexOf(style)
-                                            if (idx > -1) current.splice(idx, 1)
-                                          }
-                                        }
-                                        updateField('typography', selectedStylesField, current.join(','))
-                                      }}
-                                      className="h-4 w-4 rounded border-input accent-primary mr-2 cursor-pointer"
-                                    />
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2 ml-2">
-                                    {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
-                                      const parsed = parseTextStyle(style)
-                                      const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
-                                      const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
-                                      const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
-                                      const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
-                                      const isSelected = isUnset ? true : savedSelection.includes(style)
-                                      return (
-                                        <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
+                                <div className="space-y-8">
+                                  {TEXT_STYLE_WEIGHTS.map((weight) => {
+                                    const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
+                                    const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
+                                    const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
+                                    const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
+                                    const weightStyles = DEFAULT_TEXT_STYLES[category][weight] || []
+                                    const allSelected = isUnset ? true : (weightStyles.length > 0 && weightStyles.every(s => savedSelection.includes(s)))
+                                    const someSelected = isUnset ? true : weightStyles.some(s => savedSelection.includes(s))
+                                    return (
+                                      <div key={`${category}-${weight}`} className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                          <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
                                           <input
                                             type="checkbox"
-                                            checked={isSelected}
+                                            checked={allSelected}
+                                            ref={(el) => {
+                                              if (el && someSelected && !allSelected) el.indeterminate = true
+                                            }}
                                             onChange={(e) => {
                                               const current = savedSelection.filter((s: string) => s.trim())
                                               if (e.target.checked) {
-                                                if (!current.includes(style)) {
-                                                  current.push(style)
+                                                for (const style of weightStyles) {
+                                                  if (!current.includes(style)) {
+                                                    current.push(style)
+                                                  }
                                                 }
                                               } else {
-                                                const idx = current.indexOf(style)
-                                                if (idx > -1) current.splice(idx, 1)
+                                                for (const style of weightStyles) {
+                                                  const idx = current.indexOf(style)
+                                                  if (idx > -1) current.splice(idx, 1)
+                                                }
                                               }
                                               updateField('typography', selectedStylesField, current.join(','))
                                             }}
-                                            className="h-4 w-4 rounded border-input accent-primary"
+                                            className="h-4 w-4 rounded border-input accent-primary mr-2 cursor-pointer"
                                           />
-                                          <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}｜{parsed.letterSpacing}</span>
-                                        </label>
-                                      )
-                                    })}
-                                  </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2 ml-2">
+                                          {DEFAULT_TEXT_STYLES[category][weight].map((style) => {
+                                            const parsed = parseTextStyle(style)
+                                            const selectedStylesField = `${category.toLowerCase()}SelectedStyles`
+                                            const selectedStylesStr = (tc[selectedStylesField as keyof typeof tc] as string)
+                                            const isUnset = selectedStylesStr === undefined || selectedStylesStr === null
+                                            const savedSelection = isUnset ? [] : selectedStylesStr.trim().split(',').map(s => s.trim()).filter(Boolean)
+                                            const isSelected = isUnset ? true : savedSelection.includes(style)
+                                            return (
+                                              <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={isSelected}
+                                                  onChange={(e) => {
+                                                    const current = savedSelection.filter((s: string) => s.trim())
+                                                    if (e.target.checked) {
+                                                      if (!current.includes(style)) {
+                                                        current.push(style)
+                                                      }
+                                                    } else {
+                                                      const idx = current.indexOf(style)
+                                                      if (idx > -1) current.splice(idx, 1)
+                                                    }
+                                                    updateField('typography', selectedStylesField, current.join(','))
+                                                  }}
+                                                  className="h-4 w-4 rounded border-input accent-primary"
+                                                />
+                                                <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}｜{parsed.letterSpacing}</span>
+                                              </label>
+                                            )
+                                          })}
+                                        </div>
+                                      </div>
+                                    )
+                                  })}
                                 </div>
-                                )
-                              })}
-                              </div>
-                              <div className="space-y-1.5 mt-4">
-                                <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}の使い方</p>
-                                <Textarea
-                                  value={(tc[notesField as keyof typeof tc] as string) ?? ''}
-                                  onChange={(e) => updateField('typography', notesField, e.target.value)}
-                                  className="min-h-16 text-xs mb-1"
-                                  placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
-                                />
-                                <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
-                              </div>
+                                <div className="space-y-1.5 mt-4">
+                                  <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}の使い方</p>
+                                  <Textarea
+                                    value={(tc[notesField as keyof typeof tc] as string) ?? ''}
+                                    onChange={(e) => updateField('typography', notesField, e.target.value)}
+                                    className="min-h-16 text-xs mb-1"
+                                    placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
+                                  />
+                                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                                </div>
                               </div>
                             </div>
                           )
@@ -1133,14 +1135,15 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>アイコンライブラリ</FieldLabel>
-                      <select
-                        value={(ic.iconLibrary as string) ?? 'lucide-react'}
-                        onChange={(e) => updateField('icons', 'iconLibrary', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                      >
-                        <option value="lucide-react">Lucide React</option>
-                        <option value="カスタム">カスタム</option>
-                      </select>
+                      <Select value={(ic.iconLibrary as string) || undefined} onValueChange={(v) => updateField('icons', 'iconLibrary', v)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Lucide React" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="lucide-react">Lucide React</SelectItem>
+                          <SelectItem value="カスタム">カスタム</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     {(ic.iconLibrary as string) === 'カスタム' && (
@@ -1180,29 +1183,30 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>レイアウトタイプ</FieldLabel>
-                      <select
-                        value={(lc.layoutType as string) ?? 'liquid'}
-                        onChange={(e) => updateField('layout', 'layoutType', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                      >
-                        <option value="liquid">リキッド（流動的）</option>
-                        <option value="solid">ソリッド（固定幅）</option>
-                      </select>
+                      <Select value={(lc.layoutType as string) || undefined} onValueChange={(v) => updateField('layout', 'layoutType', v)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="リキッド（流動的）" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="liquid">リキッド（流動的）</SelectItem>
+                          <SelectItem value="solid">ソリッド（固定幅）</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-1.5">
                       <FieldLabel>基準単位</FieldLabel>
-                      <select
-                        value={(lc.spacingBase as string) ?? ''}
-                        onChange={(e) => updateField('layout', 'spacingBase', e.target.value)}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                      >
-                        <option value="">未指定</option>
-                        {SPACING_BASE_OPTIONS.map((o) => (
-                          <option key={o} value={o}>{o}</option>
-                        ))}
-                        <option value="custom">カスタム</option>
-                      </select>
+                      <Select value={(lc.spacingBase as string) || undefined} onValueChange={(v) => updateField('layout', 'spacingBase', v)}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="未指定" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {SPACING_BASE_OPTIONS.map((o) => (
+                            <SelectItem key={o} value={o}>{o}</SelectItem>
+                          ))}
+                          <SelectItem value="custom">カスタム</SelectItem>
+                        </SelectContent>
+                      </Select>
                       {(lc.spacingBase as string) === 'custom' && (
                         <Textarea
                           placeholder="カンマまたは改行で区切ってください"
@@ -1341,28 +1345,30 @@ export default function DashboardPage() {
                       <>
                         <div className="space-y-1.5">
                           <FieldLabel>ラウンドネス（丸み）</FieldLabel>
-                          <select
-                            value={(cmp.roundness as string) ?? 'md'}
-                            onChange={(e) => updateField('components', 'roundness', e.target.value)}
-                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                          >
-                            {['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map((v) => (
-                              <option key={v} value={v}>{v}</option>
-                            ))}
-                          </select>
+                          <Select value={(cmp.roundness as string) || undefined} onValueChange={(v) => updateField('components', 'roundness', v)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="md" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map((v) => (
+                                <SelectItem key={v} value={v}>{v}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         <div className="space-y-1.5">
                           <FieldLabel>エレベーション（シャドウ）</FieldLabel>
-                          <select
-                            value={(cmp.elevation as string) ?? 'md'}
-                            onChange={(e) => updateField('components', 'elevation', e.target.value)}
-                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                          >
-                            {['none', 'sm', 'md', 'lg'].map((v) => (
-                              <option key={v} value={v}>{v}</option>
-                            ))}
-                          </select>
+                          <Select value={(cmp.elevation as string) || undefined} onValueChange={(v) => updateField('components', 'elevation', v)}>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="md" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {['none', 'sm', 'md', 'lg'].map((v) => (
+                                <SelectItem key={v} value={v}>{v}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
 
                         <div className="space-y-1.5">
@@ -1488,10 +1494,9 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>WCAG 準拠レベル</FieldLabel>
-                      <select
-                        value={(ac.contrastLevel as string) ?? 'AA'}
-                        onChange={(e) => {
-                          const val = e.target.value
+                      <Select
+                        value={(ac.contrastLevel as string) || undefined}
+                        onValueChange={(val) => {
                           if (val === 'A') {
                             batchUpdate((prev) => ({
                               ...prev,
@@ -1529,13 +1534,17 @@ export default function DashboardPage() {
                             updateField('accessibility', 'contrastLevel', val)
                           }
                         }}
-                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
-                        <option value="A">WCAG A（最低基準・3:1）</option>
-                        <option value="AA">WCAG AA（推奨基準・4.5:1）</option>
-                        <option value="AAA">WCAG AAA（最高基準・7:1）</option>
-                        <option value="カスタム">カスタム</option>
-                      </select>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="WCAG AA（推奨基準・4.5:1）" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="A">WCAG A（最低基準・3:1）</SelectItem>
+                          <SelectItem value="AA">WCAG AA（推奨基準・4.5:1）</SelectItem>
+                          <SelectItem value="AAA">WCAG AAA（最高基準・7:1）</SelectItem>
+                          <SelectItem value="カスタム">カスタム</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div className="space-y-2">
@@ -1628,9 +1637,8 @@ export default function DashboardPage() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="filename">ファイル名</Label>
                   {fileCount !== null && (
-                    <span className={`text-xs font-mono ${
-                      fileCount >= maxFiles ? 'text-destructive' : 'text-muted-foreground'
-                    }`}>
+                    <span className={`text-xs font-mono ${fileCount >= maxFiles ? 'text-destructive' : 'text-muted-foreground'
+                      }`}>
                       {fileCount} / {maxFiles}
                     </span>
                   )}
@@ -1683,6 +1691,11 @@ export default function DashboardPage() {
                   )
                 )}
               </div>
+              {feedback && (
+                <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === 'success' ? 'text-success' : 'text-destructive'}`}>
+                  {feedback.message}
+                </p>
+              )}
             </div>
           </div>
         </div>

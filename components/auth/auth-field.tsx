@@ -1,5 +1,4 @@
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { FormField } from '@/components/custom/form-field'
 
 interface AuthFieldProps {
   id: string
@@ -11,27 +10,13 @@ interface AuthFieldProps {
   placeholder?: string
 }
 
-export function AuthField({
-  id,
-  label,
-  type,
-  value,
-  onChange,
-  disabled,
-  placeholder,
-}: AuthFieldProps) {
+export function AuthField({ type, placeholder, ...props }: AuthFieldProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        type={type}
-        placeholder={placeholder ?? (type === 'email' ? 'your@email.com' : '••••••••')}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={disabled}
-        required
-      />
-    </div>
+    <FormField
+      {...props}
+      type={type}
+      placeholder={placeholder ?? (type === 'email' ? 'your@email.com' : '••••••••')}
+      required
+    />
   )
 }

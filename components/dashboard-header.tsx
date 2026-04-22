@@ -5,6 +5,7 @@ import DashboardClient from '@/app/dashboard/dashboard-client'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { NavLink } from '@/components/custom/nav-link'
 import { cn } from '@/lib/utils'
 
 interface DashboardHeaderProps {
@@ -20,7 +21,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
       <div className="max-w-7xl mx-auto px-6 h-full pb-px flex justify-between items-center">
         <div>
           <h1 className="flex items-center gap-2 text-sm font-bold leading-[120%] tracking-[0.04em]">
-            <a href="/" className="hover:text-muted-foreground transition-colors duration-ui">{title}</a>
+            <NavLink href="/" className="font-bold text-foreground">{title}</NavLink>
             <Badge variant="outline">Beta</Badge>
           </h1>
           {subtitle && (
@@ -31,34 +32,26 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
           )}
         </div>
         <nav className="flex items-center gap-5">
-          <a href="/dashboard" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
-            DESIGN.md
-          </a>
-          <a href="/dashboard/agent" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
-            AGENT.md
-          </a>
+          <NavLink href="/dashboard">DESIGN.md</NavLink>
+          <NavLink href="/dashboard/agent">AGENT.md</NavLink>
           {isLoggedIn && (
-            <a href="/dashboard/files" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
-              設定ファイル管理
-            </a>
+            <NavLink href="/dashboard/files">設定ファイル管理</NavLink>
           )}
-          <a
+          <NavLink
             href="https://shumiyata.com/contact/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui"
+            className="flex items-center gap-1"
           >
             お問い合わせ
             <ExternalLink className="size-3" />
-          </a>
+          </NavLink>
           {!isLoading && (
             isLoggedIn ? (
               <DashboardClient />
             ) : (
               <div className="flex items-center gap-2">
-                <a href="/auth/login" className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui">
-                  ログイン
-                </a>
+                <NavLink href="/auth/login">ログイン</NavLink>
                 <a href="/auth/signup" className={cn(buttonVariants({ size: 'xs' }))}>
                   新規登録
                 </a>

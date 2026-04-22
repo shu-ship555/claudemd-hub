@@ -118,11 +118,12 @@ function renderTable(headers: string[], rows: string[][]): string {
   const validRows = rows.filter((r) => r.some((c) => c))
   if (validRows.length === 0) return ''
   const headerLine = `| ${headers.join(' | ')} |`
+  const separator = `| ${headers.map(() => '------').join(' | ')} |`
   const dataLines = validRows.map((row) => {
     const cells = headers.map((_, i) => row[i] ?? '')
     return `| ${cells.join(' | ')} |`
   })
-  return [headerLine, ...dataLines].join('\n')
+  return [headerLine, separator, ...dataLines].join('\n')
 }
 
 function renderList(raw: string): string {

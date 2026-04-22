@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/hooks/use-auth'
@@ -135,7 +136,7 @@ export default function AgentPage() {
   const formScrollRef = useRef<HTMLDivElement>(null)
   const previewScrollRef = useRef<HTMLTextAreaElement>(null)
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
-  const { fileName, setFileName, isSaving, save, fileCount, maxFiles } = useSaveConfigFile('AGENT.md')
+  const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile('AGENT.md')
 
   const isCustom = agentMode === 'カスタム'
   const generatedPreview = useMemo(() => generateAgentMarkdown(config), [config])
@@ -225,21 +226,21 @@ export default function AgentPage() {
           )}
 
           {/* Form */}
-          <div ref={formScrollRef} className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto pr-4">
+          <div ref={formScrollRef} className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto px-4 -mx-4">
 
             {/* モード選択 */}
             <div className="space-y-2">
               <FieldLabel requirement="required">AGENT.mdの種類</FieldLabel>
-              <select
-                value={agentMode}
-                onChange={(e) => setAgentMode(e.target.value)}
-                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-              >
-                <option value="">選択してください</option>
-                {AGENT_MODE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
-              </select>
+              <Select value={agentMode || undefined} onValueChange={setAgentMode}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="選択してください" />
+                </SelectTrigger>
+                <SelectContent>
+                  {AGENT_MODE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {isCustom && (<>
@@ -410,42 +411,42 @@ export default function AgentPage() {
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <FieldLabel>インデント</FieldLabel>
-                  <select
-                    value={config.indent}
-                    onChange={(e) => update('indent', e.target.value)}
-                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                  >
-                    <option value="">未選択</option>
-                    <option value="スペース2">スペース2</option>
-                    <option value="スペース4">スペース4</option>
-                    <option value="タブ">タブ</option>
-                  </select>
+                  <Select value={config.indent || undefined} onValueChange={(v) => update('indent', v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="未選択" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="スペース2">スペース2</SelectItem>
+                      <SelectItem value="スペース4">スペース4</SelectItem>
+                      <SelectItem value="タブ">タブ</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>文字コード</FieldLabel>
-                  <select
-                    value={config.charset}
-                    onChange={(e) => update('charset', e.target.value)}
-                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                  >
-                    <option value="">未選択</option>
-                    <option value="UTF-8">UTF-8</option>
-                    <option value="UTF-16">UTF-16</option>
-                    <option value="Shift-JIS">Shift-JIS</option>
-                  </select>
+                  <Select value={config.charset || undefined} onValueChange={(v) => update('charset', v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="未選択" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UTF-8">UTF-8</SelectItem>
+                      <SelectItem value="UTF-16">UTF-16</SelectItem>
+                      <SelectItem value="Shift-JIS">Shift-JIS</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>行末</FieldLabel>
-                  <select
-                    value={config.lineEnding}
-                    onChange={(e) => update('lineEnding', e.target.value)}
-                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
-                  >
-                    <option value="">未選択</option>
-                    <option value="LF (Unix形式)">LF (Unix形式)</option>
-                    <option value="CRLF (Windows形式)">CRLF (Windows形式)</option>
-                    <option value="CR">CR</option>
-                  </select>
+                  <Select value={config.lineEnding || undefined} onValueChange={(v) => update('lineEnding', v)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="未選択" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="LF (Unix形式)">LF (Unix形式)</SelectItem>
+                      <SelectItem value="CRLF (Windows形式)">CRLF (Windows形式)</SelectItem>
+                      <SelectItem value="CR">CR</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>命名規則</FieldLabel>
@@ -709,6 +710,11 @@ export default function AgentPage() {
                   )
                 )}
               </div>
+              {feedback && (
+                <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === 'success' ? 'text-success' : 'text-destructive'}`}>
+                  {feedback.message}
+                </p>
+              )}
             </div>
           </div>
 

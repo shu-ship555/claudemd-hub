@@ -9,6 +9,7 @@ interface FormFieldProps {
   onChange: (value: string) => void
   disabled?: boolean
   placeholder?: string
+  required?: boolean
 }
 
 export function FormField({
@@ -19,6 +20,7 @@ export function FormField({
   onChange,
   disabled = false,
   placeholder,
+  required = false,
 }: FormFieldProps) {
   return (
     <div className="space-y-2">
@@ -30,6 +32,7 @@ export function FormField({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder={placeholder}
+        required={required}
       />
     </div>
   )

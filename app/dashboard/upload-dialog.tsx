@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { createConfigFile } from './actions'
 import { useFormState } from '@/lib/hooks/use-form-state'
 import { FormField } from '@/components/custom/form-field'
@@ -13,25 +14,26 @@ export default function UploadDialog() {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [content, setContent] = useState('')
-  const { isLoading, setIsLoading } = useFormState()
+  const { error, isLoading, setError, setIsLoading } = useFormState()
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!name.trim()) {
-      alert('ファイル名を入力してください')
+      setError('ファイル名を入力してください')
       return
     }
 
+    setError('')
     setIsLoading(true)
     try {
       await createConfigFile(name, content)
       setName('')
       setContent('')
       setOpen(false)
-    } catch (error) {
-      console.error('Create error:', error)
-      alert('ファイルの作成に失敗しました')
+    } catch (err) {
+      console.error('Create error:', err)
+      setError('ファイルの作成に失敗しました')
     } finally {
       setIsLoading(false)
     }
@@ -50,6 +52,9 @@ export default function UploadDialog() {
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
           <FormField
             id="name"
             label="ファイル名"
@@ -60,13 +65,13 @@ export default function UploadDialog() {
           />
           <div className="space-y-2">
             <Label htmlFor="content">ファイル内容</Label>
-            <textarea
+            <Textarea
               id="content"
               placeholder="設定ファイルの内容を貼り付けてください..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={isLoading}
-              className="w-full h-48 rounded-md border border-input bg-transparent px-3 py-2 font-mono text-sm"
+              className="h-48 font-mono text-sm"
             />
           </div>
           <div className="flex justify-end gap-2">
