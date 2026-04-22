@@ -20,7 +20,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
       <div className="max-w-7xl mx-auto px-6 h-full pb-px flex justify-between items-center">
         <div>
           <h1 className="flex items-center gap-2 text-sm font-bold leading-[120%] tracking-[0.04em]">
-            {title}
+            <a href="/" className="hover:text-muted-foreground transition-colors duration-ui">{title}</a>
             <Badge variant="outline">Beta</Badge>
           </h1>
           {subtitle && (
