@@ -13,7 +13,7 @@ interface SectionCardProps {
 
 export function SectionCard({ label, description, icon: Icon, children, className, onClick }: SectionCardProps) {
   return (
-    <div className={cn('rounded-xl border border-border bg-card overflow-hidden transition-colors duration-ui', { 'cursor-pointer hover:border-primary': onClick }, className)}>
+    <div className={cn('rounded-xl border border-border bg-card overflow-hidden transition-colors duration-ui hover:border-primary', { 'cursor-pointer': onClick }, className)}>
       <div className="px-6 pt-4 pb-4 bg-primary-surface rounded-t-xl space-y-1 border-b border-border" onClick={onClick}>
         <Label className="text-sm font-bold leading-[120%] tracking-[0.04em] flex items-center gap-2 text-primary">
           {Icon && <Icon className="h-4 w-4 text-primary" />}

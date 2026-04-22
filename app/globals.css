@@ -54,26 +54,28 @@
   --transition-duration-ui: 150ms;                       /* ホバー/インタラクション共通 duration */
 }
 
-*, *::before, *::after {
-  border-color: var(--color-border);
-}
+@layer base {
+  *, *::before, *::after {
+    border-color: var(--color-border);
+  }
 
-html {
-  color-scheme: light;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  line-height: 1.47;
-  font-feature-settings: "palt";
-}
+  body {
+    line-height: 1.47;
+    font-feature-settings: "palt";
+  }
 
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: 0em;
-}
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: 0em;
+  }
 
-::placeholder {
-  color: oklch(0.55 0 0); /* ~#777777 – 4.5:1 on white */
-  opacity: 1;
+  ::placeholder {
+    color: oklch(0.55 0 0); /* ~#777777 – 4.5:1 on white */
+    opacity: 1;
+  }
 }

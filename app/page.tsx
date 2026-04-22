@@ -5,14 +5,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
+      <Card className="w-full max-w-md pt-5.5 px-6 pb-6">
+        <CardHeader className="px-0 pt-0">
           <CardTitle>Claude Config Manager</CardTitle>
           <CardDescription>
             Claude Code の設定ファイルを管理・整理します
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent className="flex flex-col gap-4 px-0">
           <Link href="/dashboard">
             <Button className="w-full">
               DESIGN.md を生成する

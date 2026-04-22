@@ -21,12 +21,12 @@ export function AuthCard({
 }: AuthCardProps) {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
+      <Card className="w-full max-w-md pt-5.5 px-6 pb-6">
+        <CardHeader className="px-0 pt-0">
           <CardTitle>{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           {children}
           <p className="mt-4 text-sm text-muted-foreground">
             {footerPrompt}{' '}

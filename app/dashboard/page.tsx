@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes } from 'lucide-react'
+import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes, Pencil, Check } from 'lucide-react'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from '@/lib/constants'
@@ -161,6 +161,7 @@ export default function DashboardPage() {
   const [keyColorStandard, setKeyColorStandard] = useState<'A' | 'AA' | 'AAA' | 'none'>('AA')
   const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS)
   const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set())
+  const [editingComponentIds, setEditingComponentIds] = useState<Set<string>>(new Set())
   const formScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -194,6 +195,19 @@ export default function DashboardPage() {
     setOpenComponentIds((prev) => {
       const next = new Set(prev)
       if (next.has(id)) { next.delete(id) } else { next.add(id) }
+      return next
+    })
+  }
+
+  const toggleComponentEditing = (id: string) => {
+    setEditingComponentIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+        setOpenComponentIds((prev2) => new Set([...prev2, id]))
+      }
       return next
     })
   }
@@ -1309,34 +1323,53 @@ export default function DashboardPage() {
 
                           {componentItems.map((item) => {
                             const isOpen = openComponentIds.has(item.id)
+                            const isEditing = editingComponentIds.has(item.id)
                             return (
                               <div key={item.id} className="rounded-lg border border-input overflow-hidden">
-                                <div className="flex items-center gap-2 px-3 py-2 bg-background">
+                                <div
+                                  className={`flex items-center gap-2 px-3 py-3 bg-background${!isEditing ? ' cursor-pointer' : ''}`}
+                                  onClick={!isEditing ? () => toggleComponentOpen(item.id) : undefined}
+                                >
                                   <button
                                     type="button"
-                                    onClick={() => toggleComponentOpen(item.id)}
-                                    className="flex items-center gap-2 flex-1 text-left"
+                                    onClick={(e) => { e.stopPropagation(); toggleComponentOpen(item.id) }}
+                                    className="shrink-0 text-muted-foreground"
                                   >
-                                    {isOpen ? <ChevronUp className="size-3.5 text-muted-foreground shrink-0" /> : <ChevronDown className="size-3.5 text-muted-foreground shrink-0" />}
+                                    {isOpen ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                                  </button>
+
+                                  {isEditing ? (
                                     <Input
                                       value={item.name}
                                       onChange={(e) => updateComponentItem(item.id, 'name', e.target.value)}
-                                      onClick={(e) => e.stopPropagation()}
                                       placeholder="コンポーネント名（例: Button）"
-                                      className="h-6 text-xs border-none bg-transparent px-0 font-medium focus-visible:ring-0"
+                                      autoFocus
+                                      className="h-auto flex-1 text-xs md:text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0"
                                     />
+                                  ) : (
+                                    <span className="flex-1 text-xs font-medium text-foreground truncate">
+                                      {item.name || <span className="text-muted-foreground">未設定</span>}
+                                    </span>
+                                  )}
+
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); toggleComponentEditing(item.id) }}
+                                    className="shrink-0 text-muted-foreground hover:text-foreground transition-colors duration-ui"
+                                  >
+                                    {isEditing ? <Check className="size-3.5" /> : <Pencil className="size-3.5" />}
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => removeComponentItem(item.id)}
-                                    className="text-muted-foreground hover:text-destructive shrink-0 transition-colors duration-ui"
+                                    onClick={(e) => { e.stopPropagation(); removeComponentItem(item.id) }}
+                                    className="shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-ui"
                                   >
                                     <Trash2 className="size-3.5" />
                                   </button>
                                 </div>
 
                                 {isOpen && (
-                                  <div className="p-3 space-y-3">
+                                  <div className="border-t border-input p-3 space-y-3">
                                     {COMPONENT_FIELDS.map(({ id, label, placeholder }) => (
                                       <div key={id} className="space-y-1.5">
                                         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{label}</p>
@@ -1344,10 +1377,21 @@ export default function DashboardPage() {
                                           value={item[id]}
                                           onChange={(e) => updateComponentItem(item.id, id, e.target.value)}
                                           placeholder={placeholder}
-                                          className="min-h-16 text-xs font-mono mb-1"
+                                          disabled={!isEditing}
+                                          className="min-h-16 text-xs font-mono mb-1 disabled:opacity-70"
                                         />
                                       </div>
                                     ))}
+                                    {isEditing && (
+                                      <button
+                                        type="button"
+                                        onClick={() => toggleComponentEditing(item.id)}
+                                        className="flex items-center gap-1.5 w-full justify-center rounded-lg border border-input py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui"
+                                      >
+                                        <Check className="size-3" />
+                                        編集を完了する
+                                      </button>
+                                    )}
                                   </div>
                                 )}
                               </div>

@@ -15,7 +15,7 @@ export default function UploadDialog() {
   const [content, setContent] = useState('')
   const { isLoading, setIsLoading } = useFormState()
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (!name.trim()) {
@@ -42,7 +42,7 @@ export default function UploadDialog() {
       <DialogTrigger asChild>
         <Button>設定ファイルをアップロード</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl pt-5.5 px-6 pb-6">
         <DialogHeader>
           <DialogTitle>新しい設定ファイル</DialogTitle>
           <DialogDescription>
@@ -66,7 +66,7 @@ export default function UploadDialog() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={isLoading}
-              className="w-full h-48 rounded-md border border-input bg-background px-3 py-2 font-mono text-sm"
+              className="w-full h-48 rounded-lg border border-input bg-transparent px-3 py-2 font-mono text-sm"
             />
           </div>
           <div className="flex justify-end gap-2">
