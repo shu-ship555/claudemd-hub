@@ -54,6 +54,17 @@ const SHADCN_FIELDS: { id: string; label: string; placeholder: string }[] = [
 
 const THEME_OPTIONS = ['デフォルト', 'カスタム']
 
+const WIZARD_STEPS = [
+  { id: 'visualTheme',   label: 'ビジュアルテーマ', icon: Sparkles },
+  { id: 'colorPalette',  label: 'カラーパレット',   icon: Palette },
+  { id: 'typography',    label: 'タイポグラフィ',   icon: Type },
+  { id: 'icons',         label: 'アイコン',         icon: Shapes },
+  { id: 'layout',        label: 'レイアウト',       icon: LayoutGrid },
+  { id: 'components',    label: 'コンポーネント',   icon: Layers },
+  { id: 'accessibility', label: 'アクセシビリティ', icon: Eye },
+  { id: 'other',         label: 'その他',           icon: FileText },
+] as const
+
 const DEFAULT_PREVIEW = `# Design System
 
 ## Overview
@@ -162,6 +173,7 @@ export default function DashboardPage() {
   const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS)
   const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set())
   const [editingComponentIds, setEditingComponentIds] = useState<Set<string>>(new Set())
+  const [activeSection, setActiveSection] = useState<string>('visualTheme')
   const formScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -213,6 +225,33 @@ export default function DashboardPage() {
   }
 
   const isCustom = themeSelect === 'カスタム'
+
+  const scrollToSection = (id: string) => {
+    const formEl = formScrollRef.current
+    const sectionEl = document.getElementById(id)
+    if (!formEl || !sectionEl) return
+    const top = sectionEl.getBoundingClientRect().top - formEl.getBoundingClientRect().top + formEl.scrollTop
+    formEl.scrollTo({ top: top - 16, behavior: 'smooth' })
+    setActiveSection(id)
+  }
+
+  useEffect(() => {
+    const formEl = formScrollRef.current
+    if (!formEl || !isCustom) return
+    const sectionIds = WIZARD_STEPS.map((s) => s.id)
+    const handleScroll = () => {
+      const containerTop = formEl.getBoundingClientRect().top
+      let found = sectionIds[0]
+      for (const id of sectionIds) {
+        const el = document.getElementById(id)
+        if (!el) continue
+        if (el.getBoundingClientRect().top - containerTop <= 60) found = id
+      }
+      setActiveSection(found)
+    }
+    formEl.addEventListener('scroll', handleScroll)
+    return () => formEl.removeEventListener('scroll', handleScroll)
+  }, [isCustom])
 
   const scrollPreviewToSection = (sectionName: string) => {
     if (!previewScrollRef.current) return
@@ -319,7 +358,34 @@ export default function DashboardPage() {
       </div>
 
       <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
-        <div className="grid gap-12 lg:grid-cols-2">
+        <div className={isCustom ? 'grid gap-6 lg:grid-cols-[160px_1fr_1fr]' : 'grid gap-12 lg:grid-cols-2'}>
+          {/* Wizard TOC — カスタム時のみ表示 */}
+          {isCustom && (
+            <aside className="hidden lg:block">
+              <nav className="sticky space-y-0.5" style={{ top: 'calc(3.5rem + 1.5rem)' }}>
+                {WIZARD_STEPS.map((step, i) => {
+                  const StepIcon = step.icon
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => scrollToSection(step.id)}
+                      className={cn(
+                        'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors duration-ui',
+                        activeSection === step.id
+                          ? 'bg-primary-surface text-primary font-semibold'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      )}
+                    >
+                      <span className="w-4 shrink-0 text-[10px] font-mono tabular-nums opacity-40">{i + 1}</span>
+                      <StepIcon className="size-3 shrink-0" />
+                      <span className="leading-tight truncate">{step.label}</span>
+                    </button>
+                  )
+                })}
+              </nav>
+            </aside>
+          )}
           {/* Form Section */}
           <div
             ref={formScrollRef}
@@ -351,6 +417,7 @@ export default function DashboardPage() {
               <>
                 {/* ビジュアルテーマ section */}
                 <SectionCard
+                  id="visualTheme"
                   label="ビジュアルテーマ"
                   description="ブランドの世界観・インスピレーション元・全体の雰囲気"
                   icon={Sparkles}
@@ -380,6 +447,7 @@ export default function DashboardPage() {
 
                 {/* カラーパレット section */}
                 <SectionCard
+                  id="colorPalette"
                   label="カラーパレット"
                   description="コンポーネントプレビューとマークダウンの両方に反映されます"
                   onClick={() => handleSectionClick('colorPalette')}
@@ -868,6 +936,7 @@ export default function DashboardPage() {
 
                 {/* タイポグラフィ section */}
                 <SectionCard
+                  id="typography"
                   label="タイポグラフィ"
                   onClick={() => handleSectionClick('typography')}
                   description="欧文・和文フォントファミリー"
@@ -1053,6 +1122,7 @@ export default function DashboardPage() {
 
                 {/* アイコン section */}
                 <SectionCard
+                  id="icons"
                   label="アイコン"
                   onClick={() => handleSectionClick('icons')}
                   description="アイコンライブラリの設定"
@@ -1099,6 +1169,7 @@ export default function DashboardPage() {
 
                 {/* レイアウト section */}
                 <SectionCard
+                  id="layout"
                   label="レイアウト"
                   onClick={() => handleSectionClick('layout')}
                   description="スペーシングと角丸の設定"
@@ -1231,6 +1302,7 @@ export default function DashboardPage() {
 
                 {/* コンポーネント section */}
                 <SectionCard
+                  id="components"
                   label="コンポーネント"
                   onClick={() => handleSectionClick('components')}
                   description="コンポーネント定義・エレベーション・共通指針"
@@ -1405,6 +1477,7 @@ export default function DashboardPage() {
 
                 {/* アクセシビリティ section */}
                 <SectionCard
+                  id="accessibility"
                   label="アクセシビリティ"
                   onClick={() => handleSectionClick('accessibility')}
                   description="WCAG 準拠レベルとコントラスト比の基準"
@@ -1526,6 +1599,7 @@ export default function DashboardPage() {
 
                 {/* その他 section */}
                 <SectionCard
+                  id="other"
                   label="その他"
                   description="上記以外の任意の補足情報"
                   icon={FileText}
