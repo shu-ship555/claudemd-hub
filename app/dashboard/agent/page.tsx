@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { Info, Layers, FolderOpen, Terminal, Code, Blocks, GitBranch, Bot, Server } from 'lucide-react'
+import { Info, Layers, FolderOpen, Terminal, Code, Blocks, GitBranch, Bot, Server, Plus, Trash2 } from 'lucide-react'
 import { SectionCard } from '@/components/custom/section-card'
 import { FieldLabel } from '@/components/custom/field-label'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,84 @@ import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { downloadTextFile } from '@/lib/download'
-import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig } from '@/lib/generate-agent'
+import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type TechRow3 } from '@/lib/generate-agent'
+
+type TechField3 = 'frontendStack' | 'backendStack' | 'infraStack' | 'devTools'
+
+interface TechTableProps {
+  rows: Array<{ role: string; tech: string; note?: string }>
+  showNote?: boolean
+  onUpdate: (idx: number, key: string, value: string) => void
+  onAdd: () => void
+  onRemove: (idx: number) => void
+}
+
+function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTableProps) {
+  return (
+    <div className="rounded-md border border-input overflow-hidden text-sm">
+      <div className="overflow-x-auto">
+          <table className="w-full min-w-140">
+            <thead>
+              <tr className="bg-muted border-b border-input">
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-muted-foreground w-40">役割</th>
+                <th className={`px-3 py-2 text-left text-[11px] font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
+                {showNote && <th className="px-3 py-2 text-left text-[11px] font-medium text-muted-foreground">備考</th>}
+                <th className="w-8" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i} className="border-b border-input last:border-0">
+                  <td className="px-2 py-1 w-40">
+                    <Input
+                      value={row.role}
+                      onChange={(e) => onUpdate(i, 'role', e.target.value)}
+                      className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                    />
+                  </td>
+                  <td className="px-2 py-1 w-50">
+                    <Input
+                      value={row.tech}
+                      onChange={(e) => onUpdate(i, 'tech', e.target.value)}
+                      placeholder="技術名"
+                      className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                    />
+                  </td>
+                  {showNote && (
+                    <td className="px-2 py-1">
+                      <Input
+                        value={row.note ?? ''}
+                        onChange={(e) => onUpdate(i, 'note', e.target.value)}
+                        placeholder="備考"
+                        className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                      />
+                    </td>
+                  )}
+                  <td className="pr-2 text-right">
+                    <button
+                      type="button"
+                      onClick={() => onRemove(i)}
+                      className="p-1 text-muted-foreground hover:text-destructive transition-colors duration-ui"
+                    >
+                      <Trash2 className="size-3" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+      </div>
+      <button
+        type="button"
+        onClick={onAdd}
+        className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input"
+      >
+        <Plus className="size-3" />
+        行を追加
+      </button>
+    </div>
+  )
+}
 
 const WIZARD_STEPS = [
   { id: 'overview',       label: 'プロジェクト概要',      icon: Info },
@@ -40,6 +117,20 @@ export default function AgentPage() {
   const update = <K extends keyof AgentConfig>(key: K, value: AgentConfig[K]) => {
     setConfig((prev) => ({ ...prev, [key]: value }))
   }
+
+  const updateRow3 = (field: TechField3, idx: number, key: string, value: string) => {
+    setConfig((prev) => {
+      const rows = (prev[field] as TechRow3[]).map((r, i) => i === idx ? { ...r, [key]: value } : r)
+      return { ...prev, [field]: rows }
+    })
+  }
+  const addRow3 = (field: TechField3) => {
+    setConfig((prev) => ({ ...prev, [field]: [...(prev[field] as TechRow3[]), { role: '', tech: '', note: '' }] }))
+  }
+  const removeRow3 = (field: TechField3, idx: number) => {
+    setConfig((prev) => ({ ...prev, [field]: (prev[field] as TechRow3[]).filter((_, i) => i !== idx) }))
+  }
+
 
   useEffect(() => {
     const formEl = formScrollRef.current
@@ -89,13 +180,13 @@ export default function AgentPage() {
                     type="button"
                     onClick={() => scrollToSection(step.id)}
                     className={cn(
-                      'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors duration-ui',
+                      'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui',
                       activeSection === step.id
                         ? 'bg-primary-surface text-primary font-semibold'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                     )}
                   >
-                    <span className="w-4 shrink-0 text-[10px] font-mono tabular-nums opacity-40">{i + 1}</span>
+                    <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
                     <StepIcon className="size-3 shrink-0" />
                     <span className="leading-tight truncate">{step.label}</span>
                   </button>
@@ -167,45 +258,41 @@ export default function AgentPage() {
               icon={Layers}
             >
               <div className="space-y-6">
-                <p className="text-[10px] leading-[170%] tracking-[0.04em] text-muted-foreground">
-                  各行に「役割 | 採用技術 | 備考」の形式で入力してください（例: フレームワーク | Next.js 16 | App Router のみ）
-                </p>
                 <div className="space-y-1.5">
                   <FieldLabel>フロントエンド</FieldLabel>
-                  <Textarea
-                    placeholder={'フレームワーク | Next.js 16 | App Routerのみ\nスタイリング | Tailwind CSS v4 | CSS Modulesは使わない\n状態管理 | React useState / useContext | —'}
-                    value={config.frontendStack}
-                    onChange={(e) => update('frontendStack', e.target.value)}
-                    className="min-h-24 font-mono text-xs"
+                  <TechTable
+                    rows={config.frontendStack}
+                    onUpdate={(i, k, v) => updateRow3('frontendStack', i, k, v)}
+                    onAdd={() => addRow3('frontendStack')}
+                    onRemove={(i) => removeRow3('frontendStack', i)}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>バックエンド</FieldLabel>
-                  <Textarea
-                    placeholder={'ランタイム | Node.js 20 | —\nフレームワーク | Next.js API Routes | —\n認証 | Supabase Auth | —'}
-                    value={config.backendStack}
-                    onChange={(e) => update('backendStack', e.target.value)}
-                    className="min-h-24 font-mono text-xs"
+                  <TechTable
+                    rows={config.backendStack}
+                    onUpdate={(i, k, v) => updateRow3('backendStack', i, k, v)}
+                    onAdd={() => addRow3('backendStack')}
+                    onRemove={(i) => removeRow3('backendStack', i)}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>インフラ・データ</FieldLabel>
-                  <Textarea
-                    placeholder={'データベース | PostgreSQL (Supabase) | —\nホスティング | Vercel | —\nCI/CD | GitHub Actions | —'}
-                    value={config.infraStack}
-                    onChange={(e) => update('infraStack', e.target.value)}
-                    className="min-h-20 font-mono text-xs"
+                  <TechTable
+                    rows={config.infraStack}
+                    onUpdate={(i, k, v) => updateRow3('infraStack', i, k, v)}
+                    onAdd={() => addRow3('infraStack')}
+                    onRemove={(i) => removeRow3('infraStack', i)}
                   />
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>開発ツール</FieldLabel>
-                  <Textarea
-                    placeholder={'パッケージマネージャー | npm\nLinter | ESLint\nフォーマッター | Prettier\nテスト | Vitest'}
-                    value={config.devTools}
-                    onChange={(e) => update('devTools', e.target.value)}
-                    className="min-h-20 font-mono text-xs"
+                  <TechTable
+                    rows={config.devTools}
+                    onUpdate={(i, k, v) => updateRow3('devTools', i, k, v)}
+                    onAdd={() => addRow3('devTools')}
+                    onRemove={(i) => removeRow3('devTools', i)}
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 開発ツールは「役割 | 採用技術」の2列形式</p>
                 </div>
               </div>
             </SectionCard>
@@ -235,7 +322,7 @@ export default function AgentPage() {
                     onChange={(e) => update('importantFiles', e.target.value)}
                     className="min-h-24 font-mono text-xs mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>
@@ -281,7 +368,7 @@ export default function AgentPage() {
                   <select
                     value={config.indent}
                     onChange={(e) => update('indent', e.target.value)}
-                    className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                   >
                     <option value="スペース2">スペース2</option>
                     <option value="スペース4">スペース4</option>
@@ -296,7 +383,7 @@ export default function AgentPage() {
                     onChange={(e) => update('namingRules', e.target.value)}
                     className="min-h-24 font-mono text-xs"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「対象 | 規則 | 例」の形式で1行1項目</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「対象 | 規則 | 例」の形式で1行1項目</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>禁止事項</FieldLabel>
@@ -306,7 +393,7 @@ export default function AgentPage() {
                     onChange={(e) => update('prohibitions', e.target.value)}
                     className="min-h-24 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>
@@ -327,7 +414,7 @@ export default function AgentPage() {
                     onChange={(e) => update('designPrinciples', e.target.value)}
                     className="min-h-24 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>レイヤー構成</FieldLabel>
@@ -346,7 +433,7 @@ export default function AgentPage() {
                     onChange={(e) => update('dependencyRules', e.target.value)}
                     className="min-h-20 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>テスト方針</FieldLabel>
@@ -356,7 +443,7 @@ export default function AgentPage() {
                     onChange={(e) => update('testPolicy', e.target.value)}
                     className="min-h-24 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>
@@ -395,7 +482,7 @@ export default function AgentPage() {
                     onChange={(e) => update('prRules', e.target.value)}
                     className="min-h-20 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>
@@ -416,7 +503,7 @@ export default function AgentPage() {
                     onChange={(e) => update('mustDo', e.target.value)}
                     className="min-h-28 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel requirement="required">してはいけないこと (MUST NOT)</FieldLabel>
@@ -426,7 +513,7 @@ export default function AgentPage() {
                     onChange={(e) => update('mustNot', e.target.value)}
                     className="min-h-28 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>推奨される行動 (SHOULD)</FieldLabel>
@@ -436,7 +523,7 @@ export default function AgentPage() {
                     onChange={(e) => update('should', e.target.value)}
                     className="min-h-24 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>
@@ -457,7 +544,7 @@ export default function AgentPage() {
                     onChange={(e) => update('envVars', e.target.value)}
                     className="min-h-24 font-mono text-xs"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「変数名 | 必須 | 説明 | デフォルト」の形式で1行1変数</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「変数名 | 必須 | 説明 | デフォルト」の形式で1行1変数</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>外部依存サービス</FieldLabel>
@@ -467,7 +554,7 @@ export default function AgentPage() {
                     onChange={(e) => update('externalServices', e.target.value)}
                     className="min-h-20 font-mono text-xs"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「サービス | 用途 | ローカル代替」の形式で1行1サービス</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「サービス | 用途 | ローカル代替」の形式で1行1サービス</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>よくあるタスク</FieldLabel>
@@ -477,7 +564,7 @@ export default function AgentPage() {
                     onChange={(e) => update('commonTasks', e.target.value)}
                     className="min-h-20 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>参考リソース</FieldLabel>
@@ -487,7 +574,7 @@ export default function AgentPage() {
                     onChange={(e) => update('references', e.target.value)}
                     className="min-h-20 text-sm mb-1"
                   />
-                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
               </div>
             </SectionCard>

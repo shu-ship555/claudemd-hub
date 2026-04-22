@@ -102,7 +102,7 @@ function DefaultAtom({ c, sp }: PreviewProps) {
           ].map(({ name, color }) => (
             <div key={name} className="flex flex-col items-center gap-1">
               <div className="w-9 h-9" style={{ background: color, borderRadius: brad }} />
-              <span className="text-[10px] leading-[120%] tracking-[0.04em]" style={{ color: c.muted }}>{name}</span>
+              <span className="text-2xs leading-[120%] tracking-[0.04em]" style={{ color: c.muted }}>{name}</span>
             </div>
           ))}
         </div>

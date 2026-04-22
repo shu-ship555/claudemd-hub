@@ -1,12 +1,15 @@
+export type TechRow3 = { role: string; tech: string; note: string }
+export type TechRow2 = { role: string; tech: string }
+
 export interface AgentConfig {
   projectName: string
   description: string
   languages: string
   targetEnv: string
-  frontendStack: string
-  backendStack: string
-  infraStack: string
-  devTools: string
+  frontendStack: TechRow3[]
+  backendStack: TechRow3[]
+  infraStack: TechRow3[]
+  devTools: TechRow3[]
   repoStructure: string
   importantFiles: string
   cmdInstall: string
@@ -39,10 +42,31 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   description: '',
   languages: '',
   targetEnv: '',
-  frontendStack: '',
-  backendStack: '',
-  infraStack: '',
-  devTools: '',
+  frontendStack: [
+    { role: 'フレームワーク', tech: '', note: '' },
+    { role: 'スタイリング',   tech: '', note: '' },
+    { role: '状態管理',       tech: '', note: '' },
+    { role: 'データフェッチ', tech: '', note: '' },
+    { role: 'フォーム',       tech: '', note: '' },
+  ],
+  backendStack: [
+    { role: 'ランタイム',     tech: '', note: '' },
+    { role: 'フレームワーク', tech: '', note: '' },
+    { role: 'ORM',            tech: '', note: '' },
+    { role: '認証',           tech: '', note: '' },
+  ],
+  infraStack: [
+    { role: 'データベース',   tech: '', note: '' },
+    { role: 'キャッシュ',     tech: '', note: '' },
+    { role: 'ホスティング',   tech: '', note: '' },
+    { role: 'CI/CD',          tech: '', note: '' },
+  ],
+  devTools: [
+    { role: 'パッケージマネージャー', tech: '', note: '' },
+    { role: 'Linter',                tech: '', note: '' },
+    { role: 'フォーマッター',         tech: '', note: '' },
+    { role: 'テスト',                 tech: '', note: '' },
+  ],
   repoStructure: '',
   importantFiles: '',
   cmdInstall: '',
@@ -83,7 +107,7 @@ function parseRows(raw: string): string[][] {
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean)
-    .map((line) => line.split('|').map((cell) => cell.trim()))
+    .map((line) => line.split(/[|｜]/).map((cell) => cell.trim()))
 }
 
 function renderTable(headers: string[], rows: string[][]): string {
@@ -122,6 +146,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   if (hasValue(config.description)) overviewLines.push(`**目的・概要:** ${config.description.trim()}`)
   if (hasValue(config.languages)) overviewLines.push(`**主要言語・フレームワーク:** ${config.languages.trim()}`)
   if (hasValue(config.targetEnv)) overviewLines.push(`**ターゲット環境:** ${config.targetEnv.trim()}`)
+  if (hasValue(config.maintainer)) overviewLines.push(`**メンテナー:** ${config.maintainer.trim()}`)
   if (overviewLines.length > 0) {
     idx++
     parts.push(`## ${idx}. プロジェクト概要 (Project Overview)`)
@@ -134,18 +159,17 @@ export function generateAgentMarkdown(config: AgentConfig): string {
 
   // 2. 技術スタック
   const techSections: string[] = []
-  const renderTechSection = (title: string, raw: string, headers: string[]) => {
-    if (!hasValue(raw)) return
-    const table = renderTable(headers, parseRows(raw))
-    if (!table) return
+  const renderTech3 = (title: string, rows: TechRow3[]) => {
+    const valid = rows.filter((r) => r.tech.trim())
+    if (valid.length === 0) return
     techSections.push(`### ${title}`)
-    techSections.push(table)
+    techSections.push(renderTable(['役割', '採用技術', '備考'], valid.map((r) => [r.role, r.tech, r.note])))
     techSections.push('')
   }
-  renderTechSection('フロントエンド', config.frontendStack, ['役割', '採用技術', '備考'])
-  renderTechSection('バックエンド', config.backendStack, ['役割', '採用技術', '備考'])
-  renderTechSection('インフラ・データ', config.infraStack, ['役割', '採用技術', '備考'])
-  renderTechSection('開発ツール', config.devTools, ['役割', '採用技術'])
+  renderTech3('フロントエンド', config.frontendStack)
+  renderTech3('バックエンド', config.backendStack)
+  renderTech3('インフラ・データ', config.infraStack)
+  renderTech3('開発ツール', config.devTools)
   if (techSections.length > 0) {
     idx++
     parts.push(`## ${idx}. 技術スタック (Tech Stack)`)
@@ -367,9 +391,6 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
 
   parts.push(`> **最終更新:** ${date}`)
-  if (hasValue(config.maintainer)) {
-    parts.push(`> **メンテナー:** ${config.maintainer.trim()}`)
-  }
   parts.push('> このファイルはプロジェクトの変化に合わせて定期的に更新してください。')
 
   return parts.join('\n').trim() + '\n'

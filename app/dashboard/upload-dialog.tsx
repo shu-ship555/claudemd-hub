@@ -66,7 +66,7 @@ export default function UploadDialog() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               disabled={isLoading}
-              className="w-full h-48 rounded-lg border border-input bg-transparent px-3 py-2 font-mono text-sm"
+              className="w-full h-48 rounded-md border border-input bg-transparent px-3 py-2 font-mono text-sm"
             />
           </div>
           <div className="flex justify-end gap-2">

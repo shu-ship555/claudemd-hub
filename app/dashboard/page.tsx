@@ -371,13 +371,13 @@ export default function DashboardPage() {
                       type="button"
                       onClick={() => scrollToSection(step.id)}
                       className={cn(
-                        'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-lg text-xs transition-colors duration-ui',
+                        'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui',
                         activeSection === step.id
                           ? 'bg-primary-surface text-primary font-semibold'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                       )}
                     >
-                      <span className="w-4 shrink-0 text-[10px] font-mono tabular-nums opacity-40">{i + 1}</span>
+                      <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
                       <StepIcon className="size-3 shrink-0" />
                       <span className="leading-tight truncate">{step.label}</span>
                     </button>
@@ -397,7 +397,7 @@ export default function DashboardPage() {
               <select
                 value={themeSelect}
                 onChange={(e) => handleThemeChange(e.target.value)}
-                className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
               >
                 <option value="">選択してください</option>
                 {THEME_OPTIONS.map((opt) => (
@@ -441,7 +441,7 @@ export default function DashboardPage() {
                       onChange={(e) => updateField(section, 'keyCharacteristics', e.target.value)}
                       className="min-h-40 mb-1"
                     />
-                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                    <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
 
@@ -468,7 +468,7 @@ export default function DashboardPage() {
                         <select
                           value={keyColorStandard}
                           onChange={(e) => setKeyColorStandard(e.target.value as 'A' | 'AA' | 'AAA' | 'none')}
-                          className="ml-auto rounded border border-input bg-transparent px-2 py-0.5 text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground"
+                          className="ml-auto rounded border border-input bg-transparent px-2 py-0.5 text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground"
                         >
                           <option value="A">WCAG A</option>
                           <option value="AA">WCAG AA</option>
@@ -479,8 +479,8 @@ export default function DashboardPage() {
                       <div className="space-y-4">
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
-                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[0]}°</span>
+                            <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
+                            <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[0]}°</span>
                           </div>
                           <input
                             type="range"
@@ -512,8 +512,8 @@ export default function DashboardPage() {
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
-                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[1]}%</span>
+                            <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
+                            <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[1]}%</span>
                           </div>
                           <input
                             type="range"
@@ -545,8 +545,8 @@ export default function DashboardPage() {
                         </div>
                         <div className="space-y-1">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
-                            <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[2]}%</span>
+                            <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
+                            <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(customColors.primary)[2]}%</span>
                           </div>
                           <input
                             type="range"
@@ -598,7 +598,7 @@ export default function DashboardPage() {
                               <span className="text-muted-foreground">{label}</span>
                               <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
                               {ratio !== null && keyColorStandard !== 'none' && (
-                                <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getBadgeClass(ratio)}`}>
+                                <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getBadgeClass(ratio)}`}>
                                   {ratio}:1
                                 </span>
                               )}
@@ -612,7 +612,7 @@ export default function DashboardPage() {
                         onChange={(e) => updateField('colorPalette', 'keyColorNotes', e.target.value)}
                         className="mt-1 min-h-20 text-xs mb-1.5"
                       />
-                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
 
                       {(((cc.additionalKeyColorSets as any) || []).map((set: any, idx: number) => (
                         <div key={idx} className="mt-6 pt-6 border-t space-y-4">
@@ -632,8 +632,8 @@ export default function DashboardPage() {
                             <div className="space-y-4">
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
-                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[0]}°</span>
+                                  <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">色相</span>
+                                  <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[0]}°</span>
                                 </div>
                                 <input
                                   type="range"
@@ -660,8 +660,8 @@ export default function DashboardPage() {
                               </div>
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
-                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[1]}%</span>
+                                  <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">彩度</span>
+                                  <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[1]}%</span>
                                 </div>
                                 <input
                                   type="range"
@@ -688,8 +688,8 @@ export default function DashboardPage() {
                               </div>
                               <div className="space-y-1">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
-                                  <span className="text-[10px] leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[2]}%</span>
+                                  <span className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">明度</span>
+                                  <span className="text-2xs leading-[150%] tracking-[0.04em] font-mono text-muted-foreground">{hexToHsl(set.primaryColor)[2]}%</span>
                                 </div>
                                 <input
                                   type="range"
@@ -739,7 +739,7 @@ export default function DashboardPage() {
                                     <span className="text-muted-foreground">プライマリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.primaryColor}</span>
                                     {keyColorStandard !== 'none' && (
-                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(primaryRatio)}`}>
+                                      <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(primaryRatio)}`}>
                                         {primaryRatio}:1
                                       </span>
                                     )}
@@ -769,7 +769,7 @@ export default function DashboardPage() {
                                     <span className="text-muted-foreground">セカンダリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.secondaryColor}</span>
                                     {keyColorStandard !== 'none' && (
-                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(secondaryRatio)}`}>
+                                      <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(secondaryRatio)}`}>
                                         {secondaryRatio}:1
                                       </span>
                                     )}
@@ -799,7 +799,7 @@ export default function DashboardPage() {
                                     <span className="text-muted-foreground">ターシャリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.tertiaryColor}</span>
                                     {keyColorStandard !== 'none' && (
-                                      <span className={`font-mono text-[10px] leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(tertiaryRatio)}`}>
+                                      <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(tertiaryRatio)}`}>
                                         {tertiaryRatio}:1
                                       </span>
                                     )}
@@ -833,7 +833,7 @@ export default function DashboardPage() {
                               }}
                               className="min-h-20 text-xs mb-1.5"
                             />
-                            <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                            <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         </div>
                       )))}
@@ -887,7 +887,7 @@ export default function DashboardPage() {
                         onChange={(e) => updateField('colorPalette', 'commonColorNotes', e.target.value)}
                         className="mt-1 min-h-20 text-xs mb-1.5"
                       />
-                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
@@ -928,7 +928,7 @@ export default function DashboardPage() {
                           onChange={(e) => updateField('colorPalette', 'semanticColorNotes', e.target.value)}
                           className="mt-1 min-h-20 text-xs mb-1.5"
                         />
-                        <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                        <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     </div>
                   </div>
@@ -948,7 +948,7 @@ export default function DashboardPage() {
                       <select
                         value={(tc.latinFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'latinFont', e.target.value)}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {LATIN_FONTS.map((f) => (
@@ -970,7 +970,7 @@ export default function DashboardPage() {
                       <select
                         value={(tc.japaneseFont as string) ?? ''}
                         onChange={(e) => updateField('typography', 'japaneseFont', e.target.value)}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {JAPANESE_FONTS.map((f) => (
@@ -1023,7 +1023,7 @@ export default function DashboardPage() {
                                     placeholder={`例: 64px | Bold | 140% | -0.01em\n48px | Bold | 140% | -0.01em\n32px | Normal | 150% | 0em`}
                                     className="min-h-28 text-xs font-mono mb-1"
                                   />
-                                  <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                                 </div>
                               ) : null}
                               <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
@@ -1039,7 +1039,7 @@ export default function DashboardPage() {
                                 return (
                                 <div key={`${category}-${weight}`} className="space-y-2">
                                   <div className="flex items-center justify-between">
-                                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
+                                    <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
                                     <input
                                       type="checkbox"
                                       checked={allSelected}
@@ -1109,7 +1109,7 @@ export default function DashboardPage() {
                                   className="min-h-16 text-xs mb-1"
                                   placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`}
                                 />
-                                <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                                <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                               </div>
                               </div>
                             </div>
@@ -1134,7 +1134,7 @@ export default function DashboardPage() {
                       <select
                         value={(ic.iconLibrary as string) ?? 'lucide-react'}
                         onChange={(e) => updateField('icons', 'iconLibrary', e.target.value)}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="lucide-react">Lucide React</option>
                         <option value="カスタム">カスタム</option>
@@ -1150,7 +1150,7 @@ export default function DashboardPage() {
                           placeholder={`例: SVGアイコンは public/icons/ 配下に格納\nコンポーネントは components/icons/ で管理\nサイズ: 16px / 20px / 24px の 3展開\nアイコン色は CSS 変数で制御`}
                           className="min-h-28 text-sm mb-1"
                         />
-                        <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                        <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     )}
 
@@ -1162,7 +1162,7 @@ export default function DashboardPage() {
                         placeholder={`例: アイコンは必ず aria-hidden="true" を付与する\nデフォルトサイズは 20px\nテキストと併用するときは gap-2 で配置`}
                         className="min-h-20 text-sm mb-1"
                       />
-                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1181,7 +1181,7 @@ export default function DashboardPage() {
                       <select
                         value={(lc.layoutType as string) ?? 'liquid'}
                         onChange={(e) => updateField('layout', 'layoutType', e.target.value)}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="liquid">リキッド（流動的）</option>
                         <option value="solid">ソリッド（固定幅）</option>
@@ -1193,7 +1193,7 @@ export default function DashboardPage() {
                       <select
                         value={(lc.spacingBase as string) ?? ''}
                         onChange={(e) => updateField('layout', 'spacingBase', e.target.value)}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="">未指定</option>
                         {SPACING_BASE_OPTIONS.map((o) => (
@@ -1214,7 +1214,7 @@ export default function DashboardPage() {
                     {(lc.spacingBase as string) && (lc.spacingBase as string) !== 'custom' && SPACING_SCALES[lc.spacingBase as string] && (
                       <div className="space-y-1.5">
                         <p className="text-xs text-muted-foreground">Spacing Scale</p>
-                        <div className="rounded-lg border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
+                        <div className="rounded-md border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
                           {(() => {
                             let scale: number[] = []
                             if ((lc.spacingBase as string) === 'custom') {
@@ -1252,7 +1252,7 @@ export default function DashboardPage() {
                           { key: 'xl' as const, label: 'xl' },
                           { key: '2xl' as const, label: '2xl' },
                         ].map(({ key, label }) => (
-                          <div key={key} className="flex items-center gap-2 rounded-lg border border-input bg-background p-2">
+                          <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-background p-2">
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -1330,7 +1330,7 @@ export default function DashboardPage() {
                               placeholder={placeholder}
                               className="min-h-24 text-sm mb-1"
                             />
-                            <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                            <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
                         ))}
                       </div>
@@ -1342,7 +1342,7 @@ export default function DashboardPage() {
                           <select
                             value={(cmp.roundness as string) ?? 'md'}
                             onChange={(e) => updateField('components', 'roundness', e.target.value)}
-                            className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                           >
                             {['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'].map((v) => (
                               <option key={v} value={v}>{v}</option>
@@ -1355,7 +1355,7 @@ export default function DashboardPage() {
                           <select
                             value={(cmp.elevation as string) ?? 'md'}
                             onChange={(e) => updateField('components', 'elevation', e.target.value)}
-                            className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                           >
                             {['none', 'sm', 'md', 'lg'].map((v) => (
                               <option key={v} value={v}>{v}</option>
@@ -1371,7 +1371,7 @@ export default function DashboardPage() {
                             placeholder="例: ボタンはprimary colorで塗りつぶし、カードはborderのみでelevationなし"
                             className="min-h-16 text-sm mb-1"
                           />
-                          <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                          <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                         </div>
 
                         <div className="border-t pt-4 space-y-3">
@@ -1380,7 +1380,7 @@ export default function DashboardPage() {
                             <button
                               type="button"
                               onClick={addComponentItem}
-                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-dashed border-primary text-primary hover:bg-primary-surface transition-colors duration-ui"
+                              className="flex items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary-surface transition-colors duration-ui"
                             >
                               <Plus className="size-3" />
                               追加
@@ -1397,7 +1397,7 @@ export default function DashboardPage() {
                             const isOpen = openComponentIds.has(item.id)
                             const isEditing = editingComponentIds.has(item.id)
                             return (
-                              <div key={item.id} className="rounded-lg border border-input overflow-hidden">
+                              <div key={item.id} className="rounded-md border border-input overflow-hidden">
                                 <div
                                   className={`flex items-center gap-2 px-3 py-3 bg-background${!isEditing ? ' cursor-pointer' : ''}`}
                                   onClick={!isEditing ? () => toggleComponentOpen(item.id) : undefined}
@@ -1458,7 +1458,7 @@ export default function DashboardPage() {
                                       <button
                                         type="button"
                                         onClick={() => toggleComponentEditing(item.id)}
-                                        className="flex items-center gap-1.5 w-full justify-center rounded-lg border border-input py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui"
+                                        className="flex items-center gap-1.5 w-full justify-center rounded-md border border-input py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui"
                                       >
                                         <Check className="size-3" />
                                         編集を完了する
@@ -1527,7 +1527,7 @@ export default function DashboardPage() {
                             updateField('accessibility', 'contrastLevel', val)
                           }
                         }}
-                        className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
+                        className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                       >
                         <option value="A">WCAG A（最低基準・3:1）</option>
                         <option value="AA">WCAG AA（推奨基準・4.5:1）</option>
@@ -1540,7 +1540,7 @@ export default function DashboardPage() {
                       <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コントラスト比の基準</p>
 
                       {((ac.contrastLevel as string) ?? 'AA') !== 'カスタム' ? (
-                        <div className="rounded-lg border border-input bg-muted p-3 space-y-2">
+                        <div className="rounded-md border border-input bg-muted p-3 space-y-2">
                           {([
                             { label: '通常テキスト（18pt未満 / 太字14pt未満）', a: '3.0', aa: '4.5', aaa: '7.0' },
                             { label: '大テキスト（18pt以上 / 太字14pt以上）', a: '3.0', aa: '3.0', aaa: '4.5' },
@@ -1592,7 +1592,7 @@ export default function DashboardPage() {
                         placeholder={`例: ダークモード時は別途コントラスト検証を行う\nスクリーンリーダー対応（aria属性必須）\nprefers-reduced-motion を尊重する`}
                         className="min-h-24 text-sm mb-1"
                       />
-                      <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                      <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                   </div>
                 </SectionCard>
@@ -1612,7 +1612,7 @@ export default function DashboardPage() {
                       placeholder="上記セクション以外に記載したい内容を自由に入力してください"
                       className="min-h-40 text-sm mb-1"
                     />
-                    <p className="text-[10px] leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
+                    <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
                 </SectionCard>
               </>
