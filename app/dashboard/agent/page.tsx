@@ -92,6 +92,30 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTab
   )
 }
 
+const AGENT_MODE_OPTIONS = ['デフォルト', 'カスタム']
+
+const DEFAULT_AGENT_PREVIEW = `# AGENTS.md file
+
+## Dev environment tips
+- Use \`pnpm dlx turbo run where <project_name>\` to jump to a package instead of scanning with \`ls\`.
+- Run \`pnpm install --filter <project_name>\` to add the package to your workspace so Vite, ESLint, and TypeScript can see it.
+- Use \`pnpm create vite@latest <project_name> -- --template react-ts\` to spin up a new React + Vite package with TypeScript checks ready.
+- Check the name field inside each package's package.json to confirm the right name—skip the top-level one.
+
+## Testing instructions
+- Find the CI plan in the .github/workflows folder.
+- Run \`pnpm turbo run test --filter <project_name>\` to run every check defined for that package.
+- From the package root you can just call \`pnpm test\`. The commit should pass all tests before you merge.
+- To focus on one step, add the Vitest pattern: \`pnpm vitest run -t "<test name>"\`.
+- Fix any test or type errors until the whole suite is green.
+- After moving files or changing imports, run \`pnpm lint --filter <project_name>\` to be sure ESLint and TypeScript rules still pass.
+- Add or update tests for the code you change, even if nobody asked.
+
+## PR instructions
+- Title format: [<project_name>] <Title>
+- Always run \`pnpm lint\` and \`pnpm test\` before committing.
+`
+
 const WIZARD_STEPS = [
   { id: 'overview',       label: 'プロジェクト概要',      icon: Info },
   { id: 'techStack',      label: '技術スタック',           icon: Layers },
@@ -107,12 +131,15 @@ const WIZARD_STEPS = [
 export default function AgentPage() {
   const [config, setConfig] = useState<AgentConfig>(DEFAULT_AGENT_CONFIG)
   const [activeSection, setActiveSection] = useState<string>('overview')
+  const [agentMode, setAgentMode] = useState('')
   const formScrollRef = useRef<HTMLDivElement>(null)
   const previewScrollRef = useRef<HTMLTextAreaElement>(null)
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth()
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles } = useSaveConfigFile('AGENT.md')
 
-  const preview = useMemo(() => generateAgentMarkdown(config), [config])
+  const isCustom = agentMode === 'カスタム'
+  const generatedPreview = useMemo(() => generateAgentMarkdown(config), [config])
+  const preview = isCustom ? generatedPreview : agentMode === 'デフォルト' ? DEFAULT_AGENT_PREVIEW : '# AGENTS.md file'
 
   const update = <K extends keyof AgentConfig>(key: K, value: AgentConfig[K]) => {
     setConfig((prev) => ({ ...prev, [key]: value }))
@@ -167,37 +194,55 @@ export default function AgentPage() {
       </div>
 
       <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
-        <div className="grid gap-6 lg:grid-cols-[160px_1fr_1fr]">
+        <div className={isCustom ? 'grid gap-6 lg:grid-cols-[160px_1fr_1fr]' : 'grid gap-12 lg:grid-cols-2'}>
 
-          {/* Sidebar TOC */}
-          <aside className="hidden lg:block">
-            <nav className="sticky space-y-0.5" style={{ top: 'calc(3.5rem + 1.5rem)' }}>
-              {WIZARD_STEPS.map((step, i) => {
-                const StepIcon = step.icon
-                return (
-                  <button
-                    key={step.id}
-                    type="button"
-                    onClick={() => scrollToSection(step.id)}
-                    className={cn(
-                      'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui',
-                      activeSection === step.id
-                        ? 'bg-primary-surface text-primary font-semibold'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                    )}
-                  >
-                    <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
-                    <StepIcon className="size-3 shrink-0" />
-                    <span className="leading-tight truncate">{step.label}</span>
-                  </button>
-                )
-              })}
-            </nav>
-          </aside>
+          {/* Sidebar TOC — カスタム時のみ表示 */}
+          {isCustom && (
+            <aside className="hidden lg:block">
+              <nav className="sticky space-y-0.5" style={{ top: 'calc(3.5rem + 1.5rem)' }}>
+                {WIZARD_STEPS.map((step, i) => {
+                  const StepIcon = step.icon
+                  return (
+                    <button
+                      key={step.id}
+                      type="button"
+                      onClick={() => scrollToSection(step.id)}
+                      className={cn(
+                        'flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui',
+                        activeSection === step.id
+                          ? 'bg-primary-surface text-primary font-semibold'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      )}
+                    >
+                      <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
+                      <StepIcon className="size-3 shrink-0" />
+                      <span className="leading-tight truncate">{step.label}</span>
+                    </button>
+                  )
+                })}
+              </nav>
+            </aside>
+          )}
 
           {/* Form */}
           <div ref={formScrollRef} className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto pr-4">
 
+            {/* モード選択 */}
+            <div className="space-y-2">
+              <FieldLabel requirement="required">AGENT.mdの種類</FieldLabel>
+              <select
+                value={agentMode}
+                onChange={(e) => setAgentMode(e.target.value)}
+                className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+              >
+                <option value="">選択してください</option>
+                {AGENT_MODE_OPTIONS.map((opt) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
+            </div>
+
+            {isCustom && (<>
             {/* 1. プロジェクト概要 */}
             <SectionCard
               id="overview"
@@ -207,7 +252,7 @@ export default function AgentPage() {
             >
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <FieldLabel requirement="required">プロジェクト名</FieldLabel>
+                  <FieldLabel>プロジェクト名</FieldLabel>
                   <Input
                     placeholder="例: my-saas-app"
                     value={config.projectName}
@@ -215,7 +260,7 @@ export default function AgentPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <FieldLabel requirement="required">目的・概要</FieldLabel>
+                  <FieldLabel>目的・概要</FieldLabel>
                   <Textarea
                     placeholder="例: ユーザーが Claude の設定ファイルを生成・管理できる Web アプリ"
                     value={config.description}
@@ -370,9 +415,36 @@ export default function AgentPage() {
                     onChange={(e) => update('indent', e.target.value)}
                     className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
                   >
+                    <option value="">未選択</option>
                     <option value="スペース2">スペース2</option>
                     <option value="スペース4">スペース4</option>
                     <option value="タブ">タブ</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <FieldLabel>文字コード</FieldLabel>
+                  <select
+                    value={config.charset}
+                    onChange={(e) => update('charset', e.target.value)}
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                  >
+                    <option value="">未選択</option>
+                    <option value="UTF-8">UTF-8</option>
+                    <option value="UTF-16">UTF-16</option>
+                    <option value="Shift-JIS">Shift-JIS</option>
+                  </select>
+                </div>
+                <div className="space-y-1.5">
+                  <FieldLabel>行末</FieldLabel>
+                  <select
+                    value={config.lineEnding}
+                    onChange={(e) => update('lineEnding', e.target.value)}
+                    className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm"
+                  >
+                    <option value="">未選択</option>
+                    <option value="LF (Unix形式)">LF (Unix形式)</option>
+                    <option value="CRLF (Windows形式)">CRLF (Windows形式)</option>
+                    <option value="CR">CR</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
@@ -496,7 +568,7 @@ export default function AgentPage() {
             >
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <FieldLabel requirement="required">必ずすること (MUST)</FieldLabel>
+                  <FieldLabel>必ずすること (MUST)</FieldLabel>
                   <Textarea
                     placeholder={'変更前に既存のテストが通ることを確認する\n新しいファイルを作成する前に既存ファイルを確認する\n不明な仕様は推測せず、コメント or ドキュメントを確認する\n破壊的変更（APIの削除・DBスキーマ変更）は実行前に確認を求める'}
                     value={config.mustDo}
@@ -506,7 +578,7 @@ export default function AgentPage() {
                   <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                 </div>
                 <div className="space-y-1.5">
-                  <FieldLabel requirement="required">してはいけないこと (MUST NOT)</FieldLabel>
+                  <FieldLabel>してはいけないこと (MUST NOT)</FieldLabel>
                   <Textarea
                     placeholder={'.env ファイルや秘密情報をコミットする\nmain / master ブランチへ直接プッシュする\nテストを削除してカバレッジを下げる\n本番データベースに対してDDLを直接実行する'}
                     value={config.mustNot}
@@ -578,6 +650,7 @@ export default function AgentPage() {
                 </div>
               </div>
             </SectionCard>
+            </>)}
 
           </div>
 

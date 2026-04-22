@@ -18,6 +18,8 @@ export interface AgentConfig {
   cmdTest: string
   cmdLint: string
   indent: string
+  charset: string
+  lineEnding: string
   namingRules: string
   prohibitions: string
   designPrinciples: string
@@ -44,28 +46,28 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   targetEnv: '',
   frontendStack: [
     { role: 'フレームワーク', tech: '', note: '' },
-    { role: 'スタイリング',   tech: '', note: '' },
-    { role: '状態管理',       tech: '', note: '' },
+    { role: 'スタイリング', tech: '', note: '' },
+    { role: '状態管理', tech: '', note: '' },
     { role: 'データフェッチ', tech: '', note: '' },
-    { role: 'フォーム',       tech: '', note: '' },
+    { role: 'フォーム', tech: '', note: '' },
   ],
   backendStack: [
-    { role: 'ランタイム',     tech: '', note: '' },
+    { role: 'ランタイム', tech: '', note: '' },
     { role: 'フレームワーク', tech: '', note: '' },
-    { role: 'ORM',            tech: '', note: '' },
-    { role: '認証',           tech: '', note: '' },
+    { role: 'ORM', tech: '', note: '' },
+    { role: '認証', tech: '', note: '' },
   ],
   infraStack: [
-    { role: 'データベース',   tech: '', note: '' },
-    { role: 'キャッシュ',     tech: '', note: '' },
-    { role: 'ホスティング',   tech: '', note: '' },
-    { role: 'CI/CD',          tech: '', note: '' },
+    { role: 'データベース', tech: '', note: '' },
+    { role: 'キャッシュ', tech: '', note: '' },
+    { role: 'ホスティング', tech: '', note: '' },
+    { role: 'CI/CD', tech: '', note: '' },
   ],
   devTools: [
     { role: 'パッケージマネージャー', tech: '', note: '' },
-    { role: 'Linter',                tech: '', note: '' },
-    { role: 'フォーマッター',         tech: '', note: '' },
-    { role: 'テスト',                 tech: '', note: '' },
+    { role: 'Linter', tech: '', note: '' },
+    { role: 'フォーマッター', tech: '', note: '' },
+    { role: 'テスト', tech: '', note: '' },
   ],
   repoStructure: '',
   importantFiles: '',
@@ -74,7 +76,9 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   cmdBuild: '',
   cmdTest: '',
   cmdLint: '',
-  indent: 'スペース2',
+  indent: '',
+  charset: '',
+  lineEnding: '',
   namingRules: '',
   prohibitions: '',
   designPrinciples: '',
@@ -114,12 +118,11 @@ function renderTable(headers: string[], rows: string[][]): string {
   const validRows = rows.filter((r) => r.some((c) => c))
   if (validRows.length === 0) return ''
   const headerLine = `| ${headers.join(' | ')} |`
-  const separator = `| ${headers.map(() => '------').join(' | ')} |`
   const dataLines = validRows.map((row) => {
     const cells = headers.map((_, i) => row[i] ?? '')
     return `| ${cells.join(' | ')} |`
   })
-  return [headerLine, separator, ...dataLines].join('\n')
+  return [headerLine, ...dataLines].join('\n')
 }
 
 function renderList(raw: string): string {
@@ -129,13 +132,11 @@ function renderList(raw: string): string {
 }
 
 export function generateAgentMarkdown(config: AgentConfig): string {
-  const date = new Date().toISOString().split('T')[0]
   const parts: string[] = []
   const projectName = config.projectName.trim()
 
   parts.push(`# ${projectName || 'AGENT.md'} — AI Agent Instructions`)
   parts.push('')
-  parts.push('---')
   parts.push('')
 
   let idx = 0
@@ -228,11 +229,13 @@ export function generateAgentMarkdown(config: AgentConfig): string {
 
   // 5. コーディング規約
   const conventionContent: string[] = []
-  if (hasValue(config.indent)) {
+  const generalLines: string[] = []
+  if (hasValue(config.indent)) generalLines.push(`- インデント: ${config.indent}`)
+  if (hasValue(config.charset)) generalLines.push(`- 文字コード: ${config.charset}`)
+  if (hasValue(config.lineEnding)) generalLines.push(`- 行末: ${config.lineEnding}`)
+  if (generalLines.length > 0) {
     conventionContent.push('### 全般')
-    conventionContent.push(`- インデント: ${config.indent}`)
-    conventionContent.push('- 文字コード: UTF-8')
-    conventionContent.push('- 行末: LF (Unix形式)')
+    conventionContent.push(generalLines.join('\n'))
     conventionContent.push('')
   }
   if (hasValue(config.namingRules)) {
@@ -389,9 +392,6 @@ export function generateAgentMarkdown(config: AgentConfig): string {
     parts.push('---')
     parts.push('')
   }
-
-  parts.push(`> **最終更新:** ${date}`)
-  parts.push('> このファイルはプロジェクトの変化に合わせて定期的に更新してください。')
 
   return parts.join('\n').trim() + '\n'
 }

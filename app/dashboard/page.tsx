@@ -404,13 +404,6 @@ export default function DashboardPage() {
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
-              {isCustom && (
-                <Input
-                  placeholder="例: Airtable Design System Guidelines"
-                  value={(v.themeName as string) ?? ''}
-                  onChange={(e) => updateField(section, 'themeName', e.target.value)}
-                />
-              )}
             </div>
 
             {isCustom && (
@@ -423,6 +416,15 @@ export default function DashboardPage() {
                   icon={Sparkles}
                   onClick={() => handleSectionClick('visualTheme')}
                 >
+                  <div className="space-y-1.5">
+                    <FieldLabel>デザインシステム名</FieldLabel>
+                    <Input
+                      placeholder="例: Airtable Design System Guidelines"
+                      value={(v.themeName as string) ?? ''}
+                      onChange={(e) => updateField(section, 'themeName', e.target.value)}
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <FieldLabel>ビジュアル雰囲気の説明</FieldLabel>
                     <Textarea
