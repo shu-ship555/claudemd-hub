@@ -20,8 +20,8 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
     <header className="sticky top-0 z-50 h-14 bg-card/95 backdrop-blur-xl backdrop-saturate-150 border-b border-border">
       <div className="max-w-7xl mx-auto px-6 h-full pb-px flex justify-between items-center">
         <div>
-          <h1 className="flex items-center gap-2">
-            <NavLink href="/" className="font-bold text-foreground hover:text-muted-foreground text-base">{title}</NavLink>
+          <h1 className="flex items-center gap-1 mb-0.5">
+            <NavLink href="/" className="font-bold text-foreground hover:text-muted-foreground text-base tracking-normal">{title}</NavLink>
             <Badge variant="outline">Beta</Badge>
           </h1>
           {subtitle && (

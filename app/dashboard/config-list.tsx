@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { LoadingButton } from '@/components/custom/loading-button'
 import { deleteConfigFile } from './actions'
 import type { ConfigFile } from './actions'
 
@@ -66,25 +67,27 @@ export default function ConfigList({ configs }: { configs: ConfigFile[] }) {
       </div>
 
       <Dialog open={deleteTargetId !== null} onOpenChange={(open) => { if (!open) setDeleteTargetId(null) }}>
-        <DialogContent>
+        <DialogContent className="pt-5.5 px-6 pb-6">
           <DialogHeader>
             <DialogTitle>ファイルを削除しますか？</DialogTitle>
             <DialogDescription>
               この操作は取り消せません。削除したファイルは復元できません。
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setDeleteTargetId(null)} disabled={isDeleting}>
               キャンセル
             </Button>
-            <Button
-              variant="destructive"
+            <LoadingButton
+              variant="ghost"
+              className="text-destructive hover:text-destructive"
               onClick={handleConfirmDelete}
-              disabled={isDeleting}
+              isLoading={isDeleting}
+              loadingText="削除中..."
             >
-              {isDeleting ? '削除中...' : '削除する'}
-            </Button>
-          </DialogFooter>
+              削除する
+            </LoadingButton>
+          </div>
         </DialogContent>
       </Dialog>
     </>
