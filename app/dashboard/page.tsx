@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { FieldLabel } from '@/components/custom/field-label'
 import { SectionCard } from '@/components/custom/section-card'
 import { Switch } from '@/components/ui/switch'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -1019,15 +1020,14 @@ export default function DashboardPage() {
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="use-semantic-colors"
                             checked={(cc.useSemanticColors as boolean) ?? true}
-                            onChange={(e) => updateField('colorPalette', 'useSemanticColors', e.target.checked)}
-                            className="h-4 w-4 rounded border-input accent-primary"
+                            onCheckedChange={(v) => updateField('colorPalette', 'useSemanticColors', v === true)}
                           />
-                          <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラー</p>
-                        </label>
+                          <label htmlFor="use-semantic-colors" className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground cursor-pointer">セマンティックカラー</label>
+                        </div>
                         <div className="relative group">
                           <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                           <div className="absolute top-full left-0 mt-1 z-50 invisible group-hover:visible bg-popover text-popover-foreground text-xs leading-[170%] tracking-[0.06em] rounded-md border border-border px-3 py-2 w-64 pointer-events-none">
@@ -1163,19 +1163,13 @@ export default function DashboardPage() {
                                       <div key={`${category}-${weight}`} className="space-y-2">
                                         <div className="flex items-center justify-between">
                                           <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground ml-2">{{ 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }[weight] || weight}</p>
-                                          <input
-                                            type="checkbox"
-                                            checked={allSelected}
-                                            ref={(el) => {
-                                              if (el && someSelected && !allSelected) el.indeterminate = true
-                                            }}
-                                            onChange={(e) => {
+                                          <Checkbox
+                                            checked={allSelected ? true : (someSelected ? 'indeterminate' : false)}
+                                            onCheckedChange={(v) => {
                                               const current = savedSelection.filter((s: string) => s.trim())
-                                              if (e.target.checked) {
+                                              if (v) {
                                                 for (const style of weightStyles) {
-                                                  if (!current.includes(style)) {
-                                                    current.push(style)
-                                                  }
+                                                  if (!current.includes(style)) current.push(style)
                                                 }
                                               } else {
                                                 for (const style of weightStyles) {
@@ -1185,7 +1179,7 @@ export default function DashboardPage() {
                                               }
                                               updateField('typography', selectedStylesField, current.join(','))
                                             }}
-                                            className="h-4 w-4 rounded border-input accent-primary mr-2 cursor-pointer"
+                                            className="mr-2"
                                           />
                                         </div>
                                         <div className="grid grid-cols-2 gap-2 ml-2">
@@ -1198,22 +1192,18 @@ export default function DashboardPage() {
                                             const isSelected = isUnset ? true : savedSelection.includes(style)
                                             return (
                                               <label key={style} className="flex items-center gap-2 text-sm cursor-pointer">
-                                                <input
-                                                  type="checkbox"
+                                                <Checkbox
                                                   checked={isSelected}
-                                                  onChange={(e) => {
+                                                  onCheckedChange={(v) => {
                                                     const current = savedSelection.filter((s: string) => s.trim())
-                                                    if (e.target.checked) {
-                                                      if (!current.includes(style)) {
-                                                        current.push(style)
-                                                      }
+                                                    if (v) {
+                                                      if (!current.includes(style)) current.push(style)
                                                     } else {
                                                       const idx = current.indexOf(style)
                                                       if (idx > -1) current.splice(idx, 1)
                                                     }
                                                     updateField('typography', selectedStylesField, current.join(','))
                                                   }}
-                                                  className="h-4 w-4 rounded border-input accent-primary"
                                                 />
                                                 <span className="text-muted-foreground font-mono text-xs">{parsed.fontSize}｜{parsed.weight}｜{parsed.lineHeight}｜{parsed.letterSpacing}</span>
                                               </label>
@@ -1379,11 +1369,9 @@ export default function DashboardPage() {
                         ].map(({ key, label }) => (
                           <div key={key} className="flex items-center gap-2 rounded-md border border-input bg-background p-2">
                             <label className="flex items-center gap-2 cursor-pointer">
-                              <input
-                                type="checkbox"
+                              <Checkbox
                                 checked={(lc[`${key}BreakpointEnabled` as keyof typeof lc] as boolean) ?? true}
-                                onChange={(e) => updateField('layout', `${key}BreakpointEnabled`, e.target.checked)}
-                                className="h-4 w-4 rounded border-input accent-primary"
+                                onCheckedChange={(v) => updateField('layout', `${key}BreakpointEnabled`, v === true)}
                               />
                               <span className="text-xs font-medium text-muted-foreground">{label}</span>
                             </label>
@@ -1406,11 +1394,9 @@ export default function DashboardPage() {
 
                     <div className="border-t pt-4 space-y-3">
                       <label className="flex items-center gap-2 text-sm cursor-pointer">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={(lc.ergonomicsGuidance as boolean) ?? false}
-                          onChange={(e) => updateField('layout', 'ergonomicsGuidance', e.target.checked)}
-                          className="h-4 w-4 rounded border-input accent-primary"
+                          onCheckedChange={(v) => updateField('layout', 'ergonomicsGuidance', v === true)}
                         />
                         <span className="text-muted-foreground">人間工学に基づく指示を含める</span>
                       </label>
