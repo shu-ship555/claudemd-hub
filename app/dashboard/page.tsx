@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
-import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes, Pencil, Check } from 'lucide-react'
+import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes, Pencil, Check, GripVertical } from 'lucide-react'
 import { useDesignConfig } from '@/lib/hooks/use-design-config'
 import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from '@/lib/constants'
@@ -186,20 +186,41 @@ function TextStyleTable({ value, onChange }: { value: string; onChange: (v: stri
     const newRows = next.length > 0 ? next : [emptyRow()]
     setRows(newRows); emit(newRows)
   }
+  const dragIndexRef = useRef<number | null>(null)
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  const onDragStart = (i: number) => { dragIndexRef.current = i; setDraggingIndex(i) }
+  const onDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIndex(i) }
+  const onDrop = (e: React.DragEvent, i: number) => {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from !== null && from !== i) {
+      const next = [...rows]
+      const [moved] = next.splice(from, 1)
+      next.splice(i, 0, moved)
+      setRows(next); emit(next)
+    }
+    dragIndexRef.current = null; setDraggingIndex(null); setDragOverIndex(null)
+  }
+  const onDragEnd = () => { dragIndexRef.current = null; setDraggingIndex(null); setDragOverIndex(null) }
+
   const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
   return (
     <div className="rounded-md border border-input overflow-hidden text-sm">
       <div className="overflow-x-auto">
         <table className="w-full min-w-80" style={{ tableLayout: 'fixed' }}>
           <colgroup>
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '22%' }} />
-            <col style={{ width: '22%' }} />
+            <col style={{ width: '1.5rem' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
+            <col style={{ width: '20%' }} />
             <col style={{ width: '2rem' }} />
           </colgroup>
           <thead>
             <tr className="bg-muted border-b border-input">
+              <th />
               <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">サイズ</th>
               <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">ウェイト</th>
               <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">行間</th>
@@ -209,7 +230,18 @@ function TextStyleTable({ value, onChange }: { value: string; onChange: (v: stri
           </thead>
           <tbody>
             {rows.map((row, i) => (
-              <tr key={i} className="border-b border-input last:border-0">
+              <tr
+                key={i}
+                draggable
+                onDragStart={() => onDragStart(i)}
+                onDragOver={(e) => onDragOver(e, i)}
+                onDrop={(e) => onDrop(e, i)}
+                onDragEnd={onDragEnd}
+                className={`border-b border-input last:border-0 transition-colors ${draggingIndex === i ? 'opacity-40' : ''} ${dragOverIndex === i && draggingIndex !== i ? 'border-t-2 border-t-primary bg-primary-surface' : ''}`}
+              >
+                <td className="pl-1.5">
+                  <GripVertical className="size-3 text-muted-foreground/30 cursor-grab hover:text-muted-foreground/60 transition-colors" />
+                </td>
                 <td className="px-1 py-1"><Input value={row.fontSize} onChange={(e) => updateRow(i, 'fontSize', e.target.value)} placeholder="64px" className={cellCls} /></td>
                 <td className="px-1 py-1"><Input value={row.weight} onChange={(e) => updateRow(i, 'weight', e.target.value)} placeholder="Bold" className={cellCls} /></td>
                 <td className="px-1 py-1"><Input value={row.lineHeight} onChange={(e) => updateRow(i, 'lineHeight', e.target.value)} placeholder="140%" className={cellCls} /></td>

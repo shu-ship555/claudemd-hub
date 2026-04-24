@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useMemo } from 'react'
-import { Info, Layers, FolderOpen, Terminal, Code, Blocks, GitBranch, Bot, Server, Plus, Trash2 } from 'lucide-react'
+import { Info, Layers, FolderOpen, Terminal, Code, Blocks, GitBranch, Bot, Server, Plus, Trash2, ChevronRight, ChevronLeft, GripVertical } from 'lucide-react'
 import { SectionCard } from '@/components/custom/section-card'
 import { FieldLabel } from '@/components/custom/field-label'
 import { Button } from '@/components/ui/button'
@@ -24,74 +24,213 @@ interface TechTableProps {
   onUpdate: (idx: number, key: string, value: string) => void
   onAdd: () => void
   onRemove: (idx: number) => void
+  onReorder: (from: number, to: number) => void
 }
 
-function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTableProps) {
+function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
+  const dragIndexRef = useRef<number | null>(null)
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  const onDragStart = (i: number) => { dragIndexRef.current = i; setDraggingIndex(i) }
+  const onDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIndex(i) }
+  const onDrop = (e: React.DragEvent, i: number) => {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from !== null && from !== i) onReorder(from, i)
+    dragIndexRef.current = null; setDraggingIndex(null); setDragOverIndex(null)
+  }
+  const onDragEnd = () => { dragIndexRef.current = null; setDraggingIndex(null); setDragOverIndex(null) }
+
+  const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+
   return (
     <div className="rounded-md border border-input overflow-hidden text-sm">
       <div className="overflow-x-auto">
-          <table className="w-full min-w-140">
-            <thead>
-              <tr className="bg-muted border-b border-input">
-                <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground w-40">役割</th>
-                <th className={`px-3 py-2 text-left text-2xs font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
-                {showNote && <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground">備考</th>}
-                <th className="w-8" />
+        <table className="w-full min-w-140">
+          <thead>
+            <tr className="bg-muted border-b border-input">
+              <th className="w-6" />
+              <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground w-40">役割</th>
+              <th className={`px-3 py-2 text-left text-2xs font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
+              {showNote && <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground">備考</th>}
+              <th className="w-8" />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr
+                key={i}
+                draggable
+                onDragStart={() => onDragStart(i)}
+                onDragOver={(e) => onDragOver(e, i)}
+                onDrop={(e) => onDrop(e, i)}
+                onDragEnd={onDragEnd}
+                className={`border-b border-input last:border-0 transition-colors ${draggingIndex === i ? 'opacity-40' : ''} ${dragOverIndex === i && draggingIndex !== i ? 'border-t-2 border-t-primary bg-primary-surface' : ''}`}
+              >
+                <td className="pl-2">
+                  <GripVertical className="size-3 text-muted-foreground/30 cursor-grab hover:text-muted-foreground/60 transition-colors" />
+                </td>
+                <td className="px-2 py-1 w-40">
+                  <Input value={row.role} onChange={(e) => onUpdate(i, 'role', e.target.value)} className={cellCls} />
+                </td>
+                <td className="px-2 py-1 w-50">
+                  <Input value={row.tech} onChange={(e) => onUpdate(i, 'tech', e.target.value)} placeholder="技術名" className={cellCls} />
+                </td>
+                {showNote && (
+                  <td className="px-2 py-1">
+                    <Input value={row.note ?? ''} onChange={(e) => onUpdate(i, 'note', e.target.value)} placeholder="備考" className={cellCls} />
+                  </td>
+                )}
+                <td className="pr-2 text-right">
+                  <button type="button" onClick={() => onRemove(i)} className="p-1 text-muted-foreground hover:text-destructive transition-colors duration-ui">
+                    <Trash2 className="size-3" />
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={i} className="border-b border-input last:border-0">
-                  <td className="px-2 py-1 w-40">
-                    <Input
-                      value={row.role}
-                      onChange={(e) => onUpdate(i, 'role', e.target.value)}
-                      className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
-                    />
-                  </td>
-                  <td className="px-2 py-1 w-50">
-                    <Input
-                      value={row.tech}
-                      onChange={(e) => onUpdate(i, 'tech', e.target.value)}
-                      placeholder="技術名"
-                      className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
-                    />
-                  </td>
-                  {showNote && (
-                    <td className="px-2 py-1">
-                      <Input
-                        value={row.note ?? ''}
-                        onChange={(e) => onUpdate(i, 'note', e.target.value)}
-                        placeholder="備考"
-                        className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
-                      />
-                    </td>
-                  )}
-                  <td className="pr-2 text-right">
-                    <button
-                      type="button"
-                      onClick={() => onRemove(i)}
-                      className="p-1 text-muted-foreground hover:text-destructive transition-colors duration-ui"
-                    >
-                      <Trash2 className="size-3" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <button
-        type="button"
-        onClick={onAdd}
-        className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input"
-      >
+      <button type="button" onClick={onAdd} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         行を追加
       </button>
     </div>
   )
 }
+
+// ── DirTreeBuilder ──────────────────────────────────────────────
+type DirNode = { name: string; comment: string; depth: number }
+
+function treeToNodes(value: string): DirNode[] {
+  if (!value.trim()) return []
+  return value.split('\n').filter(l => l.trim()).map(line => {
+    const m = line.match(/^((?:│\s{3}|\s{4})*)(?:[├└]── )?(.*)$/)
+    const prefix = m?.[1] ?? ''
+    const depth = Math.round(prefix.length / 4)
+    const rest = (m?.[2] ?? line).trim()
+    const ci = rest.indexOf(' # ')
+    return {
+      depth,
+      name: ci >= 0 ? rest.slice(0, ci).trimEnd() : rest,
+      comment: ci >= 0 ? rest.slice(ci + 3).trim() : '',
+    }
+  })
+}
+
+function nodesToTree(nodes: DirNode[]): string {
+  const isLast = (idx: number, depth: number) => {
+    for (let i = idx + 1; i < nodes.length; i++) {
+      if (nodes[i].depth < depth) return true
+      if (nodes[i].depth === depth) return false
+    }
+    return true
+  }
+  const hasLine = (idx: number, depth: number) => {
+    for (let i = idx + 1; i < nodes.length; i++) {
+      if (nodes[i].depth < depth) return false
+      if (nodes[i].depth === depth) return true
+    }
+    return false
+  }
+  return nodes.filter(n => n.name.trim()).map((node, i) => {
+    if (node.depth === 0) {
+      return node.comment ? `${node.name}  # ${node.comment}` : node.name
+    }
+    let prefix = ''
+    for (let d = 1; d < node.depth; d++) prefix += hasLine(i, d) ? '│   ' : '    '
+    prefix += isLast(i, node.depth) ? '└── ' : '├── '
+    const full = prefix + node.name
+    return node.comment ? `${full.padEnd(24)}# ${node.comment}` : full
+  }).join('\n')
+}
+
+function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const empty = (): DirNode => ({ name: '', comment: '', depth: 0 })
+  const [nodes, setNodes] = useState<DirNode[]>(() => {
+    const parsed = treeToNodes(value)
+    return parsed.length > 0 ? parsed : [empty()]
+  })
+  const lastEmittedRef = useRef(value)
+
+  useEffect(() => {
+    if (value !== lastEmittedRef.current) {
+      lastEmittedRef.current = value
+      const parsed = treeToNodes(value)
+      setNodes(parsed.length > 0 ? parsed : [empty()])
+    }
+  }, [value])
+
+  const emit = (next: DirNode[]) => {
+    const s = nodesToTree(next); lastEmittedRef.current = s; onChange(s)
+  }
+  const update = (i: number, key: keyof DirNode, val: string | number) => {
+    const next = [...nodes]; next[i] = { ...next[i], [key]: val }; setNodes(next); emit(next)
+  }
+  const indent = (i: number) => {
+    const max = i > 0 ? nodes[i - 1].depth + 1 : 0
+    update(i, 'depth', Math.min(nodes[i].depth + 1, max))
+  }
+  const outdent = (i: number) => update(i, 'depth', Math.max(0, nodes[i].depth - 1))
+  const remove = (i: number) => {
+    const next = nodes.filter((_, idx) => idx !== i)
+    const nn = next.length > 0 ? next : [empty()]; setNodes(nn); emit(nn)
+  }
+  const addRow = () => setNodes(prev => [...prev, { ...empty(), depth: prev[prev.length - 1]?.depth ?? 0 }])
+
+  const dragIndexRef = useRef<number | null>(null)
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  const onDragStart = (i: number) => { dragIndexRef.current = i; setDraggingIndex(i) }
+  const onDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIndex(i) }
+  const onDrop = (e: React.DragEvent, i: number) => {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from === null || from === i) { setDragOverIndex(null); setDraggingIndex(null); return }
+    const next = [...nodes]
+    const [moved] = next.splice(from, 1)
+    next.splice(i, 0, moved)
+    setNodes(next); emit(next)
+    dragIndexRef.current = null; setDragOverIndex(null); setDraggingIndex(null)
+  }
+  const onDragEnd = () => { dragIndexRef.current = null; setDragOverIndex(null); setDraggingIndex(null) }
+
+  const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/40 font-mono"
+  const iconBtnCls = "p-0.5 text-muted-foreground/50 hover:text-muted-foreground disabled:opacity-20 transition-colors shrink-0"
+
+  return (
+    <div className="rounded-md border border-input overflow-hidden text-sm">
+      {nodes.map((node, i) => (
+        <div
+          key={i}
+          draggable
+          onDragStart={() => onDragStart(i)}
+          onDragOver={(e) => onDragOver(e, i)}
+          onDrop={(e) => onDrop(e, i)}
+          onDragEnd={onDragEnd}
+          className={`flex items-center border-b border-input last:border-0 group pr-1 transition-colors ${dragOverIndex === i && draggingIndex !== i ? 'border-t-2 border-t-primary bg-primary-surface' : ''}`}
+          style={{ paddingLeft: `${node.depth * 16 + 4}px` }}
+        >
+          <GripVertical className="size-3 text-muted-foreground/30 cursor-grab shrink-0 mr-0.5 group-hover:text-muted-foreground/60" />
+          <div className="flex items-center shrink-0">
+            <button type="button" onClick={() => outdent(i)} disabled={node.depth === 0} className={iconBtnCls}><ChevronLeft className="size-3" /></button>
+            <button type="button" onClick={() => indent(i)} className={iconBtnCls}><ChevronRight className="size-3" /></button>
+          </div>
+          <Input value={node.name} onChange={(e) => update(i, 'name', e.target.value)} placeholder={node.depth === 0 ? 'src/' : 'app/'} className={`${inputCls} flex-1 min-w-0`} />
+          <span className="text-muted-foreground/50 text-xs font-mono px-1 shrink-0">#</span>
+          <Input value={node.comment} onChange={(e) => update(i, 'comment', e.target.value)} placeholder="説明" className={`${inputCls} w-36`} />
+          <button type="button" onClick={() => remove(i)} className="p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-all duration-ui shrink-0"><Trash2 className="size-3" /></button>
+        </div>
+      ))}
+      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+        <Plus className="size-3" />行を追加
+      </button>
+    </div>
+  )
+}
+// ────────────────────────────────────────────────────────────────
 
 const AGENT_MODE_OPTIONS = ['デフォルト', 'カスタム']
 
@@ -157,6 +296,14 @@ export default function AgentPage() {
   }
   const removeRow3 = (field: TechField3, idx: number) => {
     setConfig((prev) => ({ ...prev, [field]: (prev[field] as TechRow3[]).filter((_, i) => i !== idx) }))
+  }
+  const reorderRow3 = (field: TechField3, from: number, to: number) => {
+    setConfig((prev) => {
+      const rows = [...(prev[field] as TechRow3[])]
+      const [moved] = rows.splice(from, 1)
+      rows.splice(to, 0, moved)
+      return { ...prev, [field]: rows }
+    })
   }
 
 
@@ -342,6 +489,7 @@ export default function AgentPage() {
                     onUpdate={(i, k, v) => updateRow3('frontendStack', i, k, v)}
                     onAdd={() => addRow3('frontendStack')}
                     onRemove={(i) => removeRow3('frontendStack', i)}
+                    onReorder={(f, t) => reorderRow3('frontendStack', f, t)}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -351,6 +499,7 @@ export default function AgentPage() {
                     onUpdate={(i, k, v) => updateRow3('backendStack', i, k, v)}
                     onAdd={() => addRow3('backendStack')}
                     onRemove={(i) => removeRow3('backendStack', i)}
+                    onReorder={(f, t) => reorderRow3('backendStack', f, t)}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -360,6 +509,7 @@ export default function AgentPage() {
                     onUpdate={(i, k, v) => updateRow3('infraStack', i, k, v)}
                     onAdd={() => addRow3('infraStack')}
                     onRemove={(i) => removeRow3('infraStack', i)}
+                    onReorder={(f, t) => reorderRow3('infraStack', f, t)}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -369,6 +519,7 @@ export default function AgentPage() {
                     onUpdate={(i, k, v) => updateRow3('devTools', i, k, v)}
                     onAdd={() => addRow3('devTools')}
                     onRemove={(i) => removeRow3('devTools', i)}
+                    onReorder={(f, t) => reorderRow3('devTools', f, t)}
                   />
                 </div>
               </div>
@@ -384,11 +535,9 @@ export default function AgentPage() {
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <FieldLabel>ディレクトリ構造</FieldLabel>
-                  <Textarea
-                    placeholder={'src/\n├── app/          # Next.js App Router\n├── components/   # Reactコンポーネント\n├── lib/          # ユーティリティ・フック\n└── types/        # 型定義'}
+                  <DirTreeBuilder
                     value={config.repoStructure}
-                    onChange={(e) => update('repoStructure', e.target.value)}
-                    className="min-h-40 font-mono text-xs"
+                    onChange={(v) => update('repoStructure', v)}
                   />
                 </div>
                 <div className="space-y-1.5">
