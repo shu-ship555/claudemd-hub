@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/hooks/use-auth'
 import { buttonVariants } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { NavLink } from '@/components/custom/nav-link'
+import { AppIcon } from '@/components/ui/app-icon'
 import { cn } from '@/lib/utils'
 
 interface DashboardHeaderProps {
@@ -18,10 +19,13 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 h-14 bg-card/95 backdrop-blur-xl backdrop-saturate-150 border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 h-full pb-px flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 h-full pt-1 pb-2 flex justify-between items-center">
         <div>
-          <h1 className="flex items-center gap-1 mb-0.5">
-            <NavLink href="/" className="font-bold text-foreground hover:text-muted-foreground text-base tracking-normal">{title}</NavLink>
+          <h1 className="flex items-center gap-3 mb-0.5">
+            <NavLink href="/" noActive className="flex items-center gap-1 font-bold text-foreground hover:text-muted-foreground text-base tracking-normal">
+                <AppIcon />
+                {title}
+              </NavLink>
             <Badge variant="outline">Beta</Badge>
           </h1>
           {subtitle && (

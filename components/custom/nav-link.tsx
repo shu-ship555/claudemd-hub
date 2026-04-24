@@ -10,11 +10,12 @@ const active = 'text-primary font-medium border-b border-primary pb-px'
 
 interface NavLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string
+  noActive?: boolean
 }
 
-export function NavLink({ href, className, children, ...props }: NavLinkProps) {
+export function NavLink({ href, className, children, noActive, ...props }: NavLinkProps) {
   const pathname = usePathname()
-  const isActive = pathname === href
+  const isActive = !noActive && pathname === href
   const isExternal = href.startsWith('http')
 
   if (isExternal) {

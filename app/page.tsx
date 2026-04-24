@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center p-4">
+    <main className="flex flex-1 flex-col items-center justify-center pt-4 px-4 pb-12">
       <Card className="w-full max-w-md pt-5.5 px-6 pb-6">
         <CardHeader className="px-0 pt-0">
           <CardTitle>Claude Config Manager</CardTitle>
