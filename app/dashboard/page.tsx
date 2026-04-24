@@ -140,6 +140,98 @@ function parseTextStyle(style: string): { fontSize: string; weight: string; line
   }
 }
 
+type TextStyleRow = { fontSize: string; weight: string; lineHeight: string; letterSpacing: string }
+
+function parseCustomStylesToRows(value: string): TextStyleRow[] {
+  return value.split('\n').map(l => l.trim()).filter(Boolean).map(line => {
+    const parts = line.split(' | ')
+    return { fontSize: parts[0] ?? '', weight: parts[1] ?? '', lineHeight: parts[2] ?? '', letterSpacing: parts[3] ?? '' }
+  })
+}
+
+function rowsToCustomStyles(rows: TextStyleRow[]): string {
+  return rows
+    .filter(r => r.fontSize || r.weight || r.lineHeight || r.letterSpacing)
+    .map(r => `${r.fontSize} | ${r.weight} | ${r.lineHeight} | ${r.letterSpacing}`)
+    .join('\n')
+}
+
+function TextStyleTable({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const emptyRow = (): TextStyleRow => ({ fontSize: '', weight: '', lineHeight: '', letterSpacing: '' })
+  const [rows, setRows] = useState<TextStyleRow[]>(() => {
+    const parsed = parseCustomStylesToRows(value)
+    return parsed.length > 0 ? parsed : [emptyRow()]
+  })
+  const lastEmittedRef = useRef(value)
+
+  useEffect(() => {
+    if (value !== lastEmittedRef.current) {
+      lastEmittedRef.current = value
+      const parsed = parseCustomStylesToRows(value)
+      setRows(parsed.length > 0 ? parsed : [emptyRow()])
+    }
+  }, [value])
+
+  const emit = (next: TextStyleRow[]) => {
+    const serialized = rowsToCustomStyles(next)
+    lastEmittedRef.current = serialized
+    onChange(serialized)
+  }
+  const updateRow = (i: number, key: keyof TextStyleRow, val: string) => {
+    const next = [...rows]; next[i] = { ...next[i], [key]: val }; setRows(next); emit(next)
+  }
+  const addRow = () => setRows(prev => [...prev, emptyRow()])
+  const removeRow = (i: number) => {
+    const next = rows.filter((_, idx) => idx !== i)
+    const newRows = next.length > 0 ? next : [emptyRow()]
+    setRows(newRows); emit(newRows)
+  }
+  const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+  return (
+    <div className="rounded-md border border-input overflow-hidden text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-80" style={{ tableLayout: 'fixed' }}>
+          <colgroup>
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '22%' }} />
+            <col style={{ width: '2rem' }} />
+          </colgroup>
+          <thead>
+            <tr className="bg-muted border-b border-input">
+              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">サイズ</th>
+              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">ウェイト</th>
+              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">行間</th>
+              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">字間</th>
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, i) => (
+              <tr key={i} className="border-b border-input last:border-0">
+                <td className="px-1 py-1"><Input value={row.fontSize} onChange={(e) => updateRow(i, 'fontSize', e.target.value)} placeholder="64px" className={cellCls} /></td>
+                <td className="px-1 py-1"><Input value={row.weight} onChange={(e) => updateRow(i, 'weight', e.target.value)} placeholder="Bold" className={cellCls} /></td>
+                <td className="px-1 py-1"><Input value={row.lineHeight} onChange={(e) => updateRow(i, 'lineHeight', e.target.value)} placeholder="140%" className={cellCls} /></td>
+                <td className="px-1 py-1"><Input value={row.letterSpacing} onChange={(e) => updateRow(i, 'letterSpacing', e.target.value)} placeholder="0.02em" className={cellCls} /></td>
+                <td className="pr-2 text-right">
+                  <button type="button" onClick={() => removeRow(i)} className="p-1 text-muted-foreground hover:text-destructive transition-colors duration-ui">
+                    <Trash2 className="size-3" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+        <Plus className="size-3" />
+        行を追加
+      </button>
+    </div>
+  )
+}
+
 function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) {
   return {
     colorPalette: {
@@ -395,7 +487,7 @@ export default function DashboardPage() {
             {/* Standalone theme selector */}
             <div className="space-y-2">
               <FieldLabel requirement="required">DESIGN.mdの種類</FieldLabel>
-              <Select value={themeSelect || undefined} onValueChange={handleThemeChange}>
+              <Select value={themeSelect} onValueChange={handleThemeChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="選択してください" />
                 </SelectTrigger>
@@ -855,7 +947,7 @@ export default function DashboardPage() {
                             })
                             updateField('colorPalette', 'additionalKeyColorSets', next)
                           }}
-                          className="mt-4 w-full py-2 rounded-md border border-dashed border-muted-foreground text-foreground text-sm hover:border-foreground hover:text-muted-foreground transition-colors duration-ui"
+                          className="mt-4 w-full py-2 rounded-md border border-dashed border-primary text-primary text-sm hover:bg-primary-surface transition-colors duration-ui"
                         >
                           + セットを追加
                         </button>
@@ -949,7 +1041,7 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>欧文フォント</FieldLabel>
-                      <Select value={(tc.latinFont as string) || undefined} onValueChange={(v) => updateField('typography', 'latinFont', v)}>
+                      <Select value={(tc.latinFont as string) ?? ''} onValueChange={(v) => updateField('typography', 'latinFont', v)}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="未指定" />
                         </SelectTrigger>
@@ -971,7 +1063,7 @@ export default function DashboardPage() {
 
                     <div className="space-y-1.5">
                       <FieldLabel>和文フォント</FieldLabel>
-                      <Select value={(tc.japaneseFont as string) || undefined} onValueChange={(v) => updateField('typography', 'japaneseFont', v)}>
+                      <Select value={(tc.japaneseFont as string) ?? ''} onValueChange={(v) => updateField('typography', 'japaneseFont', v)}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="未指定" />
                         </SelectTrigger>
@@ -1020,15 +1112,10 @@ export default function DashboardPage() {
                                 </label>
                               </div>
                               {isCustom ? (
-                                <div className="space-y-1.5">
-                                  <Textarea
-                                    value={(tc[customStylesField as keyof typeof tc] as string) ?? ''}
-                                    onChange={(e) => updateField('typography', customStylesField, e.target.value)}
-                                    placeholder={`例: 64px | Bold | 140% | -0.01em\n48px | Bold | 140% | -0.01em\n32px | Normal | 150% | 0em`}
-                                    className="min-h-28 text-xs font-mono mb-1"
-                                  />
-                                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
-                                </div>
+                                <TextStyleTable
+                                  value={(tc[customStylesField as keyof typeof tc] as string) ?? ''}
+                                  onChange={(v) => updateField('typography', customStylesField, v)}
+                                />
                               ) : null}
                               <div className={isCustom ? 'opacity-40 pointer-events-none' : ''}>
                                 <div className="space-y-8">
@@ -1135,7 +1222,7 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>アイコンライブラリ</FieldLabel>
-                      <Select value={(ic.iconLibrary as string) || undefined} onValueChange={(v) => updateField('icons', 'iconLibrary', v)}>
+                      <Select value={(ic.iconLibrary as string) ?? ''} onValueChange={(v) => updateField('icons', 'iconLibrary', v)}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Lucide React" />
                         </SelectTrigger>
@@ -1183,7 +1270,7 @@ export default function DashboardPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>レイアウトタイプ</FieldLabel>
-                      <Select value={(lc.layoutType as string) || undefined} onValueChange={(v) => updateField('layout', 'layoutType', v)}>
+                      <Select value={(lc.layoutType as string) ?? ''} onValueChange={(v) => updateField('layout', 'layoutType', v)}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="リキッド（流動的）" />
                         </SelectTrigger>
@@ -1196,7 +1283,7 @@ export default function DashboardPage() {
 
                     <div className="space-y-1.5">
                       <FieldLabel>基準単位</FieldLabel>
-                      <Select value={(lc.spacingBase as string) || undefined} onValueChange={(v) => updateField('layout', 'spacingBase', v)}>
+                      <Select value={(lc.spacingBase as string) ?? ''} onValueChange={(v) => updateField('layout', 'spacingBase', v)}>
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="未指定" />
                         </SelectTrigger>
@@ -1345,7 +1432,7 @@ export default function DashboardPage() {
                       <>
                         <div className="space-y-1.5">
                           <FieldLabel>ラウンドネス（丸み）</FieldLabel>
-                          <Select value={(cmp.roundness as string) || undefined} onValueChange={(v) => updateField('components', 'roundness', v)}>
+                          <Select value={(cmp.roundness as string) ?? ''} onValueChange={(v) => updateField('components', 'roundness', v)}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="md" />
                             </SelectTrigger>
@@ -1359,7 +1446,7 @@ export default function DashboardPage() {
 
                         <div className="space-y-1.5">
                           <FieldLabel>エレベーション（シャドウ）</FieldLabel>
-                          <Select value={(cmp.elevation as string) || undefined} onValueChange={(v) => updateField('components', 'elevation', v)}>
+                          <Select value={(cmp.elevation as string) ?? ''} onValueChange={(v) => updateField('components', 'elevation', v)}>
                             <SelectTrigger className="w-full">
                               <SelectValue placeholder="md" />
                             </SelectTrigger>
@@ -1495,7 +1582,7 @@ export default function DashboardPage() {
                     <div className="space-y-1.5">
                       <FieldLabel>WCAG 準拠レベル</FieldLabel>
                       <Select
-                        value={(ac.contrastLevel as string) || undefined}
+                        value={(ac.contrastLevel as string) ?? ''}
                         onValueChange={(val) => {
                           if (val === 'A') {
                             batchUpdate((prev) => ({

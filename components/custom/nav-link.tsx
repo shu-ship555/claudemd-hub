@@ -1,15 +1,33 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
-const navLinkClass = 'text-xs leading-[120%] tracking-[0.04em] text-muted-foreground hover:text-foreground transition-colors duration-ui'
+const base = 'text-xs leading-[120%] tracking-[0.04em] transition-colors duration-ui'
+const inactive = 'text-muted-foreground hover:text-foreground'
+const active = 'text-primary font-medium border-b border-primary pb-px'
 
 interface NavLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string
 }
 
 export function NavLink({ href, className, children, ...props }: NavLinkProps) {
+  const pathname = usePathname()
+  const isActive = pathname === href
+  const isExternal = href.startsWith('http')
+
+  if (isExternal) {
+    return (
+      <a href={href} className={cn(base, inactive, className)} {...props}>
+        {children}
+      </a>
+    )
+  }
+
   return (
-    <a href={href} className={cn(navLinkClass, className)} {...props}>
+    <Link href={href} className={cn(base, isActive ? active : inactive, className)} {...props}>
       {children}
-    </a>
+    </Link>
   )
 }

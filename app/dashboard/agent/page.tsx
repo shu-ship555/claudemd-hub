@@ -33,9 +33,9 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTab
           <table className="w-full min-w-140">
             <thead>
               <tr className="bg-muted border-b border-input">
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-muted-foreground w-40">役割</th>
-                <th className={`px-3 py-2 text-left text-[11px] font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
-                {showNote && <th className="px-3 py-2 text-left text-[11px] font-medium text-muted-foreground">備考</th>}
+                <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground w-40">役割</th>
+                <th className={`px-3 py-2 text-left text-2xs font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
+                {showNote && <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground">備考</th>}
                 <th className="w-8" />
               </tr>
             </thead>
@@ -46,7 +46,7 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTab
                     <Input
                       value={row.role}
                       onChange={(e) => onUpdate(i, 'role', e.target.value)}
-                      className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                      className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
                     />
                   </td>
                   <td className="px-2 py-1 w-50">
@@ -54,7 +54,7 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTab
                       value={row.tech}
                       onChange={(e) => onUpdate(i, 'tech', e.target.value)}
                       placeholder="技術名"
-                      className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                      className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
                     />
                   </td>
                   {showNote && (
@@ -63,7 +63,7 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove }: TechTab
                         value={row.note ?? ''}
                         onChange={(e) => onUpdate(i, 'note', e.target.value)}
                         placeholder="備考"
-                        className="h-7 text-[11px] border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+                        className="h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
                       />
                     </td>
                   )}
@@ -231,7 +231,7 @@ export default function AgentPage() {
             {/* モード選択 */}
             <div className="space-y-2">
               <FieldLabel requirement="required">AGENT.mdの種類</FieldLabel>
-              <Select value={agentMode || undefined} onValueChange={setAgentMode}>
+              <Select value={agentMode} onValueChange={setAgentMode}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="選択してください" />
                 </SelectTrigger>
@@ -293,6 +293,37 @@ export default function AgentPage() {
                     onChange={(e) => update('maintainer', e.target.value)}
                   />
                 </div>
+                {config.maintainer.trim() && (
+                  <div className="pl-3 space-y-3 border-l-2 border-border">
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">{`連絡先`}</label>
+                      <Input
+                        placeholder="例: Slack #channel-name / email@example.com"
+                        value={config.contact}
+                        onChange={(e) => update('contact', e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">{`バージョン`}</label>
+                      <Input
+                        placeholder="例: 1.2.0"
+                        value={config.version}
+                        onChange={(e) => update('version', e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-medium">{`最終更新日`}</label>
+                      <Input
+                        placeholder="例: 2026-04-24"
+                        value={config.lastUpdated}
+                        onChange={(e) => update('lastUpdated', e.target.value)}
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </SectionCard>
 
@@ -411,7 +442,7 @@ export default function AgentPage() {
               <div className="space-y-4">
                 <div className="space-y-1.5">
                   <FieldLabel>インデント</FieldLabel>
-                  <Select value={config.indent || undefined} onValueChange={(v) => update('indent', v)}>
+                  <Select value={config.indent ?? ''} onValueChange={(v) => update('indent', v)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="未選択" />
                     </SelectTrigger>
@@ -424,7 +455,7 @@ export default function AgentPage() {
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>文字コード</FieldLabel>
-                  <Select value={config.charset || undefined} onValueChange={(v) => update('charset', v)}>
+                  <Select value={config.charset ?? ''} onValueChange={(v) => update('charset', v)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="未選択" />
                     </SelectTrigger>
@@ -437,7 +468,7 @@ export default function AgentPage() {
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>行末</FieldLabel>
-                  <Select value={config.lineEnding || undefined} onValueChange={(v) => update('lineEnding', v)}>
+                  <Select value={config.lineEnding ?? ''} onValueChange={(v) => update('lineEnding', v)}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="未選択" />
                     </SelectTrigger>

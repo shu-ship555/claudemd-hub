@@ -37,6 +37,9 @@ export interface AgentConfig {
   commonTasks: string
   references: string
   maintainer: string
+  contact: string
+  version: string
+  lastUpdated: string
 }
 
 export const DEFAULT_AGENT_CONFIG: AgentConfig = {
@@ -96,6 +99,9 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   commonTasks: '',
   references: '',
   maintainer: '',
+  contact: '',
+  version: '',
+  lastUpdated: '',
 }
 
 function hasValue(s: string): boolean {
@@ -149,9 +155,12 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   if (hasValue(config.languages)) overviewLines.push(`**主要言語・フレームワーク:** ${config.languages.trim()}`)
   if (hasValue(config.targetEnv)) overviewLines.push(`**ターゲット環境:** ${config.targetEnv.trim()}`)
   if (hasValue(config.maintainer)) overviewLines.push(`**メンテナー:** ${config.maintainer.trim()}`)
+  if (hasValue(config.contact)) overviewLines.push(`**連絡先:** ${config.contact.trim()}`)
+  if (hasValue(config.version)) overviewLines.push(`**バージョン:** ${config.version.trim()}`)
+  if (hasValue(config.lastUpdated)) overviewLines.push(`**最終更新日:** ${config.lastUpdated.trim()}`)
   if (overviewLines.length > 0) {
     idx++
-    parts.push(`## ${idx}. プロジェクト概要 (Project Overview)`)
+    parts.push(`## ${idx}. Project Overview`)
     parts.push('')
     parts.push(overviewLines.join('\n'))
     parts.push('')
@@ -174,7 +183,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   renderTech3('開発ツール', config.devTools)
   if (techSections.length > 0) {
     idx++
-    parts.push(`## ${idx}. 技術スタック (Tech Stack)`)
+    parts.push(`## ${idx}. Tech Stack`)
     parts.push('')
     parts.push(techSections.join('\n'))
     parts.push('> ⚠️ **上記以外のライブラリを新たに追加する場合は必ず確認を求めること。**')
@@ -197,7 +206,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
   if (repoContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. リポジトリ構成 (Repository Structure)`)
+    parts.push(`## ${idx}. Repository Structure`)
     parts.push('')
     parts.push(repoContent.join('\n'))
     parts.push('')
@@ -215,7 +224,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   ].filter((c) => hasValue(c.value))
   if (cmds.length > 0) {
     idx++
-    parts.push(`## ${idx}. セットアップ & 実行方法 (Setup & Commands)`)
+    parts.push(`## ${idx}. Setup & Commands`)
     parts.push('')
     for (const { label, value } of cmds) {
       parts.push(`### ${label}`)
@@ -254,7 +263,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
   if (conventionContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. コーディング規約 (Coding Conventions)`)
+    parts.push(`## ${idx}. Coding Conventions`)
     parts.push('')
     parts.push(conventionContent.join('\n'))
     parts.push('---')
@@ -287,7 +296,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
   if (archContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. アーキテクチャ & 設計方針 (Architecture & Design)`)
+    parts.push(`## ${idx}. Architecture & Design`)
     parts.push('')
     parts.push(archContent.join('\n'))
     parts.push('---')
@@ -304,7 +313,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
     gitContent.push('')
   }
   if (hasValue(config.commitFormat)) {
-    gitContent.push('### コミットメッセージ (Conventional Commits)')
+    gitContent.push('### コミットメッセージ')
     gitContent.push('```')
     gitContent.push(config.commitFormat.trim())
     gitContent.push('```')
@@ -317,7 +326,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
   if (gitContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. ブランチ & コミット規約 (Git Conventions)`)
+    parts.push(`## ${idx}. Git Conventions`)
     parts.push('')
     parts.push(gitContent.join('\n'))
     parts.push('---')
@@ -327,23 +336,23 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   // 8. エージェント行動指示
   const agentContent: string[] = []
   if (hasValue(config.mustDo)) {
-    agentContent.push('### 必ずすること (MUST)')
+    agentContent.push('### 必ずすること')
     agentContent.push(renderList(config.mustDo))
     agentContent.push('')
   }
   if (hasValue(config.mustNot)) {
-    agentContent.push('### してはいけないこと (MUST NOT)')
+    agentContent.push('### してはいけないこと')
     agentContent.push(renderList(config.mustNot))
     agentContent.push('')
   }
   if (hasValue(config.should)) {
-    agentContent.push('### 推奨される行動 (SHOULD)')
+    agentContent.push('### 推奨される行動')
     agentContent.push(renderList(config.should))
     agentContent.push('')
   }
   if (agentContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. エージェントへの行動指示 (Agent Behavior Rules)`)
+    parts.push(`## ${idx}. Agent Behavior Rules`)
     parts.push('')
     parts.push(agentContent.join('\n'))
     parts.push('---')
@@ -376,18 +385,18 @@ export function generateAgentMarkdown(config: AgentConfig): string {
     }
   }
   if (hasValue(config.commonTasks)) {
-    envContent.push('### よくあるタスク (Common Tasks)')
+    envContent.push('### よくあるタスク')
     envContent.push(renderList(config.commonTasks))
     envContent.push('')
   }
   if (hasValue(config.references)) {
-    envContent.push('### 参考リソース (References)')
+    envContent.push('### 参考リソース')
     envContent.push(renderList(config.references))
     envContent.push('')
   }
   if (envContent.length > 0) {
     idx++
-    parts.push(`## ${idx}. 外部サービス & 環境変数 (External Services & Env Vars)`)
+    parts.push(`## ${idx}. External Services & Env Vars`)
     parts.push('')
     parts.push(envContent.join('\n'))
     parts.push('---')
