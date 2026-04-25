@@ -16,18 +16,20 @@ import { useSaveConfigFile } from '@/lib/hooks/use-save-config-file'
 import { downloadTextFile } from '@/lib/download'
 import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type TechRow3 } from '@/lib/generate-agent'
 
-type TechField3 = 'frontendStack' | 'backendStack' | 'infraStack' | 'devTools'
+type TechField3 = 'frontendStack' | 'backendStack' | 'infraStack' | 'devTools' | 'namingRules'
 
 interface TechTableProps {
   rows: Array<{ role: string; tech: string; note?: string }>
   showNote?: boolean
+  colLabels?: { role?: string; tech?: string; note?: string }
   onUpdate: (idx: number, key: string, value: string) => void
   onAdd: () => void
   onRemove: (idx: number) => void
   onReorder: (from: number, to: number) => void
 }
 
-function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
+function TechTable({ rows, showNote = true, colLabels = {}, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
+  const { role: roleLabel = '役割', tech: techLabel = '採用技術', note: noteLabel = '備考' } = colLabels
   const dragIndexRef = useRef<number | null>(null)
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
@@ -51,9 +53,9 @@ function TechTable({ rows, showNote = true, onUpdate, onAdd, onRemove, onReorder
           <thead>
             <tr className="bg-muted border-b border-input">
               <th className="w-6" />
-              <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground w-40">役割</th>
-              <th className={`px-3 py-2 text-left text-2xs font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>採用技術</th>
-              {showNote && <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground">備考</th>}
+              <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground w-40">{roleLabel}</th>
+              <th className={`px-3 py-2 text-left text-2xs font-medium text-muted-foreground ${showNote ? 'w-50' : ''}`}>{techLabel}</th>
+              {showNote && <th className="px-3 py-2 text-left text-2xs font-medium text-muted-foreground">{noteLabel}</th>}
               <th className="w-8" />
             </tr>
           </thead>
@@ -630,13 +632,14 @@ export default function AgentPage() {
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>命名規則</FieldLabel>
-                  <Textarea
-                    placeholder={'変数・関数 | camelCase | getUserName\nクラス | PascalCase | UserService\n定数 | UPPER_SNAKE_CASE | MAX_RETRY_COUNT\nファイル | kebab-case | user-service.ts'}
-                    value={config.namingRules}
-                    onChange={(e) => update('namingRules', e.target.value)}
-                    className="min-h-24 font-mono text-xs"
+                  <TechTable
+                    rows={config.namingRules}
+                    colLabels={{ role: '対象', tech: '規則', note: '例' }}
+                    onUpdate={(i, k, v) => updateRow3('namingRules', i, k, v)}
+                    onAdd={() => addRow3('namingRules')}
+                    onRemove={(i) => removeRow3('namingRules', i)}
+                    onReorder={(f, t) => reorderRow3('namingRules', f, t)}
                   />
-                  <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 「対象 | 規則 | 例」の形式で1行1項目</p>
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>禁止事項</FieldLabel>

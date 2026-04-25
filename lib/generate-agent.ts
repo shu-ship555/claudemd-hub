@@ -20,7 +20,7 @@ export interface AgentConfig {
   indent: string
   charset: string
   lineEnding: string
-  namingRules: string
+  namingRules: TechRow3[]
   prohibitions: string
   designPrinciples: string
   layerStructure: string
@@ -82,7 +82,12 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   indent: '',
   charset: '',
   lineEnding: '',
-  namingRules: '',
+  namingRules: [
+    { role: '変数・関数', tech: 'camelCase', note: 'getUserName' },
+    { role: 'クラス', tech: 'PascalCase', note: 'UserService' },
+    { role: '定数', tech: 'UPPER_SNAKE_CASE', note: 'MAX_RETRY_COUNT' },
+    { role: 'ファイル', tech: 'kebab-case', note: 'user-service.ts' },
+  ],
   prohibitions: '',
   designPrinciples: '',
   layerStructure: '',
@@ -248,8 +253,9 @@ export function generateAgentMarkdown(config: AgentConfig): string {
     conventionContent.push(generalLines.join('\n'))
     conventionContent.push('')
   }
-  if (hasValue(config.namingRules)) {
-    const table = renderTable(['対象', '規則', '例'], parseRows(config.namingRules))
+  const validNaming = config.namingRules.filter((r) => r.role.trim() || r.tech.trim())
+  if (validNaming.length > 0) {
+    const table = renderTable(['対象', '規則', '例'], validNaming.map((r) => [r.role, r.tech, r.note]))
     if (table) {
       conventionContent.push('### 命名規則')
       conventionContent.push(table)
