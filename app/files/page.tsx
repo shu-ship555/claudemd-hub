@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import UploadDialog from '../upload-dialog'
-import ConfigList from '../config-list'
-import { getConfigFiles, type ConfigFile } from '../actions'
+import UploadDialog from './upload-dialog'
+import ConfigList from './config-list'
+import { getConfigFiles, type ConfigFile } from '@/app/actions'
 import { fetchSupabaseUser } from '@/lib/supabase-auth'
 
 export default async function FilesPage() {

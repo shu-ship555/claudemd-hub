@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { LoadingButton } from '@/components/custom/loading-button'
-import { deleteConfigFile } from './actions'
-import type { ConfigFile } from './actions'
+import { deleteConfigFile } from '@/app/actions'
+import type { ConfigFile } from '@/app/actions'
 
 export default function ConfigList({ configs }: { configs: ConfigFile[] }) {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)

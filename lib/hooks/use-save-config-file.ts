@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createConfigFile, getConfigFiles } from '@/app/dashboard/actions'
+import { createConfigFile, getConfigFiles } from '@/app/actions'
 import { useAuth } from '@/lib/hooks/use-auth'
 import { ERROR_MESSAGES } from '@/lib/constants'
 

@@ -83,7 +83,7 @@ export async function createConfigFile(
   })
 
   const data = await parseJsonResponse<ConfigFile>(response, 'Failed to create config file')
-  revalidatePath('/dashboard')
+  revalidatePath('/files')
   return data
 }
 
@@ -101,7 +101,7 @@ export async function updateConfigFile(
   })
 
   const data = await parseJsonResponse<ConfigFile>(response, 'Failed to update config file')
-  revalidatePath('/dashboard')
+  revalidatePath('/files')
   return data
 }
 
@@ -117,5 +117,5 @@ export async function deleteConfigFile(id: string): Promise<void> {
     const error = await response.text()
     throw new Error(`Failed to delete config file: ${error}`)
   }
-  revalidatePath('/dashboard')
+  revalidatePath('/files')
 }

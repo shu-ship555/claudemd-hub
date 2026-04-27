@@ -38,7 +38,7 @@ export default function LoginPage() {
         throw new Error('Failed to sync session')
       }
 
-      window.location.href = '/dashboard'
+      window.location.href = '/'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
     } finally {
