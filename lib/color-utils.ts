@@ -21,12 +21,12 @@ export function assembleColor(fmt: string, raw: string): string {
 }
 
 export const COLOR_PLACEHOLDERS: Record<string, string> = {
-  HEX: '例: 1b61c9',
-  rgb: '例: 27, 97, 201',
-  rgba: '例: 27, 97, 201, 0.8',
-  oklch: '例: 55% 0.2 264',
-  hsl: '例: 220, 70%, 45%',
-  hsla: '例: 220, 70%, 45%, 0.8',
+  HEX: ' 1b61c9',
+  rgb: ' 27, 97, 201',
+  rgba: ' 27, 97, 201, 0.8',
+  oklch: ' 55% 0.2 264',
+  hsl: ' 220, 70%, 45%',
+  hsla: ' 220, 70%, 45%, 0.8',
 }
 
 export function hexToHsl(hex: string): [number, number, number] {

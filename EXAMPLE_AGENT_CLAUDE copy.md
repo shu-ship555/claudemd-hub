@@ -12,8 +12,8 @@
 
 **プロジェクト名:** [PROJECT_NAME]
 **目的・概要:** [このプロジェクトが何をするものかを1〜3文で記述]
-**主要言語・フレームワーク:** [例: TypeScript / Next.js 14 / PostgreSQL]
-**ターゲット環境:** [例: Node.js 20+, Python 3.11+, ブラウザ]
+**主要言語・フレームワーク:** [ TypeScript / Next.js 14 / PostgreSQL]
+**ターゲット環境:** [ Node.js 20+, Python 3.11+, ブラウザ]
 
 ---
 
@@ -26,35 +26,35 @@
 ### フロントエンド
 | 役割 | 採用技術 | 備考 |
 |------|----------|------|
-| フレームワーク | [例: Next.js 14 (App Router)] | Pages Routerは**使わない** |
-| スタイリング | [例: Tailwind CSS v3] | CSS Modules / styled-componentsは**使わない** |
-| 状態管理 | [例: Jotai] | Redux / Zustandは**使わない** |
-| データフェッチ | [例: TanStack Query v5] | — |
-| フォーム | [例: React Hook Form + Zod] | — |
+| フレームワーク | [ Next.js 14 (App Router)] | Pages Routerは**使わない** |
+| スタイリング | [ Tailwind CSS v3] | CSS Modules / styled-componentsは**使わない** |
+| 状態管理 | [ Jotai] | Redux / Zustandは**使わない** |
+| データフェッチ | [ TanStack Query v5] | — |
+| フォーム | [ React Hook Form + Zod] | — |
 
 ### バックエンド
 | 役割 | 採用技術 | 備考 |
 |------|----------|------|
-| ランタイム | [例: Node.js 20 / Python 3.11] | — |
-| フレームワーク | [例: FastAPI / Express] | — |
-| ORM | [例: Prisma / SQLAlchemy] | — |
-| 認証 | [例: NextAuth.js / Auth0] | — |
+| ランタイム | [ Node.js 20 / Python 3.11] | — |
+| フレームワーク | [ FastAPI / Express] | — |
+| ORM | [ Prisma / SQLAlchemy] | — |
+| 認証 | [ NextAuth.js / Auth0] | — |
 
 ### インフラ・データ
 | 役割 | 採用技術 | 備考 |
 |------|----------|------|
-| データベース | [例: PostgreSQL 15] | — |
-| キャッシュ | [例: Redis 7] | — |
-| ホスティング | [例: Vercel / AWS ECS] | — |
-| CI/CD | [例: GitHub Actions] | — |
+| データベース | [ PostgreSQL 15] | — |
+| キャッシュ | [ Redis 7] | — |
+| ホスティング | [ Vercel / AWS ECS] | — |
+| CI/CD | [ GitHub Actions] | — |
 
 ### 開発ツール
 | 役割 | 採用技術 |
 |------|----------|
-| パッケージマネージャー | [例: pnpm / npm / yarn] |
-| Linter | [例: ESLint + Biome] |
-| フォーマッター | [例: Prettier] |
-| テスト | [例: Vitest + Playwright] |
+| パッケージマネージャー | [ pnpm / npm / yarn] |
+| Linter | [ ESLint + Biome] |
+| フォーマッター | [ Prettier] |
+| テスト | [ Vitest + Playwright] |
 
 > ⚠️ **上記以外のライブラリを新たに追加する場合は必ず確認を求めること。**
 
@@ -87,30 +87,30 @@
 
 ### インストール
 ```bash
-[例: npm install]
-[例: pip install -r requirements.txt]
+[ npm install]
+[ pip install -r requirements.txt]
 ```
 
 ### 開発サーバー起動
 ```bash
-[例: npm run dev]
+[ npm run dev]
 ```
 
 ### ビルド
 ```bash
-[例: npm run build]
+[ npm run build]
 ```
 
 ### テスト実行
 ```bash
-[例: npm test]
-[例: pytest tests/]
+[ npm test]
+[ pytest tests/]
 ```
 
 ### Lint / フォーマット
 ```bash
-[例: npm run lint]
-[例: npm run format]
+[ npm run lint]
+[ npm run format]
 ```
 
 ---
@@ -136,7 +136,7 @@
 ### コメント・ドキュメント
 - パブリックAPIには必ずJSDoc / Docstringを付与する
 - 「なぜ」そうしているかをコメントで補足する（「何を」はコードで読む）
-- TODO/FIXMEにはチケット番号またはIssue番号を付与する（例: `TODO(#123):`）
+- TODO/FIXMEにはチケット番号またはIssue番号を付与する（ `TODO(#123):`）
 
 ### 禁止事項
 - `console.log` / `print` をプロダクションコードに残さない
@@ -150,9 +150,9 @@
 <!-- エージェントが設計判断を行う際の指針 -->
 
 ### 設計原則
-- [例: 単一責任の原則を徹底する]
-- [例: ドメインロジックはサービス層に集約する]
-- [例: 副作用はリポジトリ層に閉じ込める]
+- [ 単一責任の原則を徹底する]
+- [ ドメインロジックはサービス層に集約する]
+- [ 副作用はリポジトリ層に閉じ込める]
 
 ### レイヤー構成
 ```
@@ -167,8 +167,8 @@ Infrastructure (DB / External APIs)
 ```
 
 ### 依存関係のルール
-- [例: ドメイン層はインフラ層に依存しない]
-- [例: 循環依存を禁止する]
+- [ ドメイン層はインフラ層に依存しない]
+- [ 循環依存を禁止する]
 
 ---
 
@@ -179,9 +179,9 @@ Infrastructure (DB / External APIs)
 ### テスト種別と対象
 | 種別 | ツール | 対象 | カバレッジ目標 |
 |------|--------|------|----------------|
-| ユニットテスト | [Jest / pytest] | ビジネスロジック | [例: 80%以上] |
-| 統合テスト | [Supertest / pytest] | APIエンドポイント | [例: 主要パス全件] |
-| E2Eテスト | [Playwright / Cypress] | クリティカルフロー | [例: 主要シナリオ5件] |
+| ユニットテスト | [Jest / pytest] | ビジネスロジック | [ 80%以上] |
+| 統合テスト | [Supertest / pytest] | APIエンドポイント | [ 主要パス全件] |
+| E2Eテスト | [Playwright / Cypress] | クリティカルフロー | [ 主要シナリオ5件] |
 
 ### テスト記述ルール
 - テスト名は「[状況] のとき [操作] すると [期待結果]」の形式で書く
@@ -197,9 +197,9 @@ Infrastructure (DB / External APIs)
 
 ### ブランチ命名
 ```
-feature/[issue番号]-[簡潔な説明]   例: feature/42-add-user-auth
-fix/[issue番号]-[簡潔な説明]       例: fix/88-null-pointer-login
-chore/[説明]                        例: chore/update-dependencies
+feature/[issue番号]-[簡潔な説明]    feature/42-add-user-auth
+fix/[issue番号]-[簡潔な説明]        fix/88-null-pointer-login
+chore/[説明]                         chore/update-dependencies
 ```
 
 ### コミットメッセージ (Conventional Commits)
@@ -275,9 +275,9 @@ chore/[説明]                        例: chore/update-dependencies
 ### 外部依存サービス
 | サービス | 用途 | ローカル代替 |
 |----------|------|--------------|
-| [例: PostgreSQL] | [データ永続化] | [Docker Compose] |
-| [例: Redis] | [セッション管理] | [Docker Compose] |
-| [例: SendGrid] | [メール送信] | [MailHog] |
+| [ PostgreSQL] | [データ永続化] | [Docker Compose] |
+| [ Redis] | [セッション管理] | [Docker Compose] |
+| [ SendGrid] | [メール送信] | [MailHog] |
 
 ---
 
@@ -310,8 +310,8 @@ chore/[説明]                        例: chore/update-dependencies
 
 | 症状 | 原因 | 解決策 |
 |------|------|--------|
-| [例: テストがタイムアウトする] | [DB接続が遅い] | [Docker を再起動: `docker compose restart`] |
-| [例: ビルドが失敗する] | [依存関係の不整合] | [`rm -rf node_modules && npm install`] |
+| [ テストがタイムアウトする] | [DB接続が遅い] | [Docker を再起動: `docker compose restart`] |
+| [ ビルドが失敗する] | [依存関係の不整合] | [`rm -rf node_modules && npm install`] |
 | [症状] | [原因] | [解決策] |
 
 ---

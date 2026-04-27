@@ -639,37 +639,37 @@ export default function AgentPage() {
                   <div className="space-y-4">
                     <div className="space-y-1.5">
                       <FieldLabel>プロジェクト名</FieldLabel>
-                      <Input placeholder="例: my-saas-app" value={config.projectName} onChange={(e) => update("projectName", e.target.value)} />
+                      <Input placeholder="my-saas-app" value={config.projectName} onChange={(e) => update("projectName", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel>目的・概要</FieldLabel>
-                      <Textarea placeholder="例: ユーザーが Claude の設定ファイルを生成・管理できる Web アプリ" value={config.description} onChange={(e) => update("description", e.target.value)} className="min-h-20" />
+                      <Textarea placeholder="ユーザーが Claude の設定ファイルを生成・管理できる Web アプリ" value={config.description} onChange={(e) => update("description", e.target.value)} className="min-h-20" />
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel>主要言語・フレームワーク</FieldLabel>
-                      <Input placeholder="例: TypeScript / Next.js 16 / PostgreSQL" value={config.languages} onChange={(e) => update("languages", e.target.value)} />
+                      <Input placeholder="TypeScript / Next.js 16 / PostgreSQL" value={config.languages} onChange={(e) => update("languages", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel>ターゲット環境</FieldLabel>
-                      <Input placeholder="例: Node.js 20+, ブラウザ" value={config.targetEnv} onChange={(e) => update("targetEnv", e.target.value)} />
+                      <Input placeholder="Node.js 20+, ブラウザ" value={config.targetEnv} onChange={(e) => update("targetEnv", e.target.value)} />
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel>メンテナー</FieldLabel>
-                      <Input placeholder="例: @your-handle" value={config.maintainer} onChange={(e) => update("maintainer", e.target.value)} />
+                      <Input placeholder="@your-handle" value={config.maintainer} onChange={(e) => update("maintainer", e.target.value)} />
                     </div>
                     {config.maintainer.trim() && (
                       <div className="pl-3 space-y-3 border-l-2 border-border">
                         <div className="space-y-1">
                           <label className="text-xs font-medium">{`連絡先`}</label>
-                          <Input placeholder="例: Slack #channel-name / email@example.com" value={config.contact} onChange={(e) => update("contact", e.target.value)} className="h-8 text-xs" />
+                          <Input placeholder="Slack #channel-name / email@example.com" value={config.contact} onChange={(e) => update("contact", e.target.value)} className="h-8 text-xs" />
                         </div>
                         <div className="space-y-1">
                           <label className="text-xs font-medium">{`バージョン`}</label>
-                          <Input placeholder="例: 1.2.0" value={config.version} onChange={(e) => update("version", e.target.value)} className="h-8 text-xs" />
+                          <Input placeholder="1.2.0" value={config.version} onChange={(e) => update("version", e.target.value)} className="h-8 text-xs" />
                         </div>
                         <div className="space-y-1">
                           <label className="text-xs font-medium">{`最終更新日`}</label>
-                          <Input placeholder="例: 2026-04-24" value={config.lastUpdated} onChange={(e) => update("lastUpdated", e.target.value)} className="h-8 text-xs" />
+                          <Input placeholder="2026-04-24" value={config.lastUpdated} onChange={(e) => update("lastUpdated", e.target.value)} className="h-8 text-xs" />
                         </div>
                       </div>
                     )}
@@ -875,7 +875,7 @@ export default function AgentPage() {
                     </div>
                     <div className="space-y-1.5">
                       <FieldLabel>コミットメッセージ形式</FieldLabel>
-                      <Input placeholder="例: <type>(<scope>): <summary>" value={config.commitFormat} onChange={(e) => update("commitFormat", e.target.value)} className="font-mono text-sm" />
+                      <Input placeholder="<type>(<scope>): <summary>" value={config.commitFormat} onChange={(e) => update("commitFormat", e.target.value)} className="font-mono text-sm" />
                     </div>
 
                     <div className="space-y-1.5">

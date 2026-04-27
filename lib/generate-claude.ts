@@ -6,38 +6,20 @@ export interface McpTool {
 }
 
 export interface ClaudeConfig {
+  agentsPath: string
+  designPath: string
   language: string
-  framework: string
-  styling: string
-  uiLib: string
-  icons: string
-  backend: string
-  principles: string
-  lintCmd: string
-  designRef: string
-  designRules: string
   mcpTools: McpTool[]
   refactoringRules: string
-  backendRules: string
   customRules: string
 }
 
 export const DEFAULT_CLAUDE_CONFIG: ClaudeConfig = {
-  language: '日本語',
-  framework: '',
-  styling: '',
-  uiLib: '',
-  icons: '',
-  backend: '',
-  principles:
-    'KISS (Keep It Simple, Stupid): 常に最もシンプルな解決策を選択してください\nYAGNI (You Ain\'t Gonna Need It): 現時点で必要な機能のみを実装してください\nDRY (Don\'t Repeat Yourself): コードの重複を排除してください',
-  lintCmd: '',
-  designRef: 'DESIGN.md',
-  designRules:
-    'DESIGN.md に定義されているカラーパレット、タイポグラフィ、スペーシングの規則を逸脱しないでください',
+  agentsPath: '',
+  designPath: '',
+  language: '',
   mcpTools: [],
   refactoringRules: '',
-  backendRules: '',
   customRules: '',
 }
 
@@ -94,6 +76,16 @@ function renderList(raw: string): string {
 export function generateClaudeMarkdown(config: ClaudeConfig): string {
   const parts: string[] = []
 
+  parts.push('# CLAUDE.md')
+  parts.push('')
+
+  // @ file references
+  const refs = [config.agentsPath, config.designPath].filter(hasValue)
+  if (refs.length > 0) {
+    refs.forEach((p) => parts.push(`@${p.trim()}`))
+    parts.push('')
+  }
+
   // Language
   if (hasValue(config.language)) {
     parts.push('## Language')
@@ -101,58 +93,6 @@ export function generateClaudeMarkdown(config: ClaudeConfig): string {
     parts.push(
       `- **Communication**: ユーザーとの対話はすべて**${config.language.trim()}**で行ってください。`
     )
-    parts.push('')
-  }
-
-  // Framework & Library
-  const frameworkLines: string[] = []
-  if (hasValue(config.framework)) frameworkLines.push(`- **Core**: ${config.framework.trim()}`)
-  if (hasValue(config.styling)) frameworkLines.push(`- **Styling**: ${config.styling.trim()}`)
-  if (hasValue(config.uiLib)) frameworkLines.push(`- **UI Components**: ${config.uiLib.trim()}`)
-  if (hasValue(config.icons)) frameworkLines.push(`- **Icons**: ${config.icons.trim()}`)
-  if (hasValue(config.backend)) frameworkLines.push(`- **Backend**: ${config.backend.trim()}`)
-  if (frameworkLines.length > 0) {
-    parts.push('## Framework & Library')
-    parts.push('')
-    parts.push(frameworkLines.join('\n'))
-    parts.push('')
-  }
-
-  // Code Quality
-  const qualityLines: string[] = []
-  if (hasValue(config.principles)) {
-    toLines(config.principles).forEach((l) =>
-      qualityLines.push(`- ${l.replace(/^[-•]\s*/, '')}`)
-    )
-  }
-  if (hasValue(config.lintCmd)) {
-    qualityLines.push(
-      `- **Linting**: 実装後は必ず \`${config.lintCmd.trim()}\` を実行し、静的解析エラーがないことを確認してください。`
-    )
-  }
-  if (qualityLines.length > 0) {
-    parts.push('## Code Quality & Engineering Principles')
-    parts.push('')
-    parts.push(qualityLines.join('\n'))
-    parts.push('')
-  }
-
-  // Design Enforcement
-  const designLines: string[] = []
-  if (hasValue(config.designRef)) {
-    designLines.push(
-      `- UIの実装や修正を行う際は、必ずプロジェクトルートにある \`${config.designRef.trim()}\` を参照してください。`
-    )
-  }
-  if (hasValue(config.designRules)) {
-    toLines(config.designRules).forEach((l) =>
-      designLines.push(`- ${l.replace(/^[-•]\s*/, '')}`)
-    )
-  }
-  if (designLines.length > 0) {
-    parts.push('## Design Enforcement')
-    parts.push('')
-    parts.push(designLines.join('\n'))
     parts.push('')
   }
 
@@ -187,14 +127,6 @@ export function generateClaudeMarkdown(config: ClaudeConfig): string {
     parts.push('## Refactoring & Optimization')
     parts.push('')
     parts.push(renderList(config.refactoringRules))
-    parts.push('')
-  }
-
-  // Backend Integration
-  if (hasValue(config.backendRules)) {
-    parts.push('## Backend Integration')
-    parts.push('')
-    parts.push(renderList(config.backendRules))
     parts.push('')
   }
 
