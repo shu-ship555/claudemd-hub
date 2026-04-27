@@ -14,7 +14,7 @@ interface CenteredCardProps {
 
 export function CenteredCard({ title, description, children, footer, className, cardClassName, headerClassName, contentClassName }: CenteredCardProps) {
   return (
-    <main className={cn("flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center bg-background px-4", className)}>
+    <main className={cn("flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center bg-background  px-4 pt-4 pb-12", className)}>
       <Card className={cn("w-full max-w-md", cardClassName)}>
         <CardHeader className={headerClassName}>
           <CardTitle>{title}</CardTitle>

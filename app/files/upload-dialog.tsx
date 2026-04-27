@@ -9,6 +9,7 @@ import { createConfigFile } from "@/app/actions";
 import { useFormState } from "@/lib/hooks/use-form-state";
 import { FormField } from "@/components/custom/form-field";
 import { LoadingButton } from "@/components/custom/loading-button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function UploadDialog() {
   const [open, setOpen] = useState(false);
@@ -50,7 +51,7 @@ export default function UploadDialog() {
           <DialogDescription>Claude Codeの設定ファイルをアップロードまたは作成してください</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
           <FormField id="name" label="ファイル名" placeholder="claude.md, .agentic.md" value={name} onChange={setName} disabled={isLoading} />
           <div className="space-y-2">
             <Label htmlFor="content">ファイル内容</Label>

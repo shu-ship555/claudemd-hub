@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
+import { LoadingButton } from '@/components/custom/loading-button'
 import { createClient } from '@/lib/supabase'
 
 export default function DashboardClient() {
@@ -22,8 +22,8 @@ export default function DashboardClient() {
   }
 
   return (
-    <Button size="xs" onClick={handleLogout} disabled={isLoading}>
-      {isLoading ? 'ログアウト中...' : 'ログアウト'}
-    </Button>
+    <LoadingButton size="xs" onClick={handleLogout} isLoading={isLoading} loadingText="ログアウト中...">
+      ログアウト
+    </LoadingButton>
   )
 }

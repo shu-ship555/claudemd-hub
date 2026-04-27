@@ -4,18 +4,17 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { Info, Layers, FolderOpen, Terminal, Code, Blocks, GitBranch, Bot, Server, Plus, Trash2, ChevronRight, ChevronLeft, GripVertical } from "lucide-react";
 import { SectionCard } from "@/components/custom/section-card";
 import { FieldLabel } from "@/components/custom/field-label";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
-import { downloadTextFile } from "@/lib/download";
 import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type TechRow3 } from "@/lib/generate-agent";
+import { useDragAndDrop } from "@/lib/hooks/use-drag-and-drop";
+import { MobileGuard } from "@/components/custom/mobile-guard";
+import { WizardSidebar } from "@/components/patterns/wizard-sidebar";
+import { PreviewSavePanel } from "@/components/patterns/preview-save-panel";
 
 type TechField3 = "frontendStack" | "backendStack" | "infraStack" | "devTools" | "namingRules" | "branchNaming" | "commitTypes" | "envVars" | "externalServices";
 
@@ -34,31 +33,7 @@ interface TechTableProps {
 
 function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
   const { role: roleLabel = "役割", tech: techLabel = "採用技術", note: noteLabel = "備考" } = colLabels;
-  const dragIndexRef = useRef<number | null>(null);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  const onDragStart = (i: number) => {
-    dragIndexRef.current = i;
-    setDraggingIndex(i);
-  };
-  const onDragOver = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    setDragOverIndex(i);
-  };
-  const onDrop = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    const from = dragIndexRef.current;
-    if (from !== null && from !== i) onReorder(from, i);
-    dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setDragOverIndex(null);
-  };
-  const onDragEnd = () => {
-    dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setDragOverIndex(null);
-  };
+  const { draggingIndex, dragOverIndex, onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop(onReorder);
 
   const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full";
 
@@ -121,31 +96,7 @@ interface EnvVarTableProps {
 }
 
 function EnvVarTable({ rows, rowPlaceholders, onUpdate, onAdd, onRemove, onReorder }: EnvVarTableProps) {
-  const dragIndexRef = useRef<number | null>(null);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  const onDragStart = (i: number) => {
-    dragIndexRef.current = i;
-    setDraggingIndex(i);
-  };
-  const onDragOver = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    setDragOverIndex(i);
-  };
-  const onDrop = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    const from = dragIndexRef.current;
-    if (from !== null && from !== i) onReorder(from, i);
-    dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setDragOverIndex(null);
-  };
-  const onDragEnd = () => {
-    dragIndexRef.current = null;
-    setDraggingIndex(null);
-    setDragOverIndex(null);
-  };
+  const { draggingIndex, dragOverIndex, onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop(onReorder);
 
   const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full";
 
@@ -294,40 +245,13 @@ function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: stri
   };
   const addRow = () => setNodes((prev) => [...prev, { ...empty(), depth: prev[prev.length - 1]?.depth ?? 0 }]);
 
-  const dragIndexRef = useRef<number | null>(null);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  const onDragStart = (i: number) => {
-    dragIndexRef.current = i;
-    setDraggingIndex(i);
-  };
-  const onDragOver = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    setDragOverIndex(i);
-  };
-  const onDrop = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    const from = dragIndexRef.current;
-    if (from === null || from === i) {
-      setDragOverIndex(null);
-      setDraggingIndex(null);
-      return;
-    }
+  const { draggingIndex, dragOverIndex, onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop((from, to) => {
     const next = [...nodes];
     const [moved] = next.splice(from, 1);
-    next.splice(i, 0, moved);
+    next.splice(to, 0, moved);
     setNodes(next);
     emit(next);
-    dragIndexRef.current = null;
-    setDragOverIndex(null);
-    setDraggingIndex(null);
-  };
-  const onDragEnd = () => {
-    dragIndexRef.current = null;
-    setDragOverIndex(null);
-    setDraggingIndex(null);
-  };
+  });
 
   const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 font-mono";
   const iconBtnCls = "p-0.5 text-muted-foreground/50 hover:text-muted-foreground disabled:opacity-20 transition-colors shrink-0";
@@ -381,12 +305,13 @@ function nodesToLayer(nodes: LayerNode[]): string {
   return ["| レイヤー名 | 内容・役割 |", "|---|---|", ...rows.map((n) => `| ${n.name} | ${n.desc} |`)].join("\n");
 }
 
+const emptyLayerNode = (): LayerNode => ({ name: "", desc: "" });
+
 function LayerBuilder({ value, onChange, rowPlaceholders }: { value: string; onChange: (v: string) => void; rowPlaceholders?: { name?: string; desc?: string }[] }) {
-  const empty = (): LayerNode => ({ name: "", desc: "" });
-  const defaultNodes = () => Array.from({ length: rowPlaceholders?.length ?? 1 }, empty);
+  const makeDefaultNodes = () => Array.from({ length: rowPlaceholders?.length ?? 1 }, emptyLayerNode);
   const [nodes, setNodes] = useState<LayerNode[]>(() => {
     const parsed = layerToNodes(value);
-    return parsed.length > 0 ? parsed : defaultNodes();
+    return parsed.length > 0 ? parsed : makeDefaultNodes();
   });
   const lastEmittedRef = useRef(value);
 
@@ -394,9 +319,9 @@ function LayerBuilder({ value, onChange, rowPlaceholders }: { value: string; onC
     if (value !== lastEmittedRef.current) {
       lastEmittedRef.current = value;
       const parsed = layerToNodes(value);
-      setNodes(parsed.length > 0 ? parsed : defaultNodes());
+      setNodes(parsed.length > 0 ? parsed : Array.from({ length: rowPlaceholders?.length ?? 1 }, emptyLayerNode));
     }
-  }, [value]);
+  }, [value, rowPlaceholders]);
 
   const emit = (next: LayerNode[]) => {
     const s = nodesToLayer(next);
@@ -411,50 +336,23 @@ function LayerBuilder({ value, onChange, rowPlaceholders }: { value: string; onC
   };
   const remove = (i: number) => {
     const next = nodes.filter((_, idx) => idx !== i);
-    const nn = next.length > 0 ? next : [empty()];
+    const nn = next.length > 0 ? next : [emptyLayerNode()];
     setNodes(nn);
     emit(nn);
   };
   const addRow = () => {
-    const nn = [...nodes, empty()];
+    const nn = [...nodes, emptyLayerNode()];
     setNodes(nn);
     emit(nn);
   };
 
-  const dragIndexRef = useRef<number | null>(null);
-  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
-  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
-
-  const onDragStart = (i: number) => {
-    dragIndexRef.current = i;
-    setDraggingIndex(i);
-  };
-  const onDragOver = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    setDragOverIndex(i);
-  };
-  const onDrop = (e: React.DragEvent, i: number) => {
-    e.preventDefault();
-    const from = dragIndexRef.current;
-    if (from === null || from === i) {
-      setDragOverIndex(null);
-      setDraggingIndex(null);
-      return;
-    }
+  const { draggingIndex, dragOverIndex, onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop((from, to) => {
     const next = [...nodes];
     const [moved] = next.splice(from, 1);
-    next.splice(i, 0, moved);
+    next.splice(to, 0, moved);
     setNodes(next);
     emit(next);
-    dragIndexRef.current = null;
-    setDragOverIndex(null);
-    setDraggingIndex(null);
-  };
-  const onDragEnd = () => {
-    dragIndexRef.current = null;
-    setDragOverIndex(null);
-    setDraggingIndex(null);
-  };
+  });
 
   const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0";
 
@@ -588,29 +486,13 @@ export default function AgentPage() {
 
   return (
     <>
-      <div className="lg:hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-background gap-3 px-8 text-center">
-        <p className="text-sm leading-[120%] tracking-[0.06em] font-bold text-foreground">PC でご覧ください</p>
-        <p className="text-xs leading-[170%] tracking-[0.06em] text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
-      </div>
+      <MobileGuard />
 
       <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
         <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
           {/* Sidebar TOC — カスタム時のみ表示 */}
           {isCustom && (
-            <aside className="hidden lg:block">
-              <nav className="sticky space-y-0.5" style={{ top: "calc(3.5rem + 1.5rem)" }}>
-                {WIZARD_STEPS.map((step, i) => {
-                  const StepIcon = step.icon;
-                  return (
-                    <button key={step.id} type="button" onClick={() => scrollToSection(step.id)} className={cn("flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui", activeSection === step.id ? "bg-primary-surface text-primary font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
-                      <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
-                      <StepIcon className="size-3 shrink-0" />
-                      <span className="leading-tight truncate">{step.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </aside>
+            <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />
           )}
 
           {/* Form */}
@@ -958,40 +840,21 @@ export default function AgentPage() {
           </div>
 
           {/* Preview & Save */}
-          <div className="space-y-5">
-            <div className="lg:sticky lg:top-20 space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="agent-filename">ファイル名</Label>
-                  {fileCount !== null && (
-                    <span className={`text-xs font-mono ${fileCount >= maxFiles ? "text-destructive" : "text-muted-foreground"}`}>
-                      {fileCount} / {maxFiles}
-                    </span>
-                  )}
-                </div>
-                <Input id="agent-filename" placeholder="AGENT.md" value={fileName} onChange={(e) => setFileName(e.target.value)} disabled={isSaving} />
-              </div>
-
-              <Textarea ref={previewScrollRef} value={preview} readOnly className="h-[calc(100vh-400px)] min-h-64 font-mono text-xs" />
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => downloadTextFile(fileName || "AGENT.md", preview)} className="flex-1">
-                  ダウンロード
-                </Button>
-                {!isAuthLoading &&
-                  (isLoggedIn ? (
-                    <Button onClick={() => save(preview)} disabled={isSaving} className="flex-1">
-                      {isSaving ? "保存中..." : "保存"}
-                    </Button>
-                  ) : (
-                    <a href="/auth/login" className={cn(buttonVariants({ variant: "default" }), "flex-1 justify-center")}>
-                      ログインして保存
-                    </a>
-                  ))}
-              </div>
-              {feedback && <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === "success" ? "text-success" : "text-destructive"}`}>{feedback.message}</p>}
-            </div>
-          </div>
+          <PreviewSavePanel
+            fileNameInputId="agent-filename"
+            defaultFileName="AGENT.md"
+            fileName={fileName}
+            setFileName={setFileName}
+            fileCount={fileCount}
+            maxFiles={maxFiles}
+            isSaving={isSaving}
+            isLoggedIn={isLoggedIn}
+            isAuthLoading={isAuthLoading}
+            preview={preview}
+            onSave={() => save(preview)}
+            feedback={feedback}
+            textareaRef={previewScrollRef}
+          />
         </div>
       </main>
     </>

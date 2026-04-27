@@ -4,18 +4,16 @@ import { useState, useMemo } from "react";
 import { MessageSquare, Plug2, Sliders, Plus, Trash2, Link2, Wrench } from "lucide-react";
 import { SectionCard } from "@/components/custom/section-card";
 import { FieldLabel } from "@/components/custom/field-label";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
-import { downloadTextFile } from "@/lib/download";
 import { generateClaudeMarkdown, DEFAULT_CLAUDE_CONFIG, MCP_PRESETS, type ClaudeConfig, type McpTool } from "@/lib/generate-claude";
+import { MobileGuard } from "@/components/custom/mobile-guard";
+import { WizardSidebar } from "@/components/patterns/wizard-sidebar";
+import { PreviewSavePanel } from "@/components/patterns/preview-save-panel";
 
 const CLAUDE_MODE_OPTIONS = ["デフォルト", "カスタム"] as const;
 
@@ -107,29 +105,13 @@ export default function ClaudePage() {
 
   return (
     <>
-      <div className="lg:hidden fixed inset-0 z-50 flex flex-col items-center justify-center bg-background gap-3 px-8 text-center">
-        <p className="text-sm leading-[120%] tracking-[0.06em] font-bold text-foreground">PC でご覧ください</p>
-        <p className="text-xs leading-[170%] tracking-[0.06em] text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
-      </div>
+      <MobileGuard />
 
       <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
         <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
           {/* Sidebar TOC — カスタム時のみ表示 */}
           {isCustom && (
-            <aside className="hidden lg:block">
-              <nav className="sticky space-y-0.5" style={{ top: "calc(3.5rem + 1.5rem)" }}>
-                {WIZARD_STEPS.map((step, i) => {
-                  const StepIcon = step.icon;
-                  return (
-                    <button key={step.id} type="button" onClick={() => scrollToSection(step.id)} className={cn("flex items-center gap-2 w-full text-left px-2.5 py-2 rounded-md text-xs transition-colors duration-ui", activeSection === step.id ? "bg-primary-surface text-primary font-semibold" : "text-muted-foreground hover:text-foreground hover:bg-muted")}>
-                      <span className="w-4 shrink-0 text-2xs font-mono tabular-nums opacity-40">{i + 1}</span>
-                      <StepIcon className="size-3 shrink-0" />
-                      <span className="leading-tight truncate">{step.label}</span>
-                    </button>
-                  );
-                })}
-              </nav>
-            </aside>
+            <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />
           )}
 
           {/* Form */}
@@ -229,40 +211,20 @@ export default function ClaudePage() {
           </div>
 
           {/* Preview & Save */}
-          <div className="space-y-5">
-            <div className="lg:sticky lg:top-20 space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="claude-filename">ファイル名</Label>
-                  {fileCount !== null && (
-                    <span className={`text-xs font-mono ${fileCount >= maxFiles ? "text-destructive" : "text-muted-foreground"}`}>
-                      {fileCount} / {maxFiles}
-                    </span>
-                  )}
-                </div>
-                <Input id="claude-filename" placeholder="CLAUDE.md" value={fileName} onChange={(e) => setFileName(e.target.value)} disabled={isSaving} />
-              </div>
-
-              <Textarea value={preview} readOnly className="h-[calc(100vh-400px)] min-h-64 font-mono text-xs" />
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => downloadTextFile(fileName || "CLAUDE.md", preview)} className="flex-1">
-                  ダウンロード
-                </Button>
-                {!isAuthLoading &&
-                  (isLoggedIn ? (
-                    <Button onClick={() => save(preview)} disabled={isSaving} className="flex-1">
-                      {isSaving ? "保存中..." : "保存"}
-                    </Button>
-                  ) : (
-                    <a href="/auth/login" className={cn(buttonVariants({ variant: "default" }), "flex-1 justify-center")}>
-                      ログインして保存
-                    </a>
-                  ))}
-              </div>
-              {feedback && <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === "success" ? "text-success" : "text-destructive"}`}>{feedback.message}</p>}
-            </div>
-          </div>
+          <PreviewSavePanel
+            fileNameInputId="claude-filename"
+            defaultFileName="CLAUDE.md"
+            fileName={fileName}
+            setFileName={setFileName}
+            fileCount={fileCount}
+            maxFiles={maxFiles}
+            isSaving={isSaving}
+            isLoggedIn={isLoggedIn}
+            isAuthLoading={isAuthLoading}
+            preview={preview}
+            onSave={() => save(preview)}
+            feedback={feedback}
+          />
         </div>
       </main>
     </>

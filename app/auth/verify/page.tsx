@@ -1,33 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { CenteredCard } from "@/components/custom/centered-card";
 
 export default function VerifyPage() {
   return (
-    <main className="flex h-[calc(100vh-3.5rem)] flex-col items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>メールを確認してください</CardTitle>
-          <CardDescription>確認用リンクをメールで送信しました</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
-            <p>メールに記載されているリンクをクリックして、アカウントを有効化してください。</p>
-          </div>
+    <CenteredCard
+      title="メールを確認してください"
+      description="確認用リンクをメールで送信しました"
+    >
+      <div className="flex flex-col gap-4">
+        <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+          <p>メールに記載されているリンクをクリックして、アカウントを有効化してください。</p>
+        </div>
 
-          <div className="text-sm text-muted-foreground space-y-2">
-            <p>メールが届かない場合は、迷惑メールフォルダをご確認いただくか、再度登録をお試しください。</p>
-          </div>
+        <div className="text-sm text-muted-foreground space-y-2">
+          <p>メールが届かない場合は、迷惑メールフォルダをご確認いただくか、再度登録をお試しください。</p>
+        </div>
 
-          <Link href="/auth/login">
-            <Button variant="outline" className="w-full">
-              ログインに戻る
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    </main>
+        <Link href="/auth/login">
+          <Button variant="outline" className="w-full">
+            ログインに戻る
+          </Button>
+        </Link>
+      </div>
+    </CenteredCard>
   );
 }
