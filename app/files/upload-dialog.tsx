@@ -45,7 +45,7 @@ export default function UploadDialog() {
       <DialogTrigger asChild>
         <Button>設定ファイルをアップロード</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl pt-5.5 px-6 pb-6">
+      <DialogContent className="max-w-2xl pt-6 px-6 pb-6">
         <DialogHeader>
           <DialogTitle>新しい設定ファイル</DialogTitle>
           <DialogDescription>Claude Codeの設定ファイルをアップロードまたは作成してください</DialogDescription>

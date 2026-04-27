@@ -77,7 +77,7 @@ function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onU
           </tbody>
         </table>
       </div>
-      <button type="button" onClick={onAdd} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+      <button type="button" onClick={onAdd} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         行を追加
       </button>
@@ -145,7 +145,7 @@ function EnvVarTable({ rows, rowPlaceholders, onUpdate, onAdd, onRemove, onReord
           </tbody>
         </table>
       </div>
-      <button type="button" onClick={onAdd} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+      <button type="button" onClick={onAdd} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         行を追加
       </button>
@@ -277,7 +277,7 @@ function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: stri
           </button>
         </div>
       ))}
-      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+      <button type="button" onClick={addRow} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         行を追加
       </button>
@@ -374,7 +374,7 @@ function LayerBuilder({ value, onChange, rowPlaceholders }: { value: string; onC
           </button>
         </div>
       ))}
-      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+      <button type="button" onClick={addRow} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         レイヤーを追加
       </button>
@@ -519,23 +519,23 @@ export default function AgentPage() {
                 {/* 1. プロジェクト概要 */}
                 <SectionCard id="overview" label="プロジェクト概要" description="エージェントがコンテキストを把握するための基本情報" icon={Info}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>プロジェクト名</FieldLabel>
                       <Input placeholder="my-saas-app" value={config.projectName} onChange={(e) => update("projectName", e.target.value)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>目的・概要</FieldLabel>
                       <Textarea placeholder="ユーザーが Claude の設定ファイルを生成・管理できる Web アプリ" value={config.description} onChange={(e) => update("description", e.target.value)} className="min-h-20" />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>主要言語・フレームワーク</FieldLabel>
                       <Input placeholder="TypeScript / Next.js 16 / PostgreSQL" value={config.languages} onChange={(e) => update("languages", e.target.value)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>ターゲット環境</FieldLabel>
                       <Input placeholder="Node.js 20+, ブラウザ" value={config.targetEnv} onChange={(e) => update("targetEnv", e.target.value)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>メンテナー</FieldLabel>
                       <Input placeholder="@your-handle" value={config.maintainer} onChange={(e) => update("maintainer", e.target.value)} />
                     </div>
@@ -561,19 +561,19 @@ export default function AgentPage() {
                 {/* 2. 技術スタック */}
                 <SectionCard id="techStack" label="技術スタック" description="採用技術と使用しない技術を明示する" icon={Layers}>
                   <div className="space-y-6">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>フロントエンド</FieldLabel>
                       <TechTable rows={config.frontendStack} onUpdate={(i, k, v) => updateRow3("frontendStack", i, k, v)} onAdd={() => addRow3("frontendStack")} onRemove={(i) => removeRow3("frontendStack", i)} onReorder={(f, t) => reorderRow3("frontendStack", f, t)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>バックエンド</FieldLabel>
                       <TechTable rows={config.backendStack} onUpdate={(i, k, v) => updateRow3("backendStack", i, k, v)} onAdd={() => addRow3("backendStack")} onRemove={(i) => removeRow3("backendStack", i)} onReorder={(f, t) => reorderRow3("backendStack", f, t)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>インフラ・データ</FieldLabel>
                       <TechTable rows={config.infraStack} onUpdate={(i, k, v) => updateRow3("infraStack", i, k, v)} onAdd={() => addRow3("infraStack")} onRemove={(i) => removeRow3("infraStack", i)} onReorder={(f, t) => reorderRow3("infraStack", f, t)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>開発ツール</FieldLabel>
                       <TechTable rows={config.devTools} onUpdate={(i, k, v) => updateRow3("devTools", i, k, v)} onAdd={() => addRow3("devTools")} onRemove={(i) => removeRow3("devTools", i)} onReorder={(f, t) => reorderRow3("devTools", f, t)} />
                     </div>
@@ -583,11 +583,11 @@ export default function AgentPage() {
                 {/* 3. リポジトリ構成 */}
                 <SectionCard id="repoStructure" label="リポジトリ構成" description="エージェントが迷わないよう、重要なファイル・ディレクトリを明示する" icon={FolderOpen}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>ディレクトリ構造</FieldLabel>
                       <DirTreeBuilder value={config.repoStructure} onChange={(v) => update("repoStructure", v)} />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>重要ファイル</FieldLabel>
                       <Textarea placeholder={"src/lib/auth.ts — 認証ユーティリティ\nsrc/types/index.ts — 共通型定義\ndocker-compose.yml — ローカル環境のDB設定"} value={config.importantFiles} onChange={(e) => update("importantFiles", e.target.value)} className="min-h-24 font-mono text-xs mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -607,7 +607,7 @@ export default function AgentPage() {
                         { key: "cmdLint", label: "Lint / フォーマット", placeholder: "npm run lint" },
                       ] as const
                     ).map(({ key, label, placeholder }) => (
-                      <div key={key} className="space-y-1.5">
+                      <div key={key} className="space-y-2">
                         <FieldLabel>{label}</FieldLabel>
                         <Input placeholder={placeholder} value={config[key]} onChange={(e) => update(key, e.target.value)} className="font-mono text-sm" />
                       </div>
@@ -618,7 +618,7 @@ export default function AgentPage() {
                 {/* 5. コーディング規約 */}
                 <SectionCard id="conventions" label="コーディング規約" description="エージェントが生成するコードの品質・スタイルを統一する" icon={Code}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>インデント</FieldLabel>
                       <Select value={config.indent ?? ""} onValueChange={(v) => update("indent", v)}>
                         <SelectTrigger className="w-full">
@@ -631,7 +631,7 @@ export default function AgentPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>文字コード</FieldLabel>
                       <Select value={config.charset ?? ""} onValueChange={(v) => update("charset", v)}>
                         <SelectTrigger className="w-full">
@@ -644,7 +644,7 @@ export default function AgentPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>行末</FieldLabel>
                       <Select value={config.lineEnding ?? ""} onValueChange={(v) => update("lineEnding", v)}>
                         <SelectTrigger className="w-full">
@@ -657,7 +657,7 @@ export default function AgentPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>命名規則</FieldLabel>
                       <TechTable
                         rows={config.namingRules}
@@ -674,7 +674,7 @@ export default function AgentPage() {
                         onReorder={(f, t) => reorderRow3("namingRules", f, t)}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>禁止事項</FieldLabel>
                       <Textarea placeholder={"console.log をプロダクションコードに残さない\nハードコードされたシークレット・APIキーを絶対にコミットしない\nany型を安易に使用しない"} value={config.prohibitions} onChange={(e) => update("prohibitions", e.target.value)} className="min-h-24 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -685,12 +685,12 @@ export default function AgentPage() {
                 {/* 6. アーキテクチャ & テスト */}
                 <SectionCard id="architecture" label="アーキテクチャ & テスト" description="設計判断の指針とテスト方針" icon={Blocks}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>設計原則</FieldLabel>
                       <Textarea placeholder={"単一責任の原則を徹底する\nドメインロジックはサービス層に集約する\n副作用はリポジトリ層に閉じ込める"} value={config.designPrinciples} onChange={(e) => update("designPrinciples", e.target.value)} className="min-h-24 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>レイヤー構成</FieldLabel>
                       <LayerBuilder
                         value={config.layerStructure}
@@ -703,12 +703,12 @@ export default function AgentPage() {
                         ]}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>依存関係のルール</FieldLabel>
                       <Textarea placeholder={"ドメイン層はインフラ層に依存しない\n循環依存を禁止する"} value={config.dependencyRules} onChange={(e) => update("dependencyRules", e.target.value)} className="min-h-20 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>テスト方針</FieldLabel>
                       <Textarea placeholder={"テスト名は「[状況] のとき [操作] すると [期待結果]」の形式で書く\n外部依存（DB・API）は必ずモック/スタブする\nテストはそれぞれ独立して実行できること（順序依存禁止）"} value={config.testPolicy} onChange={(e) => update("testPolicy", e.target.value)} className="min-h-24 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -719,7 +719,7 @@ export default function AgentPage() {
                 {/* 7. Git 規約 */}
                 <SectionCard id="git" label="Git 規約" description="ブランチ命名・コミットメッセージ・PR のルール" icon={GitBranch}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>ブランチ命名</FieldLabel>
                       <TechTable
                         rows={config.branchNaming}
@@ -735,7 +735,7 @@ export default function AgentPage() {
                         onReorder={(f, t) => reorderRow3("branchNaming", f, t)}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>コミットタイプ</FieldLabel>
                       <TechTable
                         rows={config.commitTypes}
@@ -755,12 +755,12 @@ export default function AgentPage() {
                         onReorder={(f, t) => reorderRow3("commitTypes", f, t)}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>コミットメッセージ形式</FieldLabel>
                       <Input placeholder="<type>(<scope>): <summary>" value={config.commitFormat} onChange={(e) => update("commitFormat", e.target.value)} className="font-mono text-sm" />
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>PR のルール</FieldLabel>
                       <Textarea placeholder={"1 PR = 1つの目的（機能追加とリファクタは分ける）\nレビュー前にセルフレビューを行う\nPRテンプレートがある場合は必ず埋める"} value={config.prRules} onChange={(e) => update("prRules", e.target.value)} className="min-h-20 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -771,17 +771,17 @@ export default function AgentPage() {
                 {/* 8. エージェント行動指示 */}
                 <SectionCard id="agentRules" label="エージェント行動指示" description="AI エージェントが自律的に動く際の制約・優先順位" icon={Bot}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>必ずすること (MUST)</FieldLabel>
                       <Textarea placeholder={"変更前に既存のテストが通ることを確認する\n新しいファイルを作成する前に既存ファイルを確認する\n不明な仕様は推測せず、コメント or ドキュメントを確認する\n破壊的変更（APIの削除・DBスキーマ変更）は実行前に確認を求める"} value={config.mustDo} onChange={(e) => update("mustDo", e.target.value)} className="min-h-28 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>してはいけないこと (MUST NOT)</FieldLabel>
                       <Textarea placeholder={".env ファイルや秘密情報をコミットする\nmain / master ブランチへ直接プッシュする\nテストを削除してカバレッジを下げる\n本番データベースに対してDDLを直接実行する"} value={config.mustNot} onChange={(e) => update("mustNot", e.target.value)} className="min-h-28 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>推奨される行動 (SHOULD)</FieldLabel>
                       <Textarea placeholder={"大きな変更は小さなステップに分割して実行する\n既存コードのパターンに従い、スタイルを統一する\n変更範囲が広い場合は計画を提示してから実行する"} value={config.should} onChange={(e) => update("should", e.target.value)} className="min-h-24 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -792,7 +792,7 @@ export default function AgentPage() {
                 {/* 9. 環境変数 & 外部サービス & リソース */}
                 <SectionCard id="envServices" label="環境変数 & 外部サービス" description="エージェントが参照すべき設定情報とリソース" icon={Server}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>環境変数一覧</FieldLabel>
                       <EnvVarTable
                         rows={config.envVars}
@@ -807,7 +807,7 @@ export default function AgentPage() {
                         onReorder={(f, t) => reorderRow3("envVars", f, t)}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>外部依存サービス</FieldLabel>
                       <TechTable
                         rows={config.externalServices}
@@ -823,12 +823,12 @@ export default function AgentPage() {
                         onReorder={(f, t) => reorderRow3("externalServices", f, t)}
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>よくあるタスク</FieldLabel>
                       <Textarea placeholder={"新しいAPIエンドポイントを追加する: src/routes/ → src/services/ → tests/ の順で実装\nデータベースマイグレーションを追加する: マイグレーションファイル生成 → Up/Down実装 → ローカル確認"} value={config.commonTasks} onChange={(e) => update("commonTasks", e.target.value)} className="min-h-20 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>参考リソース</FieldLabel>
                       <Textarea placeholder={"設計ドキュメント: docs/architecture.md\nAPIドキュメント: https://...\nチームWiki: https://notion.so/..."} value={config.references} onChange={(e) => update("references", e.target.value)} className="min-h-20 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>

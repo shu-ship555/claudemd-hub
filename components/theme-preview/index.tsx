@@ -149,7 +149,7 @@ function DefaultModule({ c, sp }: PreviewProps) {
   const brad = sp
   return (
     <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Form Field</p>
         <div className="space-y-1">
           <label className="text-sm font-bold" style={{ color: c.text }}>Email</label>
@@ -158,7 +158,7 @@ function DefaultModule({ c, sp }: PreviewProps) {
         </div>
       </section>
 
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Stat Cards</p>
         <div className="grid grid-cols-3" style={{ gap: sp }}>
           {[
@@ -174,7 +174,7 @@ function DefaultModule({ c, sp }: PreviewProps) {
         </div>
       </section>
 
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Alert</p>
         <div className="flex items-start" style={{ gap: sp, background: `${c.primary}22`, border: `1px solid ${c.primary}44`, padding: `${sp}px ${sp * 1.5}px`, borderRadius: sp }}>
           <span style={{ color: c.primary, fontSize: 14 }}>ℹ</span>
@@ -183,7 +183,7 @@ function DefaultModule({ c, sp }: PreviewProps) {
       </section>
 
       {/* circle prop used for badge-style chip */}
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Tags</p>
         <div className="flex flex-wrap" style={{ gap: sp * 0.5 }}>
           {['Design', 'System', 'UI/UX'].map((t) => (
@@ -199,7 +199,7 @@ function DefaultComponent({ c, sp }: PreviewProps) {
   const pad = sp * 1.5
   return (
     <div className="space-y-4 rounded-xl" style={{ background: c.bg, color: c.text, padding: pad }}>
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Data Card</p>
         <div className="rounded-lg overflow-hidden" style={{ border: `1px solid ${c.border}`, borderRadius: sp }}>
           <div className="flex items-center justify-between" style={{ background: c.surface, borderBottom: `1px solid ${c.border}`, padding: `${sp}px ${sp * 2}px` }}>
@@ -225,7 +225,7 @@ function DefaultComponent({ c, sp }: PreviewProps) {
         </div>
       </section>
 
-      <section className="space-y-1.5">
+      <section className="space-y-2">
         <p className="text-xs leading-[120%] tracking-[0.04em] font-bold uppercase" style={{ color: c.muted }}>Navigation</p>
         <div className="flex" style={{ gap: sp * 0.5, padding: sp * 0.5, background: c.surface, border: `1px solid ${c.border}`, borderRadius: sp }}>
           {['Dashboard', 'History', 'Profile'].map((item, i) => (

@@ -23,7 +23,7 @@ export function AuthCard({
     <CenteredCard
       title={title}
       description={description}
-      cardClassName="pt-5.5 px-6 pb-6"
+      cardClassName="pt-6 px-6 pb-6"
       headerClassName="px-0 pt-0"
       contentClassName="px-0"
       footer={

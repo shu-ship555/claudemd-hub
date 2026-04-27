@@ -138,11 +138,11 @@ export default function ClaudePage() {
                 {/* 0. 参照ファイル */}
                 <SectionCard id="refs" label="参照ファイル" description="@構文で読み込む外部ファイルのパスを指定する（CLAUDE.md からの相対パス）" icon={Link2}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>AGENTS.md のパス</FieldLabel>
                       <Input placeholder="AGENTS.md / docs/AGENTS.md" value={config.agentsPath} onChange={(e) => update("agentsPath", e.target.value)} className="font-mono text-sm" />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>DESIGN.md のパス</FieldLabel>
                       <Input placeholder="DESIGN.md / docs/DESIGN.md" value={config.designPath} onChange={(e) => update("designPath", e.target.value)} className="font-mono text-sm" />
                     </div>
@@ -152,7 +152,7 @@ export default function ClaudePage() {
 
                 {/* 1. 言語設定 */}
                 <SectionCard id="language" label="言語設定" description="Claudeがユーザーと対話する言語を指定する" icon={MessageSquare}>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <FieldLabel>コミュニケーション言語</FieldLabel>
                     <Input placeholder="日本語" value={config.language} onChange={(e) => update("language", e.target.value)} />
                   </div>
@@ -162,7 +162,7 @@ export default function ClaudePage() {
                 <SectionCard id="mcp" label="MCPツール" description="利用可能なMCPサーバーとその使い方をClaudeに伝える" icon={Plug2}>
                   <div className="space-y-4">
                     {/* プリセット */}
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <p className="text-xs text-muted-foreground">よく使われるMCP（クリックで追加）</p>
                       <div className="flex flex-wrap gap-2">
                         {MCP_PRESETS.map((preset) => (
@@ -183,7 +183,7 @@ export default function ClaudePage() {
                       </div>
                     )}
 
-                    <button type="button" onClick={() => addMcp()} className="flex items-center gap-1.5 w-full px-3 py-2.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border border-dashed border-input">
+                    <button type="button" onClick={() => addMcp()} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border border-dashed border-input">
                       <Plus className="size-3" />
                       カスタムMCPを追加
                     </button>
@@ -192,7 +192,7 @@ export default function ClaudePage() {
 
                 {/* 4. リファクタリング */}
                 <SectionCard id="refactoring" label="リファクタリング" description="重複・最適化を検知した際の Claudeの行動手順を定義する" icon={Wrench}>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <FieldLabel>リファクタリングルール</FieldLabel>
                     <Textarea placeholder={"重複箇所を発見した場合、まずユーザーに報告して共通化プランを提示すること\n承認を得てから実装すること\n早すぎる抽象化は避け、3回以上の重複が確認されてから共通化を検討すること"} value={config.refactoringRules} onChange={(e) => update("refactoringRules", e.target.value)} className="min-h-24 text-sm" />
                     <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -201,7 +201,7 @@ export default function ClaudePage() {
 
                 {/* 7. カスタムルール */}
                 <SectionCard id="custom" label="カスタムルール" description="上記カテゴリに当てはまらない独自の指示を自由記述する" icon={Sliders}>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <FieldLabel>自由記述</FieldLabel>
                     <Textarea placeholder={"## Python\n- pip ではなく uv を使用すること\n\n## その他\n- 追加のルールをここに書いてください"} value={config.customRules} onChange={(e) => update("customRules", e.target.value)} className="min-h-32 text-sm font-mono" />
                   </div>

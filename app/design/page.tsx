@@ -72,7 +72,7 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
     const customItems = [...selected].filter((v) => !presets.includes(v));
     return (
       <div className="space-y-2">
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {presets.map((p) => (
             <button key={p} type="button" onClick={() => onChange(field, toggleCSV(item[field], p))} className={cn("px-2.5 py-1 rounded-md text-xs border transition-colors duration-ui", selected.has(p) ? "bg-primary-surface text-primary border-primary font-medium" : "border-input text-muted-foreground hover:text-foreground hover:bg-muted")}>
               {p}
@@ -87,7 +87,7 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
             </span>
           ))}
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-2">
           <Input
             value={customInput}
             onChange={(e) => setCustomInput(e.target.value)}
@@ -145,36 +145,36 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
       </div>
       {isOpen && (
         <div className="border-t border-input p-3 space-y-4">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">① 目的と使い分け</p>
             <Textarea value={item.purpose} onChange={(e) => onChange("purpose", e.target.value)} placeholder={"Primary Button は 1 画面に 1 つ\n破壊的操作には Destructive variant を使う"} className="min-h-14 text-xs" />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">② バリアント</p>
             {renderBadgeField("variants", VARIANT_PRESETS, variantInput, setVariantInput, "カスタムバリアント")}
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">③ サイズ</p>
             {renderBadgeField("sizes", SIZE_PRESETS, sizeInput, setSizeInput, "カスタムサイズ")}
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">④ 状態</p>
             {renderBadgeField("states", STATE_PRESETS, stateInput, setStateInput, "カスタム状態")}
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">⑤ 構造と寸法</p>
             <Textarea value={item.anatomy} onChange={(e) => onChange("anatomy", e.target.value)} placeholder={"アイコン + ラベル、間隔 8px\n左右パディング 16px、高さ 40px、border-radius 8px"} className="min-h-14 text-xs" />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <p className="text-2xs font-medium text-muted-foreground">⑥ アクセシビリティ要件</p>
             <Textarea value={item.accessibility} onChange={(e) => onChange("accessibility", e.target.value)} placeholder={"aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px"} className="min-h-14 text-xs" />
           </div>
           <div className="space-y-3">
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <p className="text-2xs font-medium text-muted-foreground">⑦ Do</p>
               <Textarea value={item.dos} onChange={(e) => onChange("dos", e.target.value)} placeholder={"Primary Button は 1 画面に 1 つ\nDestructive の隣にキャンセルを配置"} className="min-h-14 text-xs" />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <p className="text-2xs font-medium text-muted-foreground">⑦ Don&apos;t</p>
               <Textarea value={item.donts} onChange={(e) => onChange("donts", e.target.value)} placeholder={"Primary Button を並べない\nアイコンのみで aria-label なし"} className="min-h-14 text-xs" />
             </div>
@@ -400,17 +400,17 @@ function TextStyleTable({ value, onChange }: { value: string; onChange: (v: stri
           <thead>
             <tr className="bg-muted border-b border-input">
               <th />
-              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">サイズ</th>
-              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">ウェイト</th>
-              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">行間</th>
-              <th className="px-2 py-1.5 text-left text-2xs font-medium text-muted-foreground">字間</th>
+              <th className="px-2 py-2 text-left text-2xs font-medium text-muted-foreground">サイズ</th>
+              <th className="px-2 py-2 text-left text-2xs font-medium text-muted-foreground">ウェイト</th>
+              <th className="px-2 py-2 text-left text-2xs font-medium text-muted-foreground">行間</th>
+              <th className="px-2 py-2 text-left text-2xs font-medium text-muted-foreground">字間</th>
               <th />
             </tr>
           </thead>
           <tbody>
             {rows.map((row, i) => (
               <tr key={i} draggable onDragStart={() => onDragStart(i)} onDragOver={(e) => onDragOver(e, i)} onDrop={(e) => onDrop(e, i)} onDragEnd={onDragEnd} className={`border-b border-input last:border-0 transition-colors ${draggingIndex === i ? "opacity-40" : ""} ${dragOverIndex === i && draggingIndex !== i ? "border-t-2 border-t-primary bg-primary-surface" : ""}`}>
-                <td className="pl-1.5">
+                <td className="pl-2">
                   <GripVertical className="size-3 text-muted-foreground/30 cursor-grab hover:text-muted-foreground/60 transition-colors" />
                 </td>
                 <td className="px-1 py-1">
@@ -435,7 +435,7 @@ function TextStyleTable({ value, onChange }: { value: string; onChange: (v: stri
           </tbody>
         </table>
       </div>
-      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+      <button type="button" onClick={addRow} className="flex items-center gap-2 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />
         行を追加
       </button>
@@ -706,7 +706,7 @@ export default function DashboardPage() {
               <>
                 {/* ビジュアルテーマ section */}
                 <SectionCard id="visualTheme" label="ビジュアルテーマ" description="ブランドの世界観・インスピレーション元・全体の雰囲気" icon={Sparkles} onClick={() => handleSectionClick("visualTheme")}>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <FieldLabel>デザインシステム名</FieldLabel>
                     <Input placeholder="Airtable Design System Guidelines" value={(v.themeName as string) ?? ""} onChange={(e) => updateField(section, "themeName", e.target.value)} />
                   </div>
@@ -716,7 +716,7 @@ export default function DashboardPage() {
                     <Textarea placeholder={"白を基調としたキャンバスに深いネイビーのテキスト（#181d26）、Airtable Blue（#1b61c9）をアクセントとする、洗練されたシンプルさ。"} value={(v.atmosphere as string) ?? ""} onChange={(e) => updateField(section, "atmosphere", e.target.value)} className="min-h-32" />
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <FieldLabel>主要な特徴</FieldLabel>
                     <Textarea placeholder={"白いキャンバスとディープネイビーのテキスト (#181d26)\nAirtable Blue (#1b61c9) を CTA とリンクに使用\nHaas + Haas Groot Disp のデュアルフォント\n12px のボタンラジウス、16px-32px のカード\nブルー調の多層シャドウ"} value={(v.keyCharacteristics as string) ?? ""} onChange={(e) => updateField(section, "keyCharacteristics", e.target.value)} className="min-h-40 mb-1" />
                     <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -863,13 +863,13 @@ export default function DashboardPage() {
                               <input type="color" value={customColors[key]} onChange={(e) => handleColorChange(key, e.target.value)} className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5" />
                               <span className="text-muted-foreground">{label}</span>
                               <span className="ml-auto font-mono text-xs text-muted-foreground">{customColors[key]}</span>
-                              {ratio !== null && keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getBadgeClass(ratio)}`}>{ratio}:1</span>}
+                              {ratio !== null && keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-2 py-0.5 rounded-full ${getBadgeClass(ratio)}`}>{ratio}:1</span>}
                             </label>
                           );
                         })}
                       </div>
                       <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">キーカラーの使い方</p>
-                      <Textarea value={(cc.keyColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "keyColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-1.5" />
+                      <Textarea value={(cc.keyColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "keyColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-2" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
 
                       {((cc.additionalKeyColorSets as any) || []).map((set: any, idx: number) => (
@@ -996,7 +996,7 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">プライマリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.primaryColor}</span>
-                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(primaryRatio)}`}>{primaryRatio}:1</span>}
+                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-2 py-0.5 rounded-full ${getSetBadgeClass(primaryRatio)}`}>{primaryRatio}:1</span>}
                                   </label>
                                 );
                               })()}
@@ -1022,7 +1022,7 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">セカンダリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.secondaryColor}</span>
-                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(secondaryRatio)}`}>{secondaryRatio}:1</span>}
+                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-2 py-0.5 rounded-full ${getSetBadgeClass(secondaryRatio)}`}>{secondaryRatio}:1</span>}
                                   </label>
                                 );
                               })()}
@@ -1048,7 +1048,7 @@ export default function DashboardPage() {
                                     />
                                     <span className="text-muted-foreground">ターシャリ</span>
                                     <span className="ml-auto font-mono text-xs text-muted-foreground">{set.tertiaryColor}</span>
-                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-1.5 py-0.5 rounded-full ${getSetBadgeClass(tertiaryRatio)}`}>{tertiaryRatio}:1</span>}
+                                    {keyColorStandard !== "none" && <span className={`font-mono text-2xs leading-[150%] tracking-[0.04em] px-2 py-0.5 rounded-full ${getSetBadgeClass(tertiaryRatio)}`}>{tertiaryRatio}:1</span>}
                                   </label>
                                 );
                               })()}
@@ -1077,7 +1077,7 @@ export default function DashboardPage() {
                                 next[idx] = { ...next[idx], notes: e.target.value };
                                 updateField("colorPalette", "additionalKeyColorSets", next);
                               }}
-                              className="min-h-20 text-xs mb-1.5"
+                              className="min-h-20 text-xs mb-2"
                             />
                             <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                           </div>
@@ -1121,7 +1121,7 @@ export default function DashboardPage() {
                         ))}
                       </div>
                       <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">グレースケールの使い方</p>
-                      <Textarea value={(cc.commonColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "commonColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-1.5" />
+                      <Textarea value={(cc.commonColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "commonColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-2" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                     </div>
                     <div className="space-y-2">
@@ -1148,7 +1148,7 @@ export default function DashboardPage() {
                           ))}
                         </div>
                         <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラーの使い方</p>
-                        <Textarea value={(cc.semanticColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "semanticColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-1.5" />
+                        <Textarea value={(cc.semanticColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "semanticColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-2" />
                         <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     </div>
@@ -1158,7 +1158,7 @@ export default function DashboardPage() {
                 {/* タイポグラフィ section */}
                 <SectionCard id="typography" label="タイポグラフィ" onClick={() => handleSectionClick("typography")} description="欧文・和文フォントファミリー" icon={Type}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>欧文フォント</FieldLabel>
                       <Select value={(tc.latinFont as string) ?? ""} onValueChange={(v) => updateField("typography", "latinFont", v)}>
                         <SelectTrigger className="w-full">
@@ -1176,7 +1176,7 @@ export default function DashboardPage() {
                       {(tc.latinFont as string) === "custom" && <Input placeholder="フォント名を入力" value={(tc.latinFontCustom as string) ?? ""} onChange={(e) => updateField("typography", "latinFontCustom", e.target.value)} />}
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>和文フォント</FieldLabel>
                       <Select value={(tc.japaneseFont as string) ?? ""} onValueChange={(v) => updateField("typography", "japaneseFont", v)}>
                         <SelectTrigger className="w-full">
@@ -1299,7 +1299,7 @@ export default function DashboardPage() {
                                     );
                                   })}
                                 </div>
-                                <div className="space-y-1.5 mt-4">
+                                <div className="space-y-2 mt-4">
                                   <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}の使い方</p>
                                   <Textarea value={(tc[notesField as keyof typeof tc] as string) ?? ""} onChange={(e) => updateField("typography", notesField, e.target.value)} className="min-h-16 text-xs mb-1" placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`} />
                                   <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -1316,7 +1316,7 @@ export default function DashboardPage() {
                 {/* アイコン section */}
                 <SectionCard id="icons" label="アイコン" onClick={() => handleSectionClick("icons")} description="アイコンライブラリの設定" icon={Shapes}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>アイコンライブラリ</FieldLabel>
                       <Select value={(ic.iconLibrary as string) ?? ""} onValueChange={(v) => updateField("icons", "iconLibrary", v)}>
                         <SelectTrigger className="w-full">
@@ -1330,14 +1330,14 @@ export default function DashboardPage() {
                     </div>
 
                     {(ic.iconLibrary as string) === "カスタム" && (
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <FieldLabel>カスタムアイコンの詳細</FieldLabel>
                         <Textarea value={(ic.iconCustomDetails as string) ?? ""} onChange={(e) => updateField("icons", "iconCustomDetails", e.target.value)} placeholder={`SVGアイコンは public/icons/ 配下に格納\nコンポーネントは components/icons/ で管理\nサイズ: 16px / 20px / 24px の 3展開\nアイコン色は CSS 変数で制御`} className="min-h-28 text-sm mb-1" />
                         <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     )}
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>補足情報</FieldLabel>
                       <Textarea value={(ic.iconNotes as string) ?? ""} onChange={(e) => updateField("icons", "iconNotes", e.target.value)} placeholder={`アイコンは必ず aria-hidden="true" を付与する\nデフォルトサイズは 20px\nテキストと併用するときは gap-2 で配置`} className="min-h-20 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -1348,7 +1348,7 @@ export default function DashboardPage() {
                 {/* レイアウト section */}
                 <SectionCard id="layout" label="レイアウト" onClick={() => handleSectionClick("layout")} description="スペーシングと角丸の設定" icon={LayoutGrid}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>レイアウトタイプ</FieldLabel>
                       <Select value={(lc.layoutType as string) ?? ""} onValueChange={(v) => updateField("layout", "layoutType", v)}>
                         <SelectTrigger className="w-full">
@@ -1361,7 +1361,7 @@ export default function DashboardPage() {
                       </Select>
                     </div>
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>基準単位</FieldLabel>
                       <Select value={(lc.spacingBase as string) ?? ""} onValueChange={(v) => updateField("layout", "spacingBase", v)}>
                         <SelectTrigger className="w-full">
@@ -1380,7 +1380,7 @@ export default function DashboardPage() {
                     </div>
 
                     {(lc.spacingBase as string) && (lc.spacingBase as string) !== "custom" && SPACING_SCALES[lc.spacingBase as string] && (
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         <p className="text-xs text-muted-foreground">Spacing Scale</p>
                         <div className="rounded-md border border-input bg-muted p-3 space-y-1 max-h-48 overflow-y-auto">
                           {(() => {
@@ -1399,8 +1399,8 @@ export default function DashboardPage() {
                             return scale.map((val) => {
                               const barWidth = Math.max(1, Math.sqrt(val / 1920) * 85);
                               return (
-                                <div key={val} className="flex items-center gap-1.5">
-                                  <div className="bg-primary rounded-sm shrink-0" style={{ width: `${barWidth}%`, height: 5 }} />
+                                <div key={val} className="flex items-center gap-2">
+                                  <div className="bg-primary rounded-sm shrink-0 h-1" style={{ width: `${barWidth}%` }} />
                                   <span className="text-xs text-muted-foreground">{val}px</span>
                                 </div>
                               );
@@ -1491,7 +1491,7 @@ export default function DashboardPage() {
                                   </div>
                                   <div className="pl-5 flex flex-wrap gap-x-4 gap-y-1.5">
                                     {items.map((item) => (
-                                      <label key={item} className="flex items-center gap-1.5 cursor-pointer">
+                                      <label key={item} className="flex items-center gap-2 cursor-pointer">
                                         <Checkbox checked={sel.has(item)} onCheckedChange={() => toggle(item)} />
                                         <span className="text-xs text-muted-foreground">{item}</span>
                                       </label>
@@ -1529,7 +1529,7 @@ export default function DashboardPage() {
                                 <div className="px-3 pt-3 pb-4 space-y-2">
                                   <p className="text-xs font-medium">その他</p>
                                   {custom.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5">
+                                    <div className="flex flex-wrap gap-2">
                                       {custom.map((name) => (
                                         <span key={name} className="flex items-center gap-1 text-xs bg-muted rounded-md px-2 py-0.5">
                                           {name}
@@ -1626,12 +1626,12 @@ export default function DashboardPage() {
                                 </button>
                               </div>
                               {paletteSwatches.length > 0 && (
-                                <div className="space-y-1.5">
+                                <div className="space-y-2">
                                   <p className="text-2xs text-muted-foreground">{focusedTokenRow !== null ? "フォーカス中の行に挿入:" : "値の入力欄をフォーカスしてカラーを挿入:"}</p>
-                                  <div className="flex flex-wrap gap-1.5">
+                                  <div className="flex flex-wrap gap-2">
                                     {paletteSwatches.map(({ label, hex }) => (
-                                      <button key={label} type="button" title={hex} onClick={() => { if (focusedTokenRow !== null) updateRow(focusedTokenRow, "value", hex); }} disabled={focusedTokenRow === null} className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-input hover:border-primary hover:bg-muted transition-colors text-2xs text-muted-foreground disabled:opacity-40 disabled:pointer-events-none">
-                                        <span className="size-3 rounded-sm shrink-0 border border-black/10" style={{ backgroundColor: hex }} />
+                                      <button key={label} type="button" title={hex} onClick={() => { if (focusedTokenRow !== null) updateRow(focusedTokenRow, "value", hex); }} disabled={focusedTokenRow === null} className="flex items-center gap-2 px-2 py-1 rounded-md border border-input hover:border-primary hover:bg-muted transition-colors text-2xs text-muted-foreground disabled:opacity-40 disabled:pointer-events-none">
+                                        <span className="size-3 rounded-sm shrink-0 border border-border" style={{ backgroundColor: hex }} />
                                         {label}
                                       </button>
                                     ))}
@@ -1639,14 +1639,14 @@ export default function DashboardPage() {
                                 </div>
                               )}
                               <div className="rounded-md border divide-y">
-                                <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 px-3 py-1.5 bg-muted/40 text-2xs text-muted-foreground">
+                                <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 px-3 py-2 bg-muted/40 text-2xs text-muted-foreground">
                                   <span>CSS 変数名</span>
                                   <span />
                                   <span>マッピング値</span>
                                   <span />
                                 </div>
                                 {tokenRows.map((row, idx) => (
-                                  <div key={idx} className={cn("grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 px-3 py-1.5", focusedTokenRow === idx && "bg-primary-surface/50")}>
+                                  <div key={idx} className={cn("grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 px-3 py-2", focusedTokenRow === idx && "bg-primary-surface/50")}>
                                     <Input value={row.key} onChange={(e) => updateRow(idx, "key", e.target.value)} placeholder="--primary" className="text-xs h-7 font-mono" />
                                     <span className="text-xs text-muted-foreground">→</span>
                                     <Input value={row.value} onChange={(e) => updateRow(idx, "value", e.target.value)} onFocus={() => setFocusedTokenRow(idx)} placeholder="hsl(var(--blue-600))" className="text-xs h-7 font-mono" />
@@ -1665,7 +1665,7 @@ export default function DashboardPage() {
                         })()}
 
                         {/* 使い分けガイド */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <FieldLabel>使い分けガイド</FieldLabel>
                             <button
@@ -1683,7 +1683,7 @@ export default function DashboardPage() {
                         </div>
 
                         {/* カスタマイズポリシー */}
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <FieldLabel>カスタマイズポリシー</FieldLabel>
                             <button
@@ -1702,7 +1702,7 @@ export default function DashboardPage() {
 
                         {/* その他フィールド */}
                         {SHADCN_FIELDS.map(({ id, label, placeholder }) => (
-                          <div key={id} className="space-y-1.5">
+                          <div key={id} className="space-y-2">
                             <FieldLabel>{label}</FieldLabel>
                             <Textarea value={(cmp[id] as string) ?? ""} onChange={(e) => updateField("components", id, e.target.value)} placeholder={placeholder} className="min-h-24 text-sm" />
                           </div>
@@ -1711,7 +1711,7 @@ export default function DashboardPage() {
                     ) : (
                       /* 独自コンポーネントモード */
                       <>
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <FieldLabel>ラウンドネス（丸み）</FieldLabel>
                           <Select value={(cmp.roundness as string) ?? ""} onValueChange={(v) => updateField("components", "roundness", v)}>
                             <SelectTrigger className="w-full">
@@ -1727,7 +1727,7 @@ export default function DashboardPage() {
                           </Select>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <FieldLabel>エレベーション（シャドウ）</FieldLabel>
                           <Select value={(cmp.elevation as string) ?? ""} onValueChange={(v) => updateField("components", "elevation", v)}>
                             <SelectTrigger className="w-full">
@@ -1743,7 +1743,7 @@ export default function DashboardPage() {
                           </Select>
                         </div>
 
-                        <div className="space-y-1.5">
+                        <div className="space-y-2">
                           <FieldLabel>コンポーネント共通指針</FieldLabel>
                           <Textarea value={(cmp.componentNotes as string) ?? ""} onChange={(e) => updateField("components", "componentNotes", e.target.value)} placeholder={"ボタンはprimary colorで塗りつぶし、カードはborderのみでelevationなし"} className="min-h-16 text-sm mb-1" />
                           <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -1772,7 +1772,7 @@ export default function DashboardPage() {
                 {/* アクセシビリティ section */}
                 <SectionCard id="accessibility" label="アクセシビリティ" onClick={() => handleSectionClick("accessibility")} description="WCAG 準拠レベルとコントラスト比の基準" icon={Eye}>
                   <div className="space-y-4">
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>WCAG 準拠レベル</FieldLabel>
                       <Select
                         value={(ac.contrastLevel as string) ?? ""}
@@ -1872,7 +1872,7 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       <FieldLabel>補足情報</FieldLabel>
                       <Textarea value={(ac.accessibilityNotes as string) ?? ""} onChange={(e) => updateField("accessibility", "accessibilityNotes", e.target.value)} placeholder={`ダークモード時は別途コントラスト検証を行う\nスクリーンリーダー対応（aria属性必須）\nprefers-reduced-motion を尊重する`} className="min-h-24 text-sm mb-1" />
                       <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -1882,7 +1882,7 @@ export default function DashboardPage() {
 
                 {/* その他 section */}
                 <SectionCard id="other" label="その他" description="上記以外の任意の補足情報" icon={FileText} onClick={() => handleSectionClick("other")}>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     <Textarea value={(oc.otherContent as string) ?? ""} onChange={(e) => updateField("other", "otherContent", e.target.value)} placeholder="上記セクション以外に記載したい内容を自由に入力してください" className="min-h-40 text-sm mb-1" />
                     <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                   </div>
