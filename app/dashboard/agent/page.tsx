@@ -18,17 +18,20 @@ import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type Tec
 
 type TechField3 = 'frontendStack' | 'backendStack' | 'infraStack' | 'devTools' | 'namingRules'
 
+type ColPlaceholder = { role?: string; tech?: string; note?: string }
+
 interface TechTableProps {
   rows: Array<{ role: string; tech: string; note?: string }>
   showNote?: boolean
-  colLabels?: { role?: string; tech?: string; note?: string }
+  colLabels?: ColPlaceholder
+  rowPlaceholders?: ColPlaceholder[]
   onUpdate: (idx: number, key: string, value: string) => void
   onAdd: () => void
   onRemove: (idx: number) => void
   onReorder: (from: number, to: number) => void
 }
 
-function TechTable({ rows, showNote = true, colLabels = {}, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
+function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
   const { role: roleLabel = '役割', tech: techLabel = '採用技術', note: noteLabel = '備考' } = colLabels
   const dragIndexRef = useRef<number | null>(null)
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
@@ -44,7 +47,7 @@ function TechTable({ rows, showNote = true, colLabels = {}, onUpdate, onAdd, onR
   }
   const onDragEnd = () => { dragIndexRef.current = null; setDraggingIndex(null); setDragOverIndex(null) }
 
-  const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full placeholder:text-muted-foreground/40"
+  const cellCls = "h-7 text-2xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 w-full"
 
   return (
     <div className="rounded-md border border-input overflow-hidden text-sm">
@@ -74,14 +77,14 @@ function TechTable({ rows, showNote = true, colLabels = {}, onUpdate, onAdd, onR
                   <GripVertical className="size-3 text-muted-foreground/30 cursor-grab hover:text-muted-foreground/60 transition-colors" />
                 </td>
                 <td className="px-2 py-1 w-40">
-                  <Input value={row.role} onChange={(e) => onUpdate(i, 'role', e.target.value)} className={cellCls} />
+                  <Input value={row.role} onChange={(e) => onUpdate(i, 'role', e.target.value)} placeholder={rowPlaceholders?.[i]?.role ?? ''} className={cellCls} />
                 </td>
                 <td className="px-2 py-1 w-50">
-                  <Input value={row.tech} onChange={(e) => onUpdate(i, 'tech', e.target.value)} placeholder="技術名" className={cellCls} />
+                  <Input value={row.tech} onChange={(e) => onUpdate(i, 'tech', e.target.value)} placeholder={rowPlaceholders?.[i]?.tech ?? '技術名'} className={cellCls} />
                 </td>
                 {showNote && (
                   <td className="px-2 py-1">
-                    <Input value={row.note ?? ''} onChange={(e) => onUpdate(i, 'note', e.target.value)} placeholder="備考" className={cellCls} />
+                    <Input value={row.note ?? ''} onChange={(e) => onUpdate(i, 'note', e.target.value)} placeholder={rowPlaceholders?.[i]?.note ?? '備考'} className={cellCls} />
                   </td>
                 )}
                 <td className="pr-2 text-right">
@@ -199,7 +202,7 @@ function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: stri
   }
   const onDragEnd = () => { dragIndexRef.current = null; setDragOverIndex(null); setDraggingIndex(null) }
 
-  const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/40 font-mono"
+  const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0 font-mono"
   const iconBtnCls = "p-0.5 text-muted-foreground/50 hover:text-muted-foreground disabled:opacity-20 transition-colors shrink-0"
 
   return (
@@ -228,6 +231,121 @@ function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: stri
       ))}
       <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
         <Plus className="size-3" />行を追加
+      </button>
+    </div>
+  )
+}
+// ── LayerBuilder ────────────────────────────────────────────────
+type LayerNode = { name: string; desc: string }
+
+function layerToNodes(value: string): LayerNode[] {
+  if (!value.trim()) return []
+  return value.split('\n')
+    .filter(line => line.startsWith('|') && !line.match(/^\|[-| ]+\|$/))
+    .map(line => {
+      const [, name = '', desc = ''] = line.split('|').map(s => s.trim())
+      return { name, desc }
+    })
+    .filter(n => n.name && n.name !== 'レイヤー名')
+}
+
+function nodesToLayer(nodes: LayerNode[]): string {
+  const rows = nodes.filter(n => n.name.trim())
+  if (rows.length === 0) return ''
+  return [
+    '| レイヤー名 | 内容・役割 |',
+    '|---|---|',
+    ...rows.map(n => `| ${n.name} | ${n.desc} |`),
+  ].join('\n')
+}
+
+function LayerBuilder({ value, onChange, rowPlaceholders }: { value: string; onChange: (v: string) => void; rowPlaceholders?: { name?: string; desc?: string }[] }) {
+  const empty = (): LayerNode => ({ name: '', desc: '' })
+  const [nodes, setNodes] = useState<LayerNode[]>(() => {
+    const parsed = layerToNodes(value)
+    return parsed.length > 0 ? parsed : [empty()]
+  })
+  const lastEmittedRef = useRef(value)
+
+  useEffect(() => {
+    if (value !== lastEmittedRef.current) {
+      lastEmittedRef.current = value
+      const parsed = layerToNodes(value)
+      setNodes(parsed.length > 0 ? parsed : [empty()])
+    }
+  }, [value])
+
+  const emit = (next: LayerNode[]) => {
+    const s = nodesToLayer(next); lastEmittedRef.current = s; onChange(s)
+  }
+  const update = (i: number, key: keyof LayerNode, val: string) => {
+    const next = [...nodes]; next[i] = { ...next[i], [key]: val }; setNodes(next); emit(next)
+  }
+  const remove = (i: number) => {
+    const next = nodes.filter((_, idx) => idx !== i)
+    const nn = next.length > 0 ? next : [empty()]; setNodes(nn); emit(nn)
+  }
+  const addRow = () => { const nn = [...nodes, empty()]; setNodes(nn); emit(nn) }
+
+  const dragIndexRef = useRef<number | null>(null)
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null)
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+
+  const onDragStart = (i: number) => { dragIndexRef.current = i; setDraggingIndex(i) }
+  const onDragOver = (e: React.DragEvent, i: number) => { e.preventDefault(); setDragOverIndex(i) }
+  const onDrop = (e: React.DragEvent, i: number) => {
+    e.preventDefault()
+    const from = dragIndexRef.current
+    if (from === null || from === i) { setDragOverIndex(null); setDraggingIndex(null); return }
+    const next = [...nodes]
+    const [moved] = next.splice(from, 1)
+    next.splice(i, 0, moved)
+    setNodes(next); emit(next)
+    dragIndexRef.current = null; setDragOverIndex(null); setDraggingIndex(null)
+  }
+  const onDragEnd = () => { dragIndexRef.current = null; setDragOverIndex(null); setDraggingIndex(null) }
+
+  const inputCls = "h-7 text-xs border-0 bg-transparent px-1 shadow-none focus-visible:ring-0"
+
+  return (
+    <div className="rounded-md border border-input overflow-hidden text-sm">
+      <div className="bg-muted border-b border-input flex items-center">
+        <div className="w-6 shrink-0" />
+        <div className="px-1 py-2 text-2xs font-medium text-muted-foreground flex-1">レイヤー名</div>
+        <div className="px-1 py-2 text-2xs font-medium text-muted-foreground w-44">内容・役割</div>
+        <div className="w-8 shrink-0" />
+      </div>
+      {nodes.map((node, i) => (
+        <div
+          key={i}
+          draggable
+          onDragStart={() => onDragStart(i)}
+          onDragOver={(e) => onDragOver(e, i)}
+          onDrop={(e) => onDrop(e, i)}
+          onDragEnd={onDragEnd}
+          className={`flex items-center gap-1 px-2 py-1 group border-b border-input last:border-0 transition-colors ${draggingIndex === i ? 'opacity-40' : ''} ${dragOverIndex === i && draggingIndex !== i ? 'border-t-2 border-t-primary bg-primary-surface' : ''}`}
+        >
+          <GripVertical className="size-3 text-muted-foreground/30 cursor-grab shrink-0 group-hover:text-muted-foreground/60" />
+          <Input
+            value={node.name}
+            onChange={(e) => update(i, 'name', e.target.value)}
+            placeholder={rowPlaceholders?.[i]?.name ?? 'レイヤー名'}
+            className={`${inputCls} flex-1 min-w-0 font-medium`}
+          />
+          <Input
+            value={node.desc}
+            onChange={(e) => update(i, 'desc', e.target.value)}
+            placeholder={rowPlaceholders?.[i]?.desc ?? '内容・役割'}
+            className={`${inputCls} w-44 text-muted-foreground`}
+          />
+          <button type="button" onClick={() => remove(i)} className="p-1 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-all duration-ui shrink-0">
+            <Trash2 className="size-3" />
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={addRow} className="flex items-center gap-1.5 w-full px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui border-t border-input">
+        <Plus className="size-3" />
+        レイヤーを追加
       </button>
     </div>
   )
@@ -635,6 +753,12 @@ export default function AgentPage() {
                   <TechTable
                     rows={config.namingRules}
                     colLabels={{ role: '対象', tech: '規則', note: '例' }}
+                    rowPlaceholders={[
+                      { role: '変数・関数', tech: 'camelCase', note: 'getUserName' },
+                      { role: 'クラス', tech: 'PascalCase', note: 'UserService' },
+                      { role: '定数', tech: 'UPPER_SNAKE_CASE', note: 'MAX_RETRY_COUNT' },
+                      { role: 'ファイル', tech: 'kebab-case', note: 'user-service.ts' },
+                    ]}
                     onUpdate={(i, k, v) => updateRow3('namingRules', i, k, v)}
                     onAdd={() => addRow3('namingRules')}
                     onRemove={(i) => removeRow3('namingRules', i)}
@@ -674,11 +798,15 @@ export default function AgentPage() {
                 </div>
                 <div className="space-y-1.5">
                   <FieldLabel>レイヤー構成</FieldLabel>
-                  <Textarea
-                    placeholder={'Presentation (API Routes / UI)\n    ↓\nApplication (Use Cases / Services)\n    ↓\nDomain (Entities / Value Objects)\n    ↓\nInfrastructure (DB / External APIs)'}
+                  <LayerBuilder
                     value={config.layerStructure}
-                    onChange={(e) => update('layerStructure', e.target.value)}
-                    className="min-h-32 font-mono text-xs"
+                    onChange={(v) => update('layerStructure', v)}
+                    rowPlaceholders={[
+                      { name: 'Presentation', desc: 'API Routes / UI' },
+                      { name: 'Application', desc: 'Use Cases / Services' },
+                      { name: 'Domain', desc: 'Entities / Value Objects' },
+                      { name: 'Infrastructure', desc: 'DB / External APIs' },
+                    ]}
                   />
                 </div>
                 <div className="space-y-1.5">

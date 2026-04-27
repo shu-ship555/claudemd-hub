@@ -83,10 +83,10 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   charset: '',
   lineEnding: '',
   namingRules: [
-    { role: '変数・関数', tech: 'camelCase', note: 'getUserName' },
-    { role: 'クラス', tech: 'PascalCase', note: 'UserService' },
-    { role: '定数', tech: 'UPPER_SNAKE_CASE', note: 'MAX_RETRY_COUNT' },
-    { role: 'ファイル', tech: 'kebab-case', note: 'user-service.ts' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
   ],
   prohibitions: '',
   designPrinciples: '',
@@ -285,9 +285,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   }
   if (hasValue(config.layerStructure)) {
     archContent.push('### レイヤー構成')
-    archContent.push('```')
     archContent.push(config.layerStructure.trim())
-    archContent.push('```')
     archContent.push('')
   }
   if (hasValue(config.dependencyRules)) {

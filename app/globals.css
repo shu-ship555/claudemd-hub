@@ -28,6 +28,7 @@
   /* Muted – WCAG AA準拠: 4.5:1以上確保のため Gray 7相当に変更 */
   --color-muted:               oklch(0.94 0 0);          /* Gray 1    #f0f0f0 */
   --color-muted-foreground:    oklch(0.44 0 0);          /* ~#686868  4.8:1 on white */
+  --color-placeholder:         oklch(0.44 0 0 / 0.4);   /* muted-foreground @ 40% */
 
   /* Semantic */
   --color-destructive:         oklch(0.52 0.18 25);      /* Error     #dc2626 */
@@ -79,7 +80,7 @@
   }
 
   ::placeholder {
-    color: oklch(0.55 0 0); /* ~#777777 – 4.5:1 on white */
+    color: var(--color-placeholder);
     opacity: 1;
   }
 }
