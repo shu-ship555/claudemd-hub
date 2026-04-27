@@ -26,14 +26,15 @@ export interface AgentConfig {
   layerStructure: string
   dependencyRules: string
   testPolicy: string
-  branchNaming: string
+  branchNaming: TechRow3[]
   commitFormat: string
+  commitTypes: TechRow3[]
   prRules: string
   mustDo: string
   mustNot: string
   should: string
-  envVars: string
-  externalServices: string
+  envVars: TechRow3[]
+  externalServices: TechRow3[]
   commonTasks: string
   references: string
   maintainer: string
@@ -93,14 +94,35 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   layerStructure: '',
   dependencyRules: '',
   testPolicy: '',
-  branchNaming: '',
+  branchNaming: [
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+  ],
   commitFormat: '',
+  commitTypes: [
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+  ],
   prRules: '',
   mustDo: '',
   mustNot: '',
   should: '',
-  envVars: '',
-  externalServices: '',
+  envVars: [
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+  ],
+  externalServices: [
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+    { role: '', tech: '', note: '' },
+  ],
   commonTasks: '',
   references: '',
   maintainer: '',
@@ -117,13 +139,6 @@ function toLines(raw: string): string[] {
   return raw.split('\n').map((l) => l.trim()).filter(Boolean)
 }
 
-function parseRows(raw: string): string[][] {
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => line.split(/[|｜]/).map((cell) => cell.trim()))
-}
 
 function renderTable(headers: string[], rows: string[][]): string {
   const validRows = rows.filter((r) => r.some((c) => c))
@@ -309,18 +324,26 @@ export function generateAgentMarkdown(config: AgentConfig): string {
 
   // 7. Git 規約
   const gitContent: string[] = []
-  if (hasValue(config.branchNaming)) {
-    gitContent.push('### ブランチ命名')
-    gitContent.push('```')
-    gitContent.push(config.branchNaming.trim())
-    gitContent.push('```')
-    gitContent.push('')
+  const validBranch = config.branchNaming.filter((r) => r.role.trim() || r.tech.trim())
+  if (validBranch.length > 0) {
+    const table = renderTable(['プレフィックス', 'パターン', '例'], validBranch.map((r) => [r.role, r.tech, r.note]))
+    if (table) {
+      gitContent.push('### ブランチ命名')
+      gitContent.push(table)
+      gitContent.push('')
+    }
   }
-  if (hasValue(config.commitFormat)) {
+  const validCommitTypes = config.commitTypes.filter((r) => r.role.trim() || r.tech.trim())
+  if (hasValue(config.commitFormat) || validCommitTypes.length > 0) {
     gitContent.push('### コミットメッセージ')
-    gitContent.push('```')
-    gitContent.push(config.commitFormat.trim())
-    gitContent.push('```')
+    if (hasValue(config.commitFormat)) {
+      gitContent.push(`**フォーマット**: \`${config.commitFormat.trim()}\``)
+      gitContent.push('')
+    }
+    if (validCommitTypes.length > 0) {
+      const table = renderTable(['type', '説明', '例'], validCommitTypes.map((r) => [r.role, r.tech, r.note]))
+      if (table) gitContent.push(table)
+    }
     gitContent.push('')
   }
   if (hasValue(config.prRules)) {
@@ -365,23 +388,20 @@ export function generateAgentMarkdown(config: AgentConfig): string {
 
   // 9. 環境変数 & 外部サービス & よくあるタスク & 参考リソース
   const envContent: string[] = []
-  if (hasValue(config.envVars)) {
-    const rows = parseRows(config.envVars).filter((r) => r.some((c) => c))
-    if (rows.length > 0) {
+  const validEnvVars = config.envVars.filter((r) => r.role.trim() || r.tech.trim())
+  if (validEnvVars.length > 0) {
+    const table = renderTable(['変数名', '説明', '必須'], validEnvVars.map((r) => [`\`${r.role}\``, r.tech, r.note]))
+    if (table) {
       envContent.push('### 環境変数一覧')
-      envContent.push('| 変数名 | 必須 | 説明 | デフォルト |')
-      envContent.push('|--------|------|------|------------|')
-      for (const row of rows) {
-        const name = row[0] ?? ''
-        envContent.push(`| \`${name}\` | ${row[1] ?? ''} | ${row[2] ?? ''} | ${row[3] ?? ''} |`)
-      }
+      envContent.push(table)
       envContent.push('')
       envContent.push('> シークレットは `.env.example` を参照し、実際の値は **絶対にコードに書かない**。')
       envContent.push('')
     }
   }
-  if (hasValue(config.externalServices)) {
-    const table = renderTable(['サービス', '用途', 'ローカル代替'], parseRows(config.externalServices))
+  const validExtServices = config.externalServices.filter((r) => r.role.trim() || r.tech.trim())
+  if (validExtServices.length > 0) {
+    const table = renderTable(['サービス', '用途', 'ローカル代替'], validExtServices.map((r) => [r.role, r.tech, r.note]))
     if (table) {
       envContent.push('### 外部依存サービス')
       envContent.push(table)
