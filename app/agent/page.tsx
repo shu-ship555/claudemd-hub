@@ -740,7 +740,7 @@ export default function AgentPage() {
                       <FieldLabel>インデント</FieldLabel>
                       <Select value={config.indent ?? ""} onValueChange={(v) => update("indent", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未選択" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="スペース2">スペース2</SelectItem>
@@ -753,7 +753,7 @@ export default function AgentPage() {
                       <FieldLabel>文字コード</FieldLabel>
                       <Select value={config.charset ?? ""} onValueChange={(v) => update("charset", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未選択" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="UTF-8">UTF-8</SelectItem>
@@ -766,7 +766,7 @@ export default function AgentPage() {
                       <FieldLabel>行末</FieldLabel>
                       <Select value={config.lineEnding ?? ""} onValueChange={(v) => update("lineEnding", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未選択" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="LF (Unix形式)">LF (Unix形式)</SelectItem>

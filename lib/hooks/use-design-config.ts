@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { designTemplate, DesignConfig, FieldValue } from '@/lib/design-template'
 import { generateDesignMarkdown } from '@/lib/generate-design'
-import { DEFAULT_TEXT_STYLES } from '@/lib/constants'
 
 export function buildInitialConfig(): DesignConfig {
   const initial: DesignConfig = {}
@@ -22,18 +21,9 @@ export function buildInitialConfig(): DesignConfig {
     }
   }
 
-  // Initialize selectedStyles with all styles from DEFAULT_TEXT_STYLES
   const categories = ['dsp', 'std', 'dns', 'oln', 'mono'] as const
   for (const cat of categories) {
-    const catKey = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase() as keyof typeof DEFAULT_TEXT_STYLES
-    const selectedStylesField = `${cat}SelectedStyles`
-    const allStyles = [
-      ...(DEFAULT_TEXT_STYLES[catKey]?.Bk || []),
-      ...(DEFAULT_TEXT_STYLES[catKey]?.B || []),
-      ...(DEFAULT_TEXT_STYLES[catKey]?.N || []),
-      ...(DEFAULT_TEXT_STYLES[catKey]?.Th || []),
-    ]
-    initial.typography![selectedStylesField] = allStyles.join(',')
+    initial.typography![`${cat}SelectedStyles`] = ''
   }
 
   return initial

@@ -235,64 +235,65 @@ function renderTypography(cfg: SectionCfg): string {
   }
 
   const categories = ['dsp', 'std', 'dns', 'oln', 'mono'] as const
+  let textStylesContent = ''
 
-  text += `### Text Styles\n\n`
   for (const cat of categories) {
     const catCapitalized = cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase()
     const catKey = catCapitalized as keyof typeof DEFAULT_TEXT_STYLES
     const catLabel = CATEGORY_LABELS[catCapitalized] || cat.toUpperCase()
 
-    text += `#### ${catLabel}\n\n`
-
+    let catContent = ''
     const isCustom = cfg[`${cat}CustomEnabled`] as boolean
     if (isCustom) {
       const customStyles = str(cfg[`${cat}CustomStyles`]).trim()
       if (customStyles) {
         const lines = customStyles.split('\n').map(l => l.trim()).filter(Boolean)
-        for (const line of lines) {
-          text += `- ${line}\n`
-        }
-        text += '\n'
+        for (const line of lines) catContent += `- ${line}\n`
+        catContent += '\n'
       }
     } else {
-    const selectedStylesField = `${cat}SelectedStyles`
-    const selectedStylesStr = str(cfg[selectedStylesField as keyof SectionCfg]).trim()
-    const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
-
-    const weights = TEXT_STYLE_WEIGHTS as readonly string[]
-    const weightLabels: Record<string, string> = { 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }
-    for (const weight of weights) {
-      const weightLabel = weightLabels[weight] || weight
-      const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
-      const filteredStyles = selectedStyles.length > 0 ? styles.filter(s => selectedStyles.includes(s)) : styles
-      if (filteredStyles.length > 0) {
-        text += `**${weightLabel}:**\n`
-        for (const style of filteredStyles) {
-          const parsed = parseTextStyle(style)
-          text += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight} | ${parsed.letterSpacing}\n`
+      const selectedStylesStr = str(cfg[`${cat}SelectedStyles` as keyof SectionCfg]).trim()
+      const selectedStyles = selectedStylesStr ? selectedStylesStr.split(',').map(s => s.trim()) : []
+      const weights = TEXT_STYLE_WEIGHTS as readonly string[]
+      const weightLabels: Record<string, string> = { 'Th': 'Thin', 'N': 'Normal', 'B': 'Bold', 'Bk': 'Black' }
+      for (const weight of weights) {
+        const styles = DEFAULT_TEXT_STYLES[catKey]?.[weight as keyof typeof DEFAULT_TEXT_STYLES[keyof typeof DEFAULT_TEXT_STYLES]] || []
+        const filteredStyles = selectedStyles.length > 0 ? styles.filter(s => selectedStyles.includes(s)) : []
+        if (filteredStyles.length > 0) {
+          catContent += `**${weightLabels[weight] || weight}:**\n`
+          for (const style of filteredStyles) {
+            const parsed = parseTextStyle(style)
+            catContent += `- ${parsed.fontSize} | ${parsed.weight} | ${parsed.lineHeight} | ${parsed.letterSpacing}\n`
+          }
+          catContent += '\n'
         }
-        text += '\n'
       }
-    }
     }
 
     const notes = str(cfg[`${cat}Notes` as keyof SectionCfg]).trim()
     if (notes) {
-      text += `**使い方:**\n`
-      const noteLines = notes.split('\n').filter(l => l.trim())
-      for (const line of noteLines) {
-        text += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
+      catContent += `**使い方:**\n`
+      for (const line of notes.split('\n').filter(l => l.trim())) {
+        catContent += `${line.trim().startsWith('-') ? line.trim() : `- ${line.trim()}`}\n`
       }
-      text += '\n'
+      catContent += '\n'
     }
-    text += '\n'
+
+    if (catContent.trim()) {
+      textStylesContent += `#### ${catLabel}\n\n${catContent}`
+    }
+  }
+
+  if (textStylesContent.trim()) {
+    text += `### Text Styles\n\n${textStylesContent}`
   }
 
   return text.trim() ? `${text}\n` : ''
 }
 
 function renderIcons(cfg: SectionCfg): string {
-  const library = str(cfg.iconLibrary).trim() || 'lucide-react'
+  const library = str(cfg.iconLibrary).trim()
+  if (!library) return ''
   let text = `- **Library**: \`${library}\`\n`
 
   if (library === 'カスタム') {
@@ -357,7 +358,8 @@ const COMPONENT_SECTION_LABELS: Record<string, string> = {
   states:        '状態',
   anatomy:       '構造と寸法',
   accessibility: 'アクセシビリティ要件',
-  dosDonts:      'Do / Don\'t',
+  dos:           'Do',
+  donts:         'Don\'t',
 }
 
 const SHADCN_SECTION_LABELS: Record<string, string> = {
@@ -413,19 +415,18 @@ const WCAG_STANDARDS: Record<string, { text: string; largeText: string; ui: stri
 }
 
 function renderAccessibility(cfg: SectionCfg): string {
-  const level = str(cfg.contrastLevel).trim() || 'AA'
+  const level = str(cfg.contrastLevel).trim()
   let text = ''
 
   const standards = WCAG_STANDARDS[level]
-  if (standards) {
+  if (level && standards) {
     text += `### WCAG ${level} 準拠\n\n`
     text += `| 対象 | 最低コントラスト比 |\n`
     text += `|------|------------------|\n`
     text += `| 通常テキスト (18pt未満 / 太字14pt未満) | ${standards.text}:1 |\n`
     text += `| 大テキスト (18pt以上 / 太字14pt以上) | ${standards.largeText}:1 |\n`
     text += `| UI コンポーネント・グラフィック | ${standards.ui}:1 |\n\n`
-  } else {
-    // カスタム
+  } else if (level === 'カスタム') {
     const textContrast = str(cfg.textContrastMin).trim()
     const largeTextContrast = str(cfg.largeTextContrastMin).trim()
     const uiContrast = str(cfg.uiContrastMin).trim()

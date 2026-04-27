@@ -269,7 +269,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Dsp テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: 'サイトのメインタイトルやセクション見出しに使用します',
+        default: '',
         rows: 3,
       } as TextareaField,
       {
@@ -287,7 +287,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Std テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '通常の本文テキストや説明文に使用します',
+        default: '',
         rows: 3,
       } as TextareaField,
       {
@@ -305,7 +305,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Dns テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: '情報密度を優先する場面で、限られたスペースに多くの情報を表示します',
+        default: '',
         rows: 3,
       } as TextareaField,
       {
@@ -323,7 +323,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Oln テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: 'ボタンやラベルなど、UI要素内のテキストに使用します',
+        default: '',
         rows: 3,
       } as TextareaField,
       {
@@ -341,7 +341,7 @@ export const designTemplate: DesignSection[] = [
         label: 'Mono テキストスタイルの使い方',
         requirement: 'optional',
         placeholder: '',
-        default: 'preタグとcodeタグとのテキストに使用します',
+        default: '',
         rows: 3,
       } as TextareaField,
       {
@@ -368,7 +368,7 @@ export const designTemplate: DesignSection[] = [
         label: 'アイコンライブラリ',
         requirement: 'required',
         options: ['lucide-react', 'カスタム'],
-        default: 'lucide-react',
+        default: '',
       } as SelectField,
       {
         type: 'textarea',
@@ -404,7 +404,7 @@ export const designTemplate: DesignSection[] = [
         label: 'レイアウトタイプ',
         requirement: 'optional',
         options: ['liquid', 'solid'],
-        default: 'liquid',
+        default: '',
       } as SelectField,
       {
         type: 'select',
@@ -412,14 +412,14 @@ export const designTemplate: DesignSection[] = [
         label: 'スペーシング基準単位',
         requirement: 'optional',
         options: SPACING_BASE_OPTIONS,
-        default: '8px',
+        default: '',
       } as SelectField,
       {
         type: 'checkbox',
         id: 'smBreakpointEnabled',
         label: 'sm ブレイクポイントを使用する',
         requirement: 'optional',
-        default: true,
+        default: false,
       } as CheckboxField,
       {
         type: 'number',
@@ -435,7 +435,7 @@ export const designTemplate: DesignSection[] = [
         id: 'mdBreakpointEnabled',
         label: 'md ブレイクポイントを使用する',
         requirement: 'optional',
-        default: true,
+        default: false,
       } as CheckboxField,
       {
         type: 'number',
@@ -451,7 +451,7 @@ export const designTemplate: DesignSection[] = [
         id: 'lgBreakpointEnabled',
         label: 'lg ブレイクポイントを使用する',
         requirement: 'optional',
-        default: true,
+        default: false,
       } as CheckboxField,
       {
         type: 'number',
@@ -467,7 +467,7 @@ export const designTemplate: DesignSection[] = [
         id: 'xlBreakpointEnabled',
         label: 'xl ブレイクポイントを使用する',
         requirement: 'optional',
-        default: true,
+        default: false,
       } as CheckboxField,
       {
         type: 'number',
@@ -483,7 +483,7 @@ export const designTemplate: DesignSection[] = [
         id: '2xlBreakpointEnabled',
         label: '2xl ブレイクポイントを使用する',
         requirement: 'optional',
-        default: true,
+        default: false,
       } as CheckboxField,
       {
         type: 'number',
@@ -516,7 +516,7 @@ export const designTemplate: DesignSection[] = [
         label: 'ラウンドネス（丸み）',
         requirement: 'optional',
         options: ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'],
-        default: 'md',
+        default: '',
       } as SelectField,
       {
         type: 'select',
@@ -524,7 +524,7 @@ export const designTemplate: DesignSection[] = [
         label: 'エレベーション（シャドウ）',
         requirement: 'optional',
         options: ['none', 'sm', 'md', 'lg'],
-        default: 'md',
+        default: '',
       } as SelectField,
       {
         type: 'textarea',
@@ -550,7 +550,7 @@ export const designTemplate: DesignSection[] = [
         label: 'WCAG 準拠レベル',
         requirement: 'required',
         options: ['AA', 'AAA', 'カスタム'],
-        default: 'AA',
+        default: '',
       } as SelectField,
       {
         type: 'text',

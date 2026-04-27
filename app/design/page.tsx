@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes, Pencil, Check, GripVertical, X } from "lucide-react";
+import { Sparkles, Palette, Type, LayoutGrid, Info, Layers, ChevronDown, ChevronUp, Plus, Trash2, Eye, FileText, Shapes, GripVertical, X } from "lucide-react";
 import { useDesignConfig } from "@/lib/hooks/use-design-config";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from "@/lib/constants";
@@ -32,18 +32,121 @@ type ComponentItem = {
   states: string;
   anatomy: string;
   accessibility: string;
-  dosDonts: string;
+  dos: string;
+  donts: string;
 };
 
-const COMPONENT_FIELDS: { id: keyof Omit<ComponentItem, "id" | "name">; label: string; placeholder: string }[] = [
-  { id: "purpose", label: "① 目的と使い分け", placeholder: " Primary Button は1画面に1つ\n破壊的操作には Destructive variant を使う" },
-  { id: "variants", label: "② バリアント", placeholder: " Primary / Secondary / Ghost / Destructive\nそれぞれの用途を記述" },
-  { id: "sizes", label: "③ サイズ", placeholder: " Small (h-6, px-2) / Medium (h-8, px-3) / Large (h-10, px-4)\n各文脈での使い分けも記述" },
-  { id: "states", label: "④ 状態", placeholder: " Default / Hover / Active / Focus / Disabled / Loading\n各状態の色・境界線・透明度を明示" },
-  { id: "anatomy", label: "⑤ 構造と寸法", placeholder: " アイコン + ラベル、間隔8px\n左右パディング16px、高さ40px、border-radius 8px" },
-  { id: "accessibility", label: "⑥ アクセシビリティ要件", placeholder: " aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px" },
-  { id: "dosDonts", label: "⑦ Do / Don't", placeholder: "Do: Primary Button は1画面に1つ\nDon't: Primary Button を並べない" },
-];
+
+
+const VARIANT_PRESETS = ["Primary", "Secondary", "Outline", "Ghost", "Destructive", "Link"];
+const SIZE_PRESETS = ["xs", "sm", "md", "lg", "xl", "2xl"];
+const STATE_PRESETS = ["Default", "Hover", "Active", "Focus", "Disabled", "Loading"];
+
+function parseCSV(s: string): string[] {
+  return s.split(",").map((v) => v.trim()).filter(Boolean);
+}
+function toggleCSV(current: string, item: string): string {
+  const list = parseCSV(current);
+  const idx = list.indexOf(item);
+  if (idx >= 0) list.splice(idx, 1);
+  else list.push(item);
+  return list.join(", ");
+}
+
+function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: ComponentItem; isOpen: boolean; onToggle: () => void; onChange: (field: keyof ComponentItem, value: string) => void; onRemove: () => void }) {
+  const [variantInput, setVariantInput] = useState("");
+  const [sizeInput, setSizeInput] = useState("");
+  const [stateInput, setStateInput] = useState("");
+
+  const addCustomCSV = (field: "variants" | "sizes" | "states", input: string, setInput: (s: string) => void) => {
+    const val = input.trim();
+    if (!val) return;
+    const list = parseCSV(item[field]);
+    if (!list.includes(val)) onChange(field, [...list, val].join(", "));
+    setInput("");
+  };
+
+  const renderBadgeField = (field: "variants" | "sizes" | "states", presets: string[], customInput: string, setCustomInput: (s: string) => void, inputPlaceholder: string) => {
+    const selected = new Set(parseCSV(item[field]));
+    const customItems = [...selected].filter((v) => !presets.includes(v));
+    return (
+      <div className="space-y-2">
+        <div className="flex flex-wrap gap-1.5">
+          {presets.map((p) => (
+            <button key={p} type="button" onClick={() => onChange(field, toggleCSV(item[field], p))} className={cn("px-2.5 py-1 rounded-md text-xs border transition-colors duration-ui", selected.has(p) ? "bg-primary-surface text-primary border-primary font-medium" : "border-input text-muted-foreground hover:text-foreground hover:bg-muted")}>
+              {p}
+            </button>
+          ))}
+          {customItems.map((v) => (
+            <span key={v} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs bg-primary-surface text-primary border border-primary font-medium">
+              {v}
+              <button type="button" onClick={() => onChange(field, toggleCSV(item[field], v))} className="hover:text-destructive ml-0.5"><X className="size-2.5" /></button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-1.5">
+          <Input value={customInput} onChange={(e) => setCustomInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomCSV(field, customInput, setCustomInput); } }} placeholder={inputPlaceholder} className="h-7 text-xs flex-1" />
+          <button type="button" onClick={() => addCustomCSV(field, customInput, setCustomInput)} disabled={!customInput.trim()} className="flex shrink-0 items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary-surface disabled:opacity-40 disabled:pointer-events-none">
+            <Plus className="size-3" />
+            追加
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="rounded-md border border-input overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2.5 bg-background cursor-pointer" onClick={onToggle}>
+        <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(); }} className="shrink-0 text-muted-foreground">
+          {isOpen ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+        </button>
+        <Input value={item.name} onChange={(e) => { e.stopPropagation(); onChange("name", e.target.value); }} onClick={(e) => e.stopPropagation()} placeholder="Button" className="h-auto flex-1 text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0" />
+        <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }} className="shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-ui">
+          <Trash2 className="size-3.5" />
+        </button>
+      </div>
+      {isOpen && (
+        <div className="border-t border-input p-3 space-y-4">
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">① 目的と使い分け</p>
+            <Textarea value={item.purpose} onChange={(e) => onChange("purpose", e.target.value)} placeholder={"Primary Button は 1 画面に 1 つ\n破壊的操作には Destructive variant を使う"} className="min-h-14 text-xs" />
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">② バリアント</p>
+            {renderBadgeField("variants", VARIANT_PRESETS, variantInput, setVariantInput, "カスタムバリアント")}
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">③ サイズ</p>
+            {renderBadgeField("sizes", SIZE_PRESETS, sizeInput, setSizeInput, "カスタムサイズ")}
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">④ 状態</p>
+            {renderBadgeField("states", STATE_PRESETS, stateInput, setStateInput, "カスタム状態")}
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">⑤ 構造と寸法</p>
+            <Textarea value={item.anatomy} onChange={(e) => onChange("anatomy", e.target.value)} placeholder={"アイコン + ラベル、間隔 8px\n左右パディング 16px、高さ 40px、border-radius 8px"} className="min-h-14 text-xs" />
+          </div>
+          <div className="space-y-1.5">
+            <p className="text-2xs font-medium text-muted-foreground">⑥ アクセシビリティ要件</p>
+            <Textarea value={item.accessibility} onChange={(e) => onChange("accessibility", e.target.value)} placeholder={"aria-label, aria-disabled\nTab / Enter / Space / Escape の挙動\n最小タッチターゲット 44×44px"} className="min-h-14 text-xs" />
+          </div>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <p className="text-2xs font-medium text-muted-foreground">⑦ Do</p>
+              <Textarea value={item.dos} onChange={(e) => onChange("dos", e.target.value)} placeholder={"Primary Button は 1 画面に 1 つ\nDestructive の隣にキャンセルを配置"} className="min-h-14 text-xs" />
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-2xs font-medium text-muted-foreground">⑦ Don&apos;t</p>
+              <Textarea value={item.donts} onChange={(e) => onChange("donts", e.target.value)} placeholder={"Primary Button を並べない\nアイコンのみで aria-label なし"} className="min-h-14 text-xs" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const SHADCN_FIELDS: { id: string; label: string; placeholder: string }[] = [
   { id: "shadcnStandardPatterns", label: "標準パターン", placeholder: "Form: react-hook-form + zod + FormField\n破壊的操作フロー: 操作ボタン → AlertDialog（確認）→ Toast（結果）" },
@@ -347,7 +450,6 @@ export default function DashboardPage() {
   const [keyColorStandard, setKeyColorStandard] = useState<"A" | "AA" | "AAA" | "none">("AA");
   const [componentItems, setComponentItems] = useState<ComponentItem[]>(DEFAULT_COMPONENT_ITEMS);
   const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set());
-  const [editingComponentIds, setEditingComponentIds] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<string>("visualTheme");
   const [shadcnCustomInput, setShadcnCustomInput] = useState("");
   const formScrollRef = useRef<HTMLDivElement>(null);
@@ -360,7 +462,7 @@ export default function DashboardPage() {
 
   const addComponentItem = () => {
     const id = Date.now().toString();
-    const newItem: ComponentItem = { id, name: "", purpose: "", variants: "", sizes: "", states: "", anatomy: "", accessibility: "", dosDonts: "" };
+    const newItem: ComponentItem = { id, name: "", purpose: "", variants: "", sizes: "", states: "", anatomy: "", accessibility: "", dos: "", donts: "" };
     const next = [...componentItems, newItem];
     setComponentItems(next);
     setOpenComponentIds((prev) => new Set([...prev, id]));
@@ -391,18 +493,7 @@ export default function DashboardPage() {
     });
   };
 
-  const toggleComponentEditing = (id: string) => {
-    setEditingComponentIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-        setOpenComponentIds((prev2) => new Set([...prev2, id]));
-      }
-      return next;
-    });
-  };
+
 
   const isCustom = themeSelect === "カスタム";
 
@@ -505,8 +596,8 @@ export default function DashboardPage() {
           },
           typography: {
             ...(prev.typography ?? {}),
-            latinFont: (prev.typography?.latinFont as string) || "Inter",
-            japaneseFont: (prev.typography?.japaneseFont as string) || "Noto Sans JP",
+            latinFont: (prev.typography?.latinFont as string) ?? "",
+            japaneseFont: (prev.typography?.japaneseFont as string) ?? "",
           },
         };
       });
@@ -1035,7 +1126,7 @@ export default function DashboardPage() {
                       <FieldLabel>欧文フォント</FieldLabel>
                       <Select value={(tc.latinFont as string) ?? ""} onValueChange={(v) => updateField("typography", "latinFont", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未指定" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           {LATIN_FONTS.map((f) => (
@@ -1053,7 +1144,7 @@ export default function DashboardPage() {
                       <FieldLabel>和文フォント</FieldLabel>
                       <Select value={(tc.japaneseFont as string) ?? ""} onValueChange={(v) => updateField("typography", "japaneseFont", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未指定" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           {JAPANESE_FONTS.map((f) => (
@@ -1193,7 +1284,7 @@ export default function DashboardPage() {
                       <FieldLabel>アイコンライブラリ</FieldLabel>
                       <Select value={(ic.iconLibrary as string) ?? ""} onValueChange={(v) => updateField("icons", "iconLibrary", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Lucide React" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="lucide-react">Lucide React</SelectItem>
@@ -1225,7 +1316,7 @@ export default function DashboardPage() {
                       <FieldLabel>レイアウトタイプ</FieldLabel>
                       <Select value={(lc.layoutType as string) ?? ""} onValueChange={(v) => updateField("layout", "layoutType", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="リキッド（流動的）" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="liquid">リキッド（流動的）</SelectItem>
@@ -1238,7 +1329,7 @@ export default function DashboardPage() {
                       <FieldLabel>基準単位</FieldLabel>
                       <Select value={(lc.spacingBase as string) ?? ""} onValueChange={(v) => updateField("layout", "spacingBase", v)}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="未指定" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           {SPACING_BASE_OPTIONS.map((o) => (
@@ -1547,7 +1638,7 @@ export default function DashboardPage() {
                           <FieldLabel>ラウンドネス（丸み）</FieldLabel>
                           <Select value={(cmp.roundness as string) ?? ""} onValueChange={(v) => updateField("components", "roundness", v)}>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="md" />
+                              <SelectValue placeholder="選択してください" />
                             </SelectTrigger>
                             <SelectContent>
                               {["none", "xs", "sm", "md", "lg", "xl", "2xl", "full"].map((v) => (
@@ -1563,7 +1654,7 @@ export default function DashboardPage() {
                           <FieldLabel>エレベーション（シャドウ）</FieldLabel>
                           <Select value={(cmp.elevation as string) ?? ""} onValueChange={(v) => updateField("components", "elevation", v)}>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder="md" />
+                              <SelectValue placeholder="選択してください" />
                             </SelectTrigger>
                             <SelectContent>
                               {["none", "sm", "md", "lg"].map((v) => (
@@ -1592,66 +1683,16 @@ export default function DashboardPage() {
 
                           {componentItems.length === 0 && <p className="text-xs text-muted-foreground text-center py-4">「追加」からコンポーネントを定義してください</p>}
 
-                          {componentItems.map((item) => {
-                            const isOpen = openComponentIds.has(item.id);
-                            const isEditing = editingComponentIds.has(item.id);
-                            return (
-                              <div key={item.id} className="rounded-md border border-input overflow-hidden">
-                                <div className={`flex items-center gap-2 px-3 py-3 bg-background${!isEditing ? " cursor-pointer" : ""}`} onClick={!isEditing ? () => toggleComponentOpen(item.id) : undefined}>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleComponentOpen(item.id);
-                                    }}
-                                    className="shrink-0 text-muted-foreground"
-                                  >
-                                    {isOpen ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-                                  </button>
-
-                                  {isEditing ? <Input value={item.name} onChange={(e) => updateComponentItem(item.id, "name", e.target.value)} placeholder="コンポーネント名（ Button）" autoFocus className="h-auto flex-1 text-xs md:text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0" /> : <span className="flex-1 text-xs font-medium text-foreground truncate">{item.name || <span className="text-muted-foreground">未設定</span>}</span>}
-
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      toggleComponentEditing(item.id);
-                                    }}
-                                    className="shrink-0 text-muted-foreground hover:text-foreground transition-colors duration-ui"
-                                  >
-                                    {isEditing ? <Check className="size-3.5" /> : <Pencil className="size-3.5" />}
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      removeComponentItem(item.id);
-                                    }}
-                                    className="shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-ui"
-                                  >
-                                    <Trash2 className="size-3.5" />
-                                  </button>
-                                </div>
-
-                                {isOpen && (
-                                  <div className="border-t border-input p-3 space-y-3">
-                                    {COMPONENT_FIELDS.map(({ id, label, placeholder }) => (
-                                      <div key={id} className="space-y-1.5">
-                                        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{label}</p>
-                                        <Textarea value={item[id]} onChange={(e) => updateComponentItem(item.id, id, e.target.value)} placeholder={placeholder} disabled={!isEditing} className="min-h-16 text-xs font-mono mb-1 disabled:opacity-70" />
-                                      </div>
-                                    ))}
-                                    {isEditing && (
-                                      <button type="button" onClick={() => toggleComponentEditing(item.id)} className="flex items-center gap-1.5 w-full justify-center rounded-md border border-input py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-ui">
-                                        <Check className="size-3" />
-                                        編集を完了する
-                                      </button>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
+                          {componentItems.map((item) => (
+                            <ComponentCard
+                              key={item.id}
+                              item={item}
+                              isOpen={openComponentIds.has(item.id)}
+                              onToggle={() => toggleComponentOpen(item.id)}
+                              onChange={(field, value) => updateComponentItem(item.id, field, value)}
+                              onRemove={() => removeComponentItem(item.id)}
+                            />
+                          ))}
                         </div>
                       </>
                     )}
@@ -1705,7 +1746,7 @@ export default function DashboardPage() {
                         }}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="WCAG AA（推奨基準・4.5:1）" />
+                          <SelectValue placeholder="選択してください" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="A">WCAG A（最低基準・3:1）</SelectItem>
@@ -1716,10 +1757,11 @@ export default function DashboardPage() {
                       </Select>
                     </div>
 
+                    {(ac.contrastLevel as string) && (
                     <div className="space-y-2">
                       <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コントラスト比の基準</p>
 
-                      {((ac.contrastLevel as string) ?? "AA") !== "カスタム" ? (
+                      {(ac.contrastLevel as string) !== "カスタム" ? (
                         <div className="rounded-md border border-input bg-muted p-3 space-y-2">
                           {(
                             [
@@ -1758,6 +1800,7 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </div>
+                    )}
 
                     <div className="space-y-1.5">
                       <FieldLabel>補足情報</FieldLabel>

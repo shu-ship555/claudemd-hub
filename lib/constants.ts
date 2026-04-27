@@ -76,37 +76,7 @@ export const ERGONOMICS_DEFAULT_TEXT = `### 人間工学に基づく指示
 - 赤や黄色は目を引きやすく、青や緑は落ち着きを与えます。
 - 警告には赤、進行には緑といった「色のメンタルモデル」を利用することで、説明がなくても伝わるデザインになります。`
 
-export const DEFAULT_COMPONENT_ITEMS = [
-  {
-    id: 'default-button',
-    name: 'Button',
-    purpose: `ユーザーのアクションを促すための操作要素。
-1画面の主要な CTA は Primary を1つのみ。`,
-    variants: `- Primary: ページの主要なアクション（送信、購入、次へ）
-- Secondary: 副次的なアクション（キャンセル、戻る）
-- Ghost: 補助的なアクション、ツールバー内
-- Destructive: 削除、破壊的操作。確認ダイアログと併用推奨`,
-    sizes: `| Size | Height | Padding X | Font |
-|------|--------|-----------|------|
-| sm   | 32px   | 12px      | 14px |
-| md   | 40px   | 16px      | 14px |
-| lg   | 48px   | 20px      | 16px |`,
-    states: `- Default: bg #1a4fd6 / text #fff
-- Hover: bg #3b65ce
-- Active: bg #0d38a5
-- Focus-visible: outline 2px #1a4fd6、offset 2px
-- Disabled: bg Gray 2 / text Gray 5、cursor not-allowed`,
-    anatomy: `アイコン + ラベル、間隔8px\n左右パディング16px、高さ40px、border-radius 8px`,
-    accessibility: `- 最小タッチターゲット 44×44px（sm サイズは周辺に余白で確保）
-- アイコンのみの場合は aria-label 必須
-- Enter / Space で発火
-- Loading 中は aria-busy="true"、クリック無効化`,
-    dosDonts: `✅ Primary は1画面1つ
-❌ Primary を並置しない（ユーザーが迷う = ヒックの法則）
-✅ Destructive の隣に Secondary の「キャンセル」を配置
-❌ アイコンのみで aria-label なし`,
-  },
-]
+export const DEFAULT_COMPONENT_ITEMS: never[] = []
 
 export const ERROR_MESSAGES = {
   FILE_NAME_REQUIRED: 'ファイル名を入力してください',
