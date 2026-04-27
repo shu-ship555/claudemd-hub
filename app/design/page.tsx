@@ -36,14 +36,15 @@ type ComponentItem = {
   donts: string;
 };
 
-
-
-const VARIANT_PRESETS = ["Primary", "Secondary", "Outline", "Ghost", "Destructive", "Link"];
-const SIZE_PRESETS = ["xs", "sm", "md", "lg", "xl", "2xl"];
+const VARIANT_PRESETS = ["Primary", "Secondary", "Tertiary", "Outline", "Ghost", "Destructive", "Link"];
+const SIZE_PRESETS = ["2xs", "xs", "sm", "base", "md", "lg", "xl", "2xl"];
 const STATE_PRESETS = ["Default", "Hover", "Active", "Focus", "Disabled", "Loading"];
 
 function parseCSV(s: string): string[] {
-  return s.split(",").map((v) => v.trim()).filter(Boolean);
+  return s
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
 }
 function toggleCSV(current: string, item: string): string {
   const list = parseCSV(current);
@@ -80,12 +81,25 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
           {customItems.map((v) => (
             <span key={v} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs bg-primary-surface text-primary border border-primary font-medium">
               {v}
-              <button type="button" onClick={() => onChange(field, toggleCSV(item[field], v))} className="hover:text-destructive ml-0.5"><X className="size-2.5" /></button>
+              <button type="button" onClick={() => onChange(field, toggleCSV(item[field], v))} className="hover:text-destructive ml-0.5">
+                <X className="size-2.5" />
+              </button>
             </span>
           ))}
         </div>
         <div className="flex gap-1.5">
-          <Input value={customInput} onChange={(e) => setCustomInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomCSV(field, customInput, setCustomInput); } }} placeholder={inputPlaceholder} className="h-7 text-xs flex-1" />
+          <Input
+            value={customInput}
+            onChange={(e) => setCustomInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addCustomCSV(field, customInput, setCustomInput);
+              }
+            }}
+            placeholder={inputPlaceholder}
+            className="h-7 text-xs flex-1"
+          />
           <button type="button" onClick={() => addCustomCSV(field, customInput, setCustomInput)} disabled={!customInput.trim()} className="flex shrink-0 items-center gap-1 text-xs px-2 py-1 rounded-md border border-dashed border-primary text-primary hover:bg-primary-surface disabled:opacity-40 disabled:pointer-events-none">
             <Plus className="size-3" />
             追加
@@ -98,11 +112,34 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
   return (
     <div className="rounded-md border border-input overflow-hidden">
       <div className="flex items-center gap-2 px-3 py-2.5 bg-background cursor-pointer" onClick={onToggle}>
-        <button type="button" onClick={(e) => { e.stopPropagation(); onToggle(); }} className="shrink-0 text-muted-foreground">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          className="shrink-0 text-muted-foreground"
+        >
           {isOpen ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
         </button>
-        <Input value={item.name} onChange={(e) => { e.stopPropagation(); onChange("name", e.target.value); }} onClick={(e) => e.stopPropagation()} placeholder="Button" className="h-auto flex-1 text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0" />
-        <button type="button" onClick={(e) => { e.stopPropagation(); onRemove(); }} className="shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-ui">
+        <Input
+          value={item.name}
+          onChange={(e) => {
+            e.stopPropagation();
+            onChange("name", e.target.value);
+          }}
+          onClick={(e) => e.stopPropagation()}
+          placeholder="Button"
+          className="h-auto flex-1 text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0"
+        />
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="shrink-0 text-muted-foreground hover:text-destructive transition-colors duration-ui"
+        >
           <Trash2 className="size-3.5" />
         </button>
       </div>
@@ -452,6 +489,7 @@ export default function DashboardPage() {
   const [openComponentIds, setOpenComponentIds] = useState<Set<string>>(new Set());
   const [activeSection, setActiveSection] = useState<string>("visualTheme");
   const [shadcnCustomInput, setShadcnCustomInput] = useState("");
+  const [focusedTokenRow, setFocusedTokenRow] = useState<number | null>(null);
   const formScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -492,8 +530,6 @@ export default function DashboardPage() {
       return next;
     });
   };
-
-
 
   const isCustom = themeSelect === "カスタム";
 
@@ -1553,6 +1589,34 @@ export default function DashboardPage() {
                             const base = tokenRows.filter((r) => r.key || r.value);
                             updateField("components", "shadcnTokenMapping", serialize([...base, ...newRows]));
                           };
+                          const cp = config.colorPalette ?? {};
+                          const additionalSets = ((cp.additionalKeyColorSets as unknown as Array<{ primaryColor: string; secondaryColor: string; tertiaryColor: string; bgColor: string }>) || []);
+                          const paletteSwatches: { label: string; hex: string }[] = [];
+                          for (const c of [
+                            { label: "Primary 01", hex: (cp.primaryCtaColor as string) ?? "" },
+                            { label: "Secondary 01", hex: (cp.secondaryCtaColor as string) ?? "" },
+                            { label: "Tertiary 01", hex: (cp.tertiaryCtaColor as string) ?? "" },
+                            { label: "Surface 01", hex: (cp.primarySurfaceColor as string) ?? "" },
+                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                          additionalSets.forEach((set, i) => {
+                            const n = String(i + 2).padStart(2, "0");
+                            for (const c of [
+                              { label: `Primary ${n}`, hex: set.primaryColor ?? "" },
+                              { label: `Secondary ${n}`, hex: set.secondaryColor ?? "" },
+                              { label: `Tertiary ${n}`, hex: set.tertiaryColor ?? "" },
+                              { label: `Surface ${n}`, hex: set.bgColor ?? "" },
+                            ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                          });
+                          for (const c of [
+                            { label: "Success", hex: (cp.successColor as string) ?? "" },
+                            { label: "Error", hex: (cp.errorColor as string) ?? "" },
+                            { label: "Warning", hex: (cp.warningColor as string) ?? "" },
+                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                          for (const c of [
+                            { label: "White", hex: (cp.white as string) ?? "" },
+                            ...Array.from({ length: 12 }, (_, i) => ({ label: `Gray ${String(i + 1).padStart(2, "0")}`, hex: (cp[`gray${i + 1}` as keyof typeof cp] as string) ?? "" })),
+                            { label: "Black", hex: (cp.black as string) ?? "" },
+                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
                           return (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
@@ -1561,6 +1625,19 @@ export default function DashboardPage() {
                                   プリセットを挿入
                                 </button>
                               </div>
+                              {paletteSwatches.length > 0 && (
+                                <div className="space-y-1.5">
+                                  <p className="text-2xs text-muted-foreground">{focusedTokenRow !== null ? "フォーカス中の行に挿入:" : "値の入力欄をフォーカスしてカラーを挿入:"}</p>
+                                  <div className="flex flex-wrap gap-1.5">
+                                    {paletteSwatches.map(({ label, hex }) => (
+                                      <button key={label} type="button" title={hex} onClick={() => { if (focusedTokenRow !== null) updateRow(focusedTokenRow, "value", hex); }} disabled={focusedTokenRow === null} className="flex items-center gap-1.5 px-2 py-1 rounded-md border border-input hover:border-primary hover:bg-muted transition-colors text-2xs text-muted-foreground disabled:opacity-40 disabled:pointer-events-none">
+                                        <span className="size-3 rounded-sm shrink-0 border border-black/10" style={{ backgroundColor: hex }} />
+                                        {label}
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
                               <div className="rounded-md border divide-y">
                                 <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-2 px-3 py-1.5 bg-muted/40 text-2xs text-muted-foreground">
                                   <span>CSS 変数名</span>
@@ -1569,10 +1646,10 @@ export default function DashboardPage() {
                                   <span />
                                 </div>
                                 {tokenRows.map((row, idx) => (
-                                  <div key={idx} className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 px-3 py-1.5">
+                                  <div key={idx} className={cn("grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2 px-3 py-1.5", focusedTokenRow === idx && "bg-primary-surface/50")}>
                                     <Input value={row.key} onChange={(e) => updateRow(idx, "key", e.target.value)} placeholder="--primary" className="text-xs h-7 font-mono" />
                                     <span className="text-xs text-muted-foreground">→</span>
-                                    <Input value={row.value} onChange={(e) => updateRow(idx, "value", e.target.value)} placeholder="hsl(var(--blue-600))" className="text-xs h-7 font-mono" />
+                                    <Input value={row.value} onChange={(e) => updateRow(idx, "value", e.target.value)} onFocus={() => setFocusedTokenRow(idx)} placeholder="hsl(var(--blue-600))" className="text-xs h-7 font-mono" />
                                     <button type="button" onClick={() => removeRow(idx)} className="text-muted-foreground hover:text-foreground">
                                       <X className="size-3" />
                                     </button>
@@ -1681,17 +1758,10 @@ export default function DashboardPage() {
                             </button>
                           </div>
 
-                          {componentItems.length === 0 && <p className="text-xs text-muted-foreground text-center py-4">「追加」からコンポーネントを定義してください</p>}
+                          {componentItems.length === 0 && <p className="text-xs bg-muted text-muted-foreground rounded-md text-center px-4 pt-4 pb-4.5">「追加」からコンポーネントを定義してください</p>}
 
                           {componentItems.map((item) => (
-                            <ComponentCard
-                              key={item.id}
-                              item={item}
-                              isOpen={openComponentIds.has(item.id)}
-                              onToggle={() => toggleComponentOpen(item.id)}
-                              onChange={(field, value) => updateComponentItem(item.id, field, value)}
-                              onRemove={() => removeComponentItem(item.id)}
-                            />
+                            <ComponentCard key={item.id} item={item} isOpen={openComponentIds.has(item.id)} onToggle={() => toggleComponentOpen(item.id)} onChange={(field, value) => updateComponentItem(item.id, field, value)} onRemove={() => removeComponentItem(item.id)} />
                           ))}
                         </div>
                       </>
@@ -1758,48 +1828,48 @@ export default function DashboardPage() {
                     </div>
 
                     {(ac.contrastLevel as string) && (
-                    <div className="space-y-2">
-                      <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コントラスト比の基準</p>
+                      <div className="space-y-2">
+                        <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">コントラスト比の基準</p>
 
-                      {(ac.contrastLevel as string) !== "カスタム" ? (
-                        <div className="rounded-md border border-input bg-muted p-3 space-y-2">
-                          {(
-                            [
-                              { label: "通常テキスト（18pt未満 / 太字14pt未満）", a: "3.0", aa: "4.5", aaa: "7.0" },
-                              { label: "大テキスト（18pt以上 / 太字14pt以上）", a: "3.0", aa: "3.0", aaa: "4.5" },
-                              { label: "UIコンポーネント・グラフィック", a: "3.0", aa: "3.0", aaa: "3.0" },
-                            ] as const
-                          ).map(({ label, a, aa, aaa }) => {
-                            const level = (ac.contrastLevel as string) ?? "AA";
-                            const value = level === "AAA" ? aaa : level === "A" ? a : aa;
-                            return (
-                              <div key={label} className="flex items-center justify-between">
-                                <span className="text-xs text-muted-foreground">{label}</span>
-                                <span className="font-mono text-xs leading-[120%] tracking-[0.04em] font-bold text-muted-foreground">{value}:1</span>
+                        {(ac.contrastLevel as string) !== "カスタム" ? (
+                          <div className="rounded-md border border-input bg-muted p-3 space-y-2">
+                            {(
+                              [
+                                { label: "通常テキスト（18pt未満 / 太字14pt未満）", a: "3.0", aa: "4.5", aaa: "7.0" },
+                                { label: "大テキスト（18pt以上 / 太字14pt以上）", a: "3.0", aa: "3.0", aaa: "4.5" },
+                                { label: "UIコンポーネント・グラフィック", a: "3.0", aa: "3.0", aaa: "3.0" },
+                              ] as const
+                            ).map(({ label, a, aa, aaa }) => {
+                              const level = (ac.contrastLevel as string) ?? "AA";
+                              const value = level === "AAA" ? aaa : level === "A" ? a : aa;
+                              return (
+                                <div key={label} className="flex items-center justify-between">
+                                  <span className="text-xs text-muted-foreground">{label}</span>
+                                  <span className="font-mono text-xs leading-[120%] tracking-[0.04em] font-bold text-muted-foreground">{value}:1</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <div className="space-y-3">
+                            {(
+                              [
+                                { field: "textContrastMin", label: "通常テキスト（18pt未満 / 太字14pt未満）", placeholder: "4.5" },
+                                { field: "largeTextContrastMin", label: "大テキスト（18pt以上 / 太字14pt以上）", placeholder: "3.0" },
+                                { field: "uiContrastMin", label: "UIコンポーネント・グラフィック", placeholder: "3.0" },
+                              ] as const
+                            ).map(({ field, label, placeholder }) => (
+                              <div key={field} className="flex items-center gap-3">
+                                <span className="text-xs text-muted-foreground flex-1">{label}</span>
+                                <div className="flex items-center gap-1">
+                                  <Input type="number" min={1} max={21} step={0.1} placeholder={placeholder} value={(ac[field] as string) ?? ""} onChange={(e) => updateField("accessibility", field, e.target.value)} className="w-20 text-right text-xs" />
+                                  <span className="text-xs text-muted-foreground">:1</span>
+                                </div>
                               </div>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {(
-                            [
-                              { field: "textContrastMin", label: "通常テキスト（18pt未満 / 太字14pt未満）", placeholder: "4.5" },
-                              { field: "largeTextContrastMin", label: "大テキスト（18pt以上 / 太字14pt以上）", placeholder: "3.0" },
-                              { field: "uiContrastMin", label: "UIコンポーネント・グラフィック", placeholder: "3.0" },
-                            ] as const
-                          ).map(({ field, label, placeholder }) => (
-                            <div key={field} className="flex items-center gap-3">
-                              <span className="text-xs text-muted-foreground flex-1">{label}</span>
-                              <div className="flex items-center gap-1">
-                                <Input type="number" min={1} max={21} step={0.1} placeholder={placeholder} value={(ac[field] as string) ?? ""} onChange={(e) => updateField("accessibility", field, e.target.value)} className="w-20 text-right text-xs" />
-                                <span className="text-xs text-muted-foreground">:1</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     )}
 
                     <div className="space-y-1.5">
