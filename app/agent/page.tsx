@@ -488,8 +488,8 @@ export default function AgentPage() {
     <>
       <MobileGuard />
 
-      <main className="w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
-        <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
+      <main className="h-[calc(100vh-3.5rem)] overflow-y-auto w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
+        <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr] items-start" : "grid gap-12 lg:grid-cols-2 items-start"}>
           {/* Sidebar TOC — カスタム時のみ表示 */}
           {isCustom && <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />}
 

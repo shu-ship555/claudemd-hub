@@ -659,12 +659,12 @@ export default function DashboardPage() {
 
   return (
     <>
-      <main className="w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
-        <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
+      <main className="h-[calc(100vh-3.5rem)] overflow-y-auto w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
+        <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr] items-start" : "grid gap-12 lg:grid-cols-2 items-start"}>
           {/* Wizard TOC — カスタム時のみ表示 */}
           {isCustom && (
             <aside className="hidden lg:block">
-              <nav className="sticky space-y-0.5" style={{ top: "calc(3.5rem + 1.5rem)" }}>
+              <nav className="space-y-0.5">
                 {WIZARD_STEPS.map((step, i) => {
                   const StepIcon = step.icon;
                   return (
@@ -1133,7 +1133,7 @@ export default function DashboardPage() {
                         </div>
                       </div>
                       <div className={!((cc.useSemanticColors as boolean) ?? true) ? "opacity-50 pointer-events-none" : ""}>
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-2 gap-3 mb-3">
                           {SEMANTIC_COLOR_FIELDS.map(({ key, label }) => (
                             <label key={key} className="flex items-center gap-2 text-sm cursor-pointer">
                               <input type="color" value={customColors[key]} onChange={(e) => handleColorChange(key, e.target.value)} className="h-8 w-10 cursor-pointer rounded border border-input bg-transparent p-0.5" />
@@ -1142,8 +1142,8 @@ export default function DashboardPage() {
                             </label>
                           ))}
                         </div>
-                        <p className="mt-3 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラーの使い方</p>
-                        <Textarea value={(cc.semanticColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "semanticColorNotes", e.target.value)} className="mt-1 min-h-20 text-xs mb-2" />
+                        <p className="mb-1 text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">セマンティックカラーの使い方</p>
+                        <Textarea value={(cc.semanticColorNotes as string) ?? ""} onChange={(e) => updateField("colorPalette", "semanticColorNotes", e.target.value)} className="min-h-20 text-xs mb-2" />
                         <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
                       </div>
                     </div>
@@ -1216,7 +1216,7 @@ export default function DashboardPage() {
                               </div>
                               {isCustom ? <TextStyleTable value={(tc[customStylesField as keyof typeof tc] as string) ?? ""} onChange={(v) => updateField("typography", customStylesField, v)} /> : null}
                               <div className={isCustom ? "opacity-40 pointer-events-none" : ""}>
-                                <div className="space-y-8">
+                                <div className="space-y-8 mb-4">
                                   {TEXT_STYLE_WEIGHTS.map((weight) => {
                                     const selectedStylesField = `${category.toLowerCase()}SelectedStyles`;
                                     const selectedStylesStr = tc[selectedStylesField as keyof typeof tc] as string;
@@ -1294,7 +1294,7 @@ export default function DashboardPage() {
                                     );
                                   })}
                                 </div>
-                                <div className="space-y-2 mt-4">
+                                <div className="space-y-2">
                                   <p className="text-xs leading-[120%] tracking-[0.04em] font-bold text-foreground">{categoryLabel}の使い方</p>
                                   <Textarea value={(tc[notesField as keyof typeof tc] as string) ?? ""} onChange={(e) => updateField("typography", notesField, e.target.value)} className="min-h-16 text-xs mb-1" placeholder={`${categoryLabel}テキストスタイルの使用例や説明を入力してください`} />
                                   <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
@@ -1901,7 +1901,7 @@ export default function DashboardPage() {
 
           {/* Preview & Save Section */}
           <div className="space-y-5">
-            <div className="lg:sticky lg:top-20 space-y-5">
+            <div className="space-y-5">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="filename">ファイル名</Label>

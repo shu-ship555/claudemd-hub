@@ -16,7 +16,7 @@ interface WizardSidebarProps {
 export function WizardSidebar({ steps, activeSection, onNavigate }: WizardSidebarProps) {
   return (
     <aside className="hidden lg:block">
-      <nav className="sticky space-y-0.5" style={{ top: 'calc(3.5rem + 1.5rem)' }}>
+      <nav className="space-y-0.5">
         {steps.map((step, i) => {
           const StepIcon = step.icon
           return (

@@ -43,8 +43,8 @@ export default function ConfigList({ configs }: { configs: ConfigFile[] }) {
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
-                <CardTitle className="text-base">{config.name}</CardTitle>
-                <CardDescription className="mt-1">更新: {new Date(config.updated_at).toLocaleString("ja-JP")}</CardDescription>
+                <CardTitle className="text-base mb-1">{config.name}</CardTitle>
+                <CardDescription>更新: {new Date(config.updated_at).toLocaleString("ja-JP")}</CardDescription>
               </div>
               <div className="flex gap-2">
                 <AlertDialog>
