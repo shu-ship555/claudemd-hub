@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/hooks/use-auth";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
 import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type TechRow3 } from "@/lib/generate-agent";
@@ -20,18 +21,317 @@ type TechField3 = "frontendStack" | "backendStack" | "infraStack" | "devTools" |
 
 type ColPlaceholder = { role?: string; tech?: string; note?: string };
 
+type PresetItem = { label: string; row: TechRow3 };
+type PresetGroup = { group: string; items: PresetItem[] };
+const TECH_PRESETS: Record<"frontendStack" | "backendStack" | "infraStack" | "devTools", PresetGroup[]> = {
+  frontendStack: [
+    {
+      group: "フレームワーク",
+      items: [
+        { label: "Next.js", row: { role: "フレームワーク", tech: "Next.js", note: "" } },
+        { label: "React", row: { role: "フレームワーク", tech: "React", note: "" } },
+        { label: "Vue.js", row: { role: "フレームワーク", tech: "Vue.js", note: "" } },
+        { label: "Nuxt", row: { role: "フレームワーク", tech: "Nuxt.js", note: "" } },
+        { label: "SvelteKit", row: { role: "フレームワーク", tech: "SvelteKit", note: "" } },
+        { label: "Astro", row: { role: "フレームワーク", tech: "Astro", note: "" } },
+      ],
+    },
+    {
+      group: "言語",
+      items: [
+        { label: "TypeScript", row: { role: "言語", tech: "TypeScript", note: "" } },
+        { label: "JavaScript", row: { role: "言語", tech: "JavaScript", note: "" } },
+      ],
+    },
+    {
+      group: "スタイリング",
+      items: [
+        { label: "Tailwind CSS", row: { role: "スタイリング", tech: "Tailwind CSS", note: "" } },
+        { label: "CSS Modules", row: { role: "スタイリング", tech: "CSS Modules", note: "" } },
+        { label: "styled-components", row: { role: "スタイリング", tech: "styled-components", note: "" } },
+      ],
+    },
+    {
+      group: "状態管理",
+      items: [
+        { label: "Zustand", row: { role: "状態管理", tech: "Zustand", note: "" } },
+        { label: "Jotai", row: { role: "状態管理", tech: "Jotai", note: "" } },
+        { label: "Redux Toolkit", row: { role: "状態管理", tech: "Redux Toolkit", note: "" } },
+      ],
+    },
+    {
+      group: "データフェッチ",
+      items: [
+        { label: "TanStack Query", row: { role: "データフェッチ", tech: "TanStack Query", note: "" } },
+        { label: "SWR", row: { role: "データフェッチ", tech: "SWR", note: "" } },
+      ],
+    },
+    {
+      group: "ビルドツール",
+      items: [
+        { label: "Vite", row: { role: "ビルドツール", tech: "Vite", note: "" } },
+        { label: "Turbopack", row: { role: "ビルドツール", tech: "Turbopack", note: "" } },
+      ],
+    },
+    {
+      group: "AWS",
+      items: [
+        { label: "Amplify", row: { role: "ホスティング", tech: "AWS Amplify", note: "" } },
+        { label: "CloudFront", row: { role: "CDN", tech: "Amazon CloudFront", note: "" } },
+        { label: "S3", row: { role: "静的ファイル配信", tech: "Amazon S3", note: "" } },
+      ],
+    },
+    {
+      group: "GCP",
+      items: [
+        { label: "Firebase Hosting", row: { role: "ホスティング", tech: "Firebase Hosting", note: "" } },
+        { label: "Cloud CDN", row: { role: "CDN", tech: "Cloud CDN", note: "" } },
+        { label: "Cloud Storage", row: { role: "静的ファイル配信", tech: "Cloud Storage", note: "" } },
+      ],
+    },
+  ],
+  backendStack: [
+    {
+      group: "ランタイム",
+      items: [
+        { label: "Node.js", row: { role: "ランタイム", tech: "Node.js", note: "" } },
+        { label: "Bun", row: { role: "ランタイム", tech: "Bun", note: "" } },
+        { label: "Deno", row: { role: "ランタイム", tech: "Deno", note: "" } },
+      ],
+    },
+    {
+      group: "フレームワーク",
+      items: [
+        { label: "NestJS", row: { role: "フレームワーク", tech: "NestJS", note: "" } },
+        { label: "Express", row: { role: "フレームワーク", tech: "Express", note: "" } },
+        { label: "Hono", row: { role: "フレームワーク", tech: "Hono", note: "" } },
+        { label: "FastAPI", row: { role: "フレームワーク", tech: "FastAPI", note: "" } },
+        { label: "Django", row: { role: "フレームワーク", tech: "Django", note: "" } },
+        { label: "Rails", row: { role: "フレームワーク", tech: "Ruby on Rails", note: "" } },
+      ],
+    },
+    {
+      group: "言語",
+      items: [
+        { label: "TypeScript", row: { role: "言語", tech: "TypeScript", note: "" } },
+        { label: "Python", row: { role: "言語", tech: "Python", note: "" } },
+        { label: "Go", row: { role: "言語", tech: "Go", note: "" } },
+        { label: "Rust", row: { role: "言語", tech: "Rust", note: "" } },
+        { label: "Java", row: { role: "言語", tech: "Java", note: "" } },
+      ],
+    },
+    {
+      group: "API",
+      items: [
+        { label: "REST", row: { role: "API", tech: "REST", note: "" } },
+        { label: "GraphQL", row: { role: "API", tech: "GraphQL", note: "" } },
+        { label: "tRPC", row: { role: "API", tech: "tRPC", note: "" } },
+        { label: "gRPC", row: { role: "API", tech: "gRPC", note: "" } },
+      ],
+    },
+    {
+      group: "ORM",
+      items: [
+        { label: "Prisma", row: { role: "ORM", tech: "Prisma", note: "" } },
+        { label: "Drizzle", row: { role: "ORM", tech: "Drizzle ORM", note: "" } },
+        { label: "TypeORM", row: { role: "ORM", tech: "TypeORM", note: "" } },
+        { label: "SQLAlchemy", row: { role: "ORM", tech: "SQLAlchemy", note: "" } },
+      ],
+    },
+    {
+      group: "AWS",
+      items: [
+        { label: "EC2", row: { role: "コンピューティング", tech: "Amazon EC2", note: "" } },
+        { label: "ECS / Fargate", row: { role: "コンテナ実行", tech: "Amazon ECS / Fargate", note: "" } },
+        { label: "Lambda", row: { role: "サーバーレス", tech: "AWS Lambda", note: "" } },
+        { label: "EKS", row: { role: "Kubernetes", tech: "Amazon EKS", note: "" } },
+        { label: "API Gateway", row: { role: "APIゲートウェイ", tech: "Amazon API Gateway", note: "" } },
+        { label: "Cognito", row: { role: "認証", tech: "Amazon Cognito", note: "" } },
+        { label: "SQS", row: { role: "メッセージキュー", tech: "Amazon SQS", note: "" } },
+        { label: "SES", row: { role: "メール送信", tech: "Amazon SES", note: "" } },
+      ],
+    },
+    {
+      group: "GCP",
+      items: [
+        { label: "Cloud Run", row: { role: "コンテナ / サーバーレス", tech: "Cloud Run", note: "" } },
+        { label: "Cloud Functions", row: { role: "サーバーレス", tech: "Cloud Functions", note: "" } },
+        { label: "App Engine", row: { role: "PaaS", tech: "App Engine", note: "" } },
+        { label: "GKE", row: { role: "Kubernetes", tech: "Google Kubernetes Engine", note: "" } },
+        { label: "Pub/Sub", row: { role: "メッセージキュー", tech: "Cloud Pub/Sub", note: "" } },
+      ],
+    },
+  ],
+  infraStack: [
+    {
+      group: "データベース",
+      items: [
+        { label: "PostgreSQL", row: { role: "データベース", tech: "PostgreSQL", note: "" } },
+        { label: "MySQL", row: { role: "データベース", tech: "MySQL", note: "" } },
+        { label: "MongoDB", row: { role: "データベース", tech: "MongoDB", note: "" } },
+        { label: "SQLite", row: { role: "データベース", tech: "SQLite", note: "" } },
+        { label: "Supabase", row: { role: "データベース / BaaS", tech: "Supabase", note: "" } },
+        { label: "Firebase", row: { role: "データベース / BaaS", tech: "Firebase", note: "" } },
+      ],
+    },
+    {
+      group: "キャッシュ",
+      items: [
+        { label: "Redis", row: { role: "キャッシュ", tech: "Redis", note: "" } },
+        { label: "Memcached", row: { role: "キャッシュ", tech: "Memcached", note: "" } },
+      ],
+    },
+    {
+      group: "ホスティング",
+      items: [
+        { label: "Vercel", row: { role: "ホスティング", tech: "Vercel", note: "" } },
+        { label: "Azure", row: { role: "ホスティング", tech: "Azure", note: "" } },
+        { label: "Fly.io", row: { role: "ホスティング", tech: "Fly.io", note: "" } },
+        { label: "Railway", row: { role: "ホスティング", tech: "Railway", note: "" } },
+      ],
+    },
+    {
+      group: "AWS",
+      items: [
+        { label: "S3", row: { role: "ストレージ", tech: "Amazon S3", note: "" } },
+        { label: "RDS", row: { role: "データベース", tech: "Amazon RDS", note: "" } },
+        { label: "Aurora", row: { role: "データベース", tech: "Amazon Aurora", note: "" } },
+        { label: "DynamoDB", row: { role: "NoSQLデータベース", tech: "Amazon DynamoDB", note: "" } },
+        { label: "ElastiCache", row: { role: "キャッシュ", tech: "Amazon ElastiCache", note: "" } },
+        { label: "ECR", row: { role: "コンテナレジストリ", tech: "Amazon ECR", note: "" } },
+      ],
+    },
+    {
+      group: "GCP",
+      items: [
+        { label: "Cloud Storage", row: { role: "ストレージ", tech: "Cloud Storage", note: "" } },
+        { label: "Cloud SQL", row: { role: "データベース", tech: "Cloud SQL", note: "" } },
+        { label: "BigQuery", row: { role: "データ分析", tech: "BigQuery", note: "" } },
+        { label: "Firestore", row: { role: "NoSQLデータベース", tech: "Cloud Firestore", note: "" } },
+        { label: "Memorystore", row: { role: "キャッシュ", tech: "Cloud Memorystore", note: "" } },
+        { label: "Artifact Registry", row: { role: "コンテナレジストリ", tech: "Artifact Registry", note: "" } },
+      ],
+    },
+    {
+      group: "コンテナ",
+      items: [
+        { label: "Docker", row: { role: "コンテナ", tech: "Docker", note: "" } },
+        { label: "Kubernetes", row: { role: "コンテナオーケストレーション", tech: "Kubernetes", note: "" } },
+      ],
+    },
+    {
+      group: "CDN / エッジ",
+      items: [
+        { label: "Cloudflare", row: { role: "CDN / エッジ", tech: "Cloudflare", note: "" } },
+        { label: "Fastly", row: { role: "CDN", tech: "Fastly", note: "" } },
+      ],
+    },
+  ],
+  devTools: [
+    {
+      group: "Lint / フォーマット",
+      items: [
+        { label: "ESLint", row: { role: "Linter", tech: "ESLint", note: "" } },
+        { label: "Prettier", row: { role: "フォーマッター", tech: "Prettier", note: "" } },
+        { label: "Biome", row: { role: "Linter / フォーマッター", tech: "Biome", note: "" } },
+      ],
+    },
+    {
+      group: "テスト",
+      items: [
+        { label: "Vitest", row: { role: "テスト", tech: "Vitest", note: "" } },
+        { label: "Jest", row: { role: "テスト", tech: "Jest", note: "" } },
+        { label: "Playwright", row: { role: "E2Eテスト", tech: "Playwright", note: "" } },
+        { label: "Cypress", row: { role: "E2Eテスト", tech: "Cypress", note: "" } },
+      ],
+    },
+    {
+      group: "パッケージ管理",
+      items: [
+        { label: "pnpm", row: { role: "パッケージマネージャー", tech: "pnpm", note: "" } },
+        { label: "npm", row: { role: "パッケージマネージャー", tech: "npm", note: "" } },
+        { label: "Bun", row: { role: "パッケージマネージャー", tech: "Bun", note: "" } },
+      ],
+    },
+    {
+      group: "CI/CD",
+      items: [
+        { label: "GitHub Actions", row: { role: "CI/CD", tech: "GitHub Actions", note: "" } },
+        { label: "CircleCI", row: { role: "CI/CD", tech: "CircleCI", note: "" } },
+        { label: "CodePipeline", row: { role: "CI/CD", tech: "AWS CodePipeline", note: "" } },
+        { label: "Cloud Build", row: { role: "CI/CD", tech: "Cloud Build", note: "" } },
+      ],
+    },
+    {
+      group: "モノレポ",
+      items: [
+        { label: "Turborepo", row: { role: "モノレポ", tech: "Turborepo", note: "" } },
+        { label: "Nx", row: { role: "モノレポ", tech: "Nx", note: "" } },
+      ],
+    },
+    {
+      group: "その他",
+      items: [
+        { label: "Storybook", row: { role: "UIカタログ", tech: "Storybook", note: "" } },
+        { label: "Docker", row: { role: "コンテナ", tech: "Docker", note: "" } },
+      ],
+    },
+  ],
+};
+
+const NAMING_PRESETS = ["camelCase", "PascalCase", "UPPER_SNAKE_CASE", "kebab-case", "snake_case", "flatcase"];
+
+const BRANCH_NAMING_TEMPLATE: TechRow3[] = [
+  { role: "feature", tech: "/[issue番号]-[簡潔な説明]", note: "feature/42-add-user-auth" },
+  { role: "fix", tech: "/[issue番号]-[簡潔な説明]", note: "fix/88-null-pointer-login" },
+  { role: "hotfix", tech: "/[説明]", note: "hotfix/critical-security-patch" },
+  { role: "chore", tech: "/[説明]", note: "chore/update-dependencies" },
+  { role: "docs", tech: "/[説明]", note: "docs/update-readme" },
+  { role: "release", tech: "/[バージョン]", note: "release/1.2.0" },
+];
+
+const COMMIT_TYPES_TEMPLATE: TechRow3[] = [
+  { role: "feat", tech: "新機能の追加", note: "" },
+  { role: "fix", tech: "バグ修正", note: "" },
+  { role: "docs", tech: "ドキュメントのみの変更", note: "" },
+  { role: "style", tech: "コード整形・フォーマット", note: "" },
+  { role: "refactor", tech: "リファクタリング", note: "" },
+  { role: "test", tech: "テストの追加・修正", note: "" },
+  { role: "chore", tech: "ビルド・設定変更", note: "" },
+  { role: "perf", tech: "パフォーマンス改善", note: "" },
+  { role: "ci", tech: "CI設定の変更", note: "" },
+];
+
+const ENV_PRESETS = ["ブラウザ", "Node.js 20+", "Node.js 22+", "Docker / Linux", "Cloudflare Workers", "Vercel", "iOS", "Android"];
+
+const REPO_STRUCTURE_TEMPLATE = [
+  { name: "src/", comment: "ソースコード", depth: 0 },
+  { name: "components/", comment: "UIコンポーネント", depth: 1 },
+  { name: "features/", comment: "機能別モジュール", depth: 1 },
+  { name: "lib/", comment: "ユーティリティ・ロジック", depth: 1 },
+  { name: "hooks/", comment: "カスタムフック", depth: 2 },
+  { name: "utils/", comment: "ユーティリティ関数", depth: 2 },
+  { name: "types/", comment: "型定義", depth: 1 },
+  { name: "config/", comment: "設定ファイル", depth: 1 },
+  { name: "tests/", comment: "テスト", depth: 0 },
+  { name: "public/", comment: "静的ファイル", depth: 0 },
+];
+
 interface TechTableProps {
   rows: Array<{ role: string; tech: string; note?: string }>;
   showNote?: boolean;
+  compact?: boolean;
   colLabels?: ColPlaceholder;
   rowPlaceholders?: ColPlaceholder[];
   onUpdate: (idx: number, key: string, value: string) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
   onReorder: (from: number, to: number) => void;
+  onFocusRow?: (idx: number) => void;
+  onBlurRow?: () => void;
 }
 
-function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onUpdate, onAdd, onRemove, onReorder }: TechTableProps) {
+function TechTable({ rows, showNote = true, compact = false, colLabels = {}, rowPlaceholders, onUpdate, onAdd, onRemove, onReorder, onFocusRow, onBlurRow }: TechTableProps) {
   const { role: roleLabel = "役割", tech: techLabel = "採用技術", note: noteLabel = "備考" } = colLabels;
   const { draggingIndex, dragOverIndex, onDragStart, onDragOver, onDrop, onDragEnd } = useDragAndDrop(onReorder);
 
@@ -39,8 +339,8 @@ function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onU
 
   return (
     <div className="rounded-md border border-input overflow-hidden text-sm">
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-140">
+      <div className={compact ? "" : "overflow-x-auto"}>
+        <table className={`w-full ${compact ? "" : "min-w-140"}`}>
           <thead>
             <tr className="bg-muted border-b border-input">
               <th className="w-6" />
@@ -56,14 +356,14 @@ function TechTable({ rows, showNote = true, colLabels = {}, rowPlaceholders, onU
                 <td className="pl-2">
                   <GripVertical className="size-3 text-muted-foreground/30 cursor-grab hover:text-muted-foreground/60 transition-colors" />
                 </td>
-                <td className="px-2 py-1 w-40">
-                  <Input value={row.role} onChange={(e) => onUpdate(i, "role", e.target.value)} placeholder={rowPlaceholders?.[i]?.role ?? ""} className={cellCls} />
+                <td onFocus={() => onFocusRow?.(i)} onBlur={() => onBlurRow?.()} className="px-2 py-1 w-40">
+                  <Input value={row.role} onChange={(e) => onUpdate(i, "role", e.target.value)} placeholder={rowPlaceholders?.[i]?.role ?? "役割"} className={cellCls} />
                 </td>
-                <td className="px-2 py-1 w-50">
+                <td onFocus={() => onFocusRow?.(i)} onBlur={() => onBlurRow?.()} className="px-2 py-1 w-50">
                   <Input value={row.tech} onChange={(e) => onUpdate(i, "tech", e.target.value)} placeholder={rowPlaceholders?.[i]?.tech ?? "技術名"} className={cellCls} />
                 </td>
                 {showNote && (
-                  <td className="px-2 py-1">
+                  <td onFocus={() => onFocusRow?.(i)} onBlur={() => onBlurRow?.()} className="px-2 py-1">
                     <Input value={row.note ?? ""} onChange={(e) => onUpdate(i, "note", e.target.value)} placeholder={rowPlaceholders?.[i]?.note ?? "備考"} className={cellCls} />
                   </td>
                 )}
@@ -258,6 +558,13 @@ function DirTreeBuilder({ value, onChange }: { value: string; onChange: (v: stri
 
   return (
     <div className="rounded-md border border-input overflow-hidden text-sm">
+      <div className="flex items-center bg-muted border-b border-input px-1 py-2">
+        <span className="w-6 shrink-0" />
+        <span className="flex-1 min-w-0 text-2xs font-medium text-muted-foreground px-1">パス / ファイル名</span>
+        <span className="text-muted-foreground/0 text-xs font-mono px-1 shrink-0 select-none">#</span>
+        <span className="w-36 text-2xs font-medium text-muted-foreground px-1">説明</span>
+        <span className="w-6 shrink-0" />
+      </div>
       {nodes.map((node, i) => (
         <div key={i} draggable onDragStart={() => onDragStart(i)} onDragOver={(e) => onDragOver(e, i)} onDrop={(e) => onDrop(e, i)} onDragEnd={onDragEnd} className={`flex items-center border-b border-input last:border-0 group pr-1 transition-colors ${dragOverIndex === i && draggingIndex !== i ? "border-t-2 border-t-primary bg-primary-surface" : ""}`} style={{ paddingLeft: `${node.depth * 16 + 4}px` }}>
           <GripVertical className="size-3 text-muted-foreground/30 cursor-grab shrink-0 mr-0.5 group-hover:text-muted-foreground/60" />
@@ -425,6 +732,7 @@ export default function AgentPage() {
   const [agentMode, setAgentMode] = useState("");
   const formScrollRef = useRef<HTMLDivElement>(null);
   const previewScrollRef = useRef<HTMLTextAreaElement>(null);
+  const focusedTechRow = useRef<Partial<Record<string, number | null>>>({});
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("AGENT.md");
 
@@ -444,6 +752,16 @@ export default function AgentPage() {
   };
   const addRow3 = (field: TechField3) => {
     setConfig((prev) => ({ ...prev, [field]: [...(prev[field] as TechRow3[]), { role: "", tech: "", note: "" }] }));
+  };
+  const replaceRow3 = (field: TechField3, idx: number, row: TechRow3) => {
+    setConfig((prev) => {
+      const rows = [...(prev[field] as TechRow3[])];
+      rows[idx] = { ...row };
+      return { ...prev, [field]: rows };
+    });
+  };
+  const addPresetRow3 = (field: TechField3, row: TechRow3) => {
+    setConfig((prev) => ({ ...prev, [field]: [...(prev[field] as TechRow3[]), { ...row }] }));
   };
   const removeRow3 = (field: TechField3, idx: number) => {
     setConfig((prev) => ({ ...prev, [field]: (prev[field] as TechRow3[]).filter((_, i) => i !== idx) }));
@@ -526,11 +844,14 @@ export default function AgentPage() {
                       <Textarea placeholder="ユーザーが Claude の設定ファイルを生成・管理できる Web アプリ" value={config.description} onChange={(e) => update("description", e.target.value)} className="min-h-20" />
                     </div>
                     <div className="space-y-2">
-                      <FieldLabel>主要言語・フレームワーク</FieldLabel>
-                      <Input placeholder="TypeScript / Next.js 16 / PostgreSQL" value={config.languages} onChange={(e) => update("languages", e.target.value)} />
-                    </div>
-                    <div className="space-y-2">
                       <FieldLabel>ターゲット環境</FieldLabel>
+                      <div className="flex flex-wrap gap-1.5">
+                        {ENV_PRESETS.map((p) => (
+                          <Badge key={p} variant="outline" className="cursor-pointer hover:bg-primary-surface hover:text-primary hover:border-primary transition-colors px-3 py-1" onClick={() => update("targetEnv", config.targetEnv.trim() ? `${config.targetEnv.trim()}, ${p}` : p)}>
+                            {p}
+                          </Badge>
+                        ))}
+                      </div>
                       <Input placeholder="Node.js 20+, ブラウザ" value={config.targetEnv} onChange={(e) => update("targetEnv", e.target.value)} />
                     </div>
                     <div className="space-y-2">
@@ -559,22 +880,58 @@ export default function AgentPage() {
                 {/* 2. 技術スタック */}
                 <SectionCard id="techStack" label="技術スタック" description="採用技術と使用しない技術を明示する" icon={Layers}>
                   <div className="space-y-6">
-                    <div className="space-y-2">
-                      <FieldLabel>フロントエンド</FieldLabel>
-                      <TechTable rows={config.frontendStack} onUpdate={(i, k, v) => updateRow3("frontendStack", i, k, v)} onAdd={() => addRow3("frontendStack")} onRemove={(i) => removeRow3("frontendStack", i)} onReorder={(f, t) => reorderRow3("frontendStack", f, t)} />
-                    </div>
-                    <div className="space-y-2">
-                      <FieldLabel>バックエンド</FieldLabel>
-                      <TechTable rows={config.backendStack} onUpdate={(i, k, v) => updateRow3("backendStack", i, k, v)} onAdd={() => addRow3("backendStack")} onRemove={(i) => removeRow3("backendStack", i)} onReorder={(f, t) => reorderRow3("backendStack", f, t)} />
-                    </div>
-                    <div className="space-y-2">
-                      <FieldLabel>インフラ・データ</FieldLabel>
-                      <TechTable rows={config.infraStack} onUpdate={(i, k, v) => updateRow3("infraStack", i, k, v)} onAdd={() => addRow3("infraStack")} onRemove={(i) => removeRow3("infraStack", i)} onReorder={(f, t) => reorderRow3("infraStack", f, t)} />
-                    </div>
-                    <div className="space-y-2">
-                      <FieldLabel>開発ツール</FieldLabel>
-                      <TechTable rows={config.devTools} onUpdate={(i, k, v) => updateRow3("devTools", i, k, v)} onAdd={() => addRow3("devTools")} onRemove={(i) => removeRow3("devTools", i)} onReorder={(f, t) => reorderRow3("devTools", f, t)} />
-                    </div>
+                    {(["frontendStack", "backendStack", "infraStack", "devTools"] as const).map((field) => (
+                      <div key={field} className="space-y-2">
+                        <FieldLabel>{{ frontendStack: "フロントエンド", backendStack: "バックエンド", infraStack: "インフラ・データ", devTools: "開発ツール" }[field]}</FieldLabel>
+                        <div className="rounded-md border border-input overflow-hidden">
+                          {TECH_PRESETS[field].map((group, gi) => (
+                            <div key={group.group} className={`px-3 py-2 flex items-start gap-3 ${gi > 0 ? "border-t border-input" : ""}`}>
+                              <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground w-24 shrink-0 pt-0.5">{group.group}</p>
+                              <div className="flex flex-wrap gap-1.5">
+                                {group.items.map((preset) => (
+                                  <Badge
+                                    key={preset.label}
+                                    variant="outline"
+                                    className="cursor-pointer hover:bg-primary-surface hover:text-primary hover:border-primary transition-colors px-3 py-1"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      const idx = focusedTechRow.current[field];
+                                      if (idx !== null && idx !== undefined) {
+                                        replaceRow3(field, idx, preset.row);
+                                      } else {
+                                        addPresetRow3(field, preset.row);
+                                      }
+                                    }}
+                                  >
+                                    {preset.label}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <TechTable
+                          rows={config[field]}
+                          onUpdate={(i, k, v) => updateRow3(field, i, k, v)}
+                          onAdd={() => addRow3(field)}
+                          onRemove={(i) => removeRow3(field, i)}
+                          onReorder={(f, t) => reorderRow3(field, f, t)}
+                          onFocusRow={(i) => {
+                            focusedTechRow.current[field] = i;
+                          }}
+                          onBlurRow={() => {
+                            focusedTechRow.current[field] = null;
+                          }}
+                          rowPlaceholders={[
+                            {
+                              role: ({ frontendStack: "フレームワーク", backendStack: "ランタイム / FW", infraStack: "インフラ / DB", devTools: "ツール種別" } as const)[field],
+                              tech: ({ frontendStack: "Next.js", backendStack: "Node.js", infraStack: "Supabase", devTools: "ESLint" } as const)[field],
+                              note: "備考",
+                            },
+                          ]}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </SectionCard>
 
@@ -582,7 +939,10 @@ export default function AgentPage() {
                 <SectionCard id="repoStructure" label="リポジトリ構成" description="エージェントが迷わないよう、重要なファイル・ディレクトリを明示する" icon={FolderOpen}>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <FieldLabel>ディレクトリ構造</FieldLabel>
+                      <div className="flex items-center justify-between">
+                        <FieldLabel>ディレクトリ構造</FieldLabel>
+                        <button type="button" className="text-2xs text-primary hover:underline" onClick={() => update("repoStructure", nodesToTree(REPO_STRUCTURE_TEMPLATE))}>テンプレートを挿入</button>
+                      </div>
                       <DirTreeBuilder value={config.repoStructure} onChange={(v) => update("repoStructure", v)} />
                     </div>
                     <div className="space-y-2">
@@ -657,6 +1017,26 @@ export default function AgentPage() {
                     </div>
                     <div className="space-y-2">
                       <FieldLabel>命名規則</FieldLabel>
+                      <div className="flex flex-wrap gap-1.5">
+                        {NAMING_PRESETS.map((preset) => (
+                          <Badge
+                            key={preset}
+                            variant="outline"
+                            className="cursor-pointer hover:bg-primary-surface hover:text-primary hover:border-primary transition-colors px-3 py-1 font-mono"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                              const idx = focusedTechRow.current["namingRules"];
+                              if (idx !== null && idx !== undefined) {
+                                updateRow3("namingRules", idx, "tech", preset);
+                              } else {
+                                addPresetRow3("namingRules", { role: "", tech: preset, note: "" });
+                              }
+                            }}
+                          >
+                            {preset}
+                          </Badge>
+                        ))}
+                      </div>
                       <TechTable
                         rows={config.namingRules}
                         colLabels={{ role: "対象", tech: "規則", note: "例" }}
@@ -670,6 +1050,12 @@ export default function AgentPage() {
                         onAdd={() => addRow3("namingRules")}
                         onRemove={(i) => removeRow3("namingRules", i)}
                         onReorder={(f, t) => reorderRow3("namingRules", f, t)}
+                        onFocusRow={(i) => {
+                          focusedTechRow.current["namingRules"] = i;
+                        }}
+                        onBlurRow={() => {
+                          focusedTechRow.current["namingRules"] = null;
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -718,7 +1104,12 @@ export default function AgentPage() {
                 <SectionCard id="git" label="Git 規約" description="ブランチ命名・コミットメッセージ・PR のルール" icon={GitBranch}>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <FieldLabel>ブランチ命名</FieldLabel>
+                      <div className="flex items-center justify-between">
+                        <FieldLabel>ブランチ命名</FieldLabel>
+                        <button type="button" className="text-2xs text-primary hover:underline" onClick={() => update("branchNaming", BRANCH_NAMING_TEMPLATE)}>
+                          テンプレートを挿入
+                        </button>
+                      </div>
                       <TechTable
                         rows={config.branchNaming}
                         colLabels={{ role: "プレフィックス", tech: "パターン", note: "例" }}
@@ -734,18 +1125,25 @@ export default function AgentPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <FieldLabel>コミットタイプ</FieldLabel>
+                      <div className="flex items-center justify-between">
+                        <FieldLabel>コミットタイプ</FieldLabel>
+                        <button type="button" className="text-2xs text-primary hover:underline" onClick={() => update("commitTypes", COMMIT_TYPES_TEMPLATE)}>
+                          テンプレートを挿入
+                        </button>
+                      </div>
                       <TechTable
                         rows={config.commitTypes}
-                        colLabels={{ role: "type", tech: "説明", note: "例" }}
+                        showNote={false}
+                        compact
+                        colLabels={{ role: "type", tech: "説明" }}
                         rowPlaceholders={[
-                          { role: "feat", tech: "新機能追加", note: "feat(auth): add OAuth login" },
-                          { role: "fix", tech: "バグ修正", note: "fix(api): handle null response" },
-                          { role: "docs", tech: "ドキュメント変更", note: "docs: update README" },
-                          { role: "refactor", tech: "リファクタリング", note: "refactor(user): extract service" },
-                          { role: "test", tech: "テスト追加・修正", note: "test(auth): add login spec" },
-                          { role: "chore", tech: "ビルド・設定変更", note: "chore: update dependencies" },
-                          { role: "style", tech: "コード整形・フォーマット", note: "style: fix indentation" },
+                          { role: "feat", tech: "新機能追加" },
+                          { role: "fix", tech: "バグ修正" },
+                          { role: "docs", tech: "ドキュメント変更" },
+                          { role: "refactor", tech: "リファクタリング" },
+                          { role: "test", tech: "テスト追加・修正" },
+                          { role: "chore", tech: "ビルド・設定変更" },
+                          { role: "style", tech: "コード整形・フォーマット" },
                         ]}
                         onUpdate={(i, k, v) => updateRow3("commitTypes", i, k, v)}
                         onAdd={() => addRow3("commitTypes")}

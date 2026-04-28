@@ -48,31 +48,10 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   description: '',
   languages: '',
   targetEnv: '',
-  frontendStack: [
-    { role: 'フレームワーク', tech: '', note: '' },
-    { role: 'スタイリング', tech: '', note: '' },
-    { role: '状態管理', tech: '', note: '' },
-    { role: 'データフェッチ', tech: '', note: '' },
-    { role: 'フォーム', tech: '', note: '' },
-  ],
-  backendStack: [
-    { role: 'ランタイム', tech: '', note: '' },
-    { role: 'フレームワーク', tech: '', note: '' },
-    { role: 'ORM', tech: '', note: '' },
-    { role: '認証', tech: '', note: '' },
-  ],
-  infraStack: [
-    { role: 'データベース', tech: '', note: '' },
-    { role: 'キャッシュ', tech: '', note: '' },
-    { role: 'ホスティング', tech: '', note: '' },
-    { role: 'CI/CD', tech: '', note: '' },
-  ],
-  devTools: [
-    { role: 'パッケージマネージャー', tech: '', note: '' },
-    { role: 'Linter', tech: '', note: '' },
-    { role: 'フォーマッター', tech: '', note: '' },
-    { role: 'テスト', tech: '', note: '' },
-  ],
+  frontendStack: [{ role: '', tech: '', note: '' }],
+  backendStack: [{ role: '', tech: '', note: '' }],
+  infraStack: [{ role: '', tech: '', note: '' }],
+  devTools: [{ role: '', tech: '', note: '' }],
   repoStructure: '',
   importantFiles: '',
   cmdInstall: '',
@@ -172,7 +151,6 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   const overviewLines: string[] = []
   if (hasValue(config.projectName)) overviewLines.push(`**プロジェクト名:** ${config.projectName.trim()}`)
   if (hasValue(config.description)) overviewLines.push(`**目的・概要:** ${config.description.trim()}`)
-  if (hasValue(config.languages)) overviewLines.push(`**主要言語・フレームワーク:** ${config.languages.trim()}`)
   if (hasValue(config.targetEnv)) overviewLines.push(`**ターゲット環境:** ${config.targetEnv.trim()}`)
   if (hasValue(config.maintainer)) overviewLines.push(`**メンテナー:** ${config.maintainer.trim()}`)
   if (hasValue(config.contact)) overviewLines.push(`**連絡先:** ${config.contact.trim()}`)
@@ -341,7 +319,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
       gitContent.push('')
     }
     if (validCommitTypes.length > 0) {
-      const table = renderTable(['type', '説明', '例'], validCommitTypes.map((r) => [r.role, r.tech, r.note]))
+      const table = renderTable(['type', '説明'], validCommitTypes.map((r) => [r.role, r.tech]))
       if (table) gitContent.push(table)
     }
     gitContent.push('')
@@ -390,7 +368,7 @@ export function generateAgentMarkdown(config: AgentConfig): string {
   const envContent: string[] = []
   const validEnvVars = config.envVars.filter((r) => r.role.trim() || r.tech.trim())
   if (validEnvVars.length > 0) {
-    const table = renderTable(['変数名', '説明', '必須'], validEnvVars.map((r) => [`\`${r.role}\``, r.tech, r.note]))
+    const table = renderTable(['変数名', '説明', '必須'], validEnvVars.map((r) => [`\`${r.role}\``, r.tech, r.note || '—']))
     if (table) {
       envContent.push('### 環境変数一覧')
       envContent.push(table)

@@ -42,7 +42,7 @@ function McpToolCard({ tool, index, onChange, onRemove }: { tool: McpTool; index
           <Trash2 className="size-3.5" />
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-3">
         <div className="space-y-1">
           <label className="text-2xs font-medium text-muted-foreground">使用タイミング</label>
           <Input placeholder="UIコンポーネントの実装・修正時" value={tool.trigger} onChange={(e) => onChange(index, "trigger", e.target.value)} className={inputCls} />
@@ -53,8 +53,9 @@ function McpToolCard({ tool, index, onChange, onRemove }: { tool: McpTool; index
         </div>
       </div>
       <div className="space-y-1">
-        <label className="text-2xs font-medium text-muted-foreground">補足・制約（改行で箇条書き）</label>
-        <Textarea placeholder="DESIGN.md のカラートークンはFigmaの値と同期済みのため、実装時はFigma MCPの値を正とする" value={tool.notes} onChange={(e) => onChange(index, "notes", e.target.value)} className="min-h-16 text-xs" />
+        <label className="text-2xs font-medium text-muted-foreground">補足・制約</label>
+        <Textarea placeholder="DESIGN.md のカラートークンはFigmaの値と同期済みのため、実装時はFigma MCPの値を正とする" value={tool.notes} onChange={(e) => onChange(index, "notes", e.target.value)} className="min-h-16 text-xs mb-1" />
+        <p className="text-2xs leading-[120%] tracking-[0.04em] text-muted-foreground">→ 改行すると箇条書きに出力されます</p>
       </div>
     </div>
   );
@@ -163,12 +164,20 @@ export default function ClaudePage() {
                     <div className="space-y-2">
                       <p className="text-xs text-muted-foreground">よく使われるMCP（クリックで追加）</p>
                       <div className="flex flex-wrap gap-2">
-                        {MCP_PRESETS.map((preset) => (
-                          <Badge key={preset.label} variant="outline" className="cursor-pointer hover:bg-primary-surface hover:text-primary hover:border-primary transition-colors px-3 py-1" onClick={() => addMcp(preset.tool)}>
-                            <Plus className="size-3" />
-                            {preset.label}
-                          </Badge>
-                        ))}
+                        {MCP_PRESETS.map((preset) => {
+                          const added = config.mcpTools.some((t) => t.name === preset.tool.name);
+                          return (
+                            <Badge
+                              key={preset.label}
+                              variant="outline"
+                              className={added ? "opacity-40 cursor-default px-3 py-1" : "cursor-pointer hover:bg-primary-surface hover:text-primary hover:border-primary transition-colors px-3 py-1"}
+                              onClick={added ? undefined : () => addMcp(preset.tool)}
+                            >
+                              <Plus className="size-3" />
+                              {preset.label}
+                            </Badge>
+                          );
+                        })}
                       </div>
                     </div>
 

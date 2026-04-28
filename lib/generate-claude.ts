@@ -54,6 +54,76 @@ export const MCP_PRESETS: { label: string; tool: McpTool }[] = [
         '本番DBへの直接DDL実行は禁止。必ずマイグレーションファイルを生成する\nRLSポリシーの変更は必ず確認を求める',
     },
   },
+  {
+    label: 'Context7',
+    tool: {
+      name: 'Context7 MCP',
+      trigger: 'ライブラリ・フレームワークのAPIを実装・確認時',
+      tools: 'resolve-library-id, get-library-docs',
+      notes:
+        '学習済みの古いAPI情報よりContext7で取得した最新ドキュメントを優先する\nバージョン指定が可能な場合は使用中のバージョンを明示する',
+    },
+  },
+  {
+    label: 'Playwright',
+    tool: {
+      name: 'Playwright MCP',
+      trigger: 'E2Eテスト作成・ブラウザ操作の自動化時',
+      tools: 'browser_navigate, browser_click, browser_screenshot, browser_snapshot',
+      notes:
+        'テスト実行は必ずローカル環境で確認する\nスクリーンショットを活用してUIの状態を検証する',
+    },
+  },
+  {
+    label: 'Linear',
+    tool: {
+      name: 'Linear MCP',
+      trigger: 'Issue確認・タスク更新・プロジェクト管理時',
+      tools: 'get_issue, create_issue, update_issue, list_issues',
+      notes:
+        '実装前に関連Issueのコメントと要件を必ず確認する\nブランチ名はIssue IDを含める',
+    },
+  },
+  {
+    label: 'Notion',
+    tool: {
+      name: 'Notion MCP',
+      trigger: 'ドキュメント参照・仕様書確認・ページ更新時',
+      tools: 'search, get_page, create_page, update_page',
+      notes:
+        '仕様変更があった場合はNotionのドキュメントも更新する\n社内ルールやAPI仕様はNotionを正とする',
+    },
+  },
+  {
+    label: 'Sentry',
+    tool: {
+      name: 'Sentry MCP',
+      trigger: 'バグ調査・エラートレース確認時',
+      tools: 'get_error_details, list_issues, get_event',
+      notes:
+        'エラー修正前にSentryのスタックトレースと発生頻度を必ず確認する\n同一エラーの過去の修正履歴も参照する',
+    },
+  },
+  {
+    label: 'Vercel',
+    tool: {
+      name: 'Vercel MCP',
+      trigger: 'デプロイ確認・環境変数管理・ログ調査時',
+      tools: 'list_deployments, get_deployment_logs, list_env_variables',
+      notes:
+        '本番環境の環境変数変更は慎重に行い、必ずプレビューデプロイで確認する\nデプロイ失敗時はビルドログを最初に確認する',
+    },
+  },
+  {
+    label: 'Brave Search',
+    tool: {
+      name: 'Brave Search MCP',
+      trigger: '最新情報・ライブラリの最新バージョン・エラー解決策の検索時',
+      tools: 'brave_web_search, brave_local_search',
+      notes:
+        '学習データのカットオフ以降の情報や公式ドキュメントがない場合に使用する\n検索結果は複数ソースで裏取りする',
+    },
+  },
 ]
 
 function hasValue(s: string): boolean {
