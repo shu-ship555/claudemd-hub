@@ -29,7 +29,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
             <Badge variant="outline">Beta</Badge>
           </h1>
           {subtitle && <p className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground">{subtitle}</p>}
-          {!subtitle && userEmail && <p className="text-xs leading-[120%] tracking-[0.04em] text-muted-foreground">{userEmail}</p>}
+          {!subtitle && userEmail && <p className="ml-1 text-xs leading-[120%] tracking-[0.04em] text-muted-foreground">{userEmail}</p>}
         </div>
         <nav className="flex items-center gap-5">
           <NavLink href="/claude">CLAUDE.md</NavLink>

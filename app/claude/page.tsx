@@ -107,12 +107,10 @@ export default function ClaudePage() {
     <>
       <MobileGuard />
 
-      <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
+      <main className="w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
           {/* Sidebar TOC — カスタム時のみ表示 */}
-          {isCustom && (
-            <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />
-          )}
+          {isCustom && <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />}
 
           {/* Form */}
           <div className="space-y-6">
@@ -211,20 +209,7 @@ export default function ClaudePage() {
           </div>
 
           {/* Preview & Save */}
-          <PreviewSavePanel
-            fileNameInputId="claude-filename"
-            defaultFileName="CLAUDE.md"
-            fileName={fileName}
-            setFileName={setFileName}
-            fileCount={fileCount}
-            maxFiles={maxFiles}
-            isSaving={isSaving}
-            isLoggedIn={isLoggedIn}
-            isAuthLoading={isAuthLoading}
-            preview={preview}
-            onSave={() => save(preview)}
-            feedback={feedback}
-          />
+          <PreviewSavePanel fileNameInputId="claude-filename" defaultFileName="CLAUDE.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} />
         </div>
       </main>
     </>

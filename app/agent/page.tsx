@@ -488,12 +488,10 @@ export default function AgentPage() {
     <>
       <MobileGuard />
 
-      <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
+      <main className="w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
           {/* Sidebar TOC — カスタム時のみ表示 */}
-          {isCustom && (
-            <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />
-          )}
+          {isCustom && <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />}
 
           {/* Form */}
           <div ref={formScrollRef} className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto px-4 -mx-4">
@@ -840,21 +838,7 @@ export default function AgentPage() {
           </div>
 
           {/* Preview & Save */}
-          <PreviewSavePanel
-            fileNameInputId="agent-filename"
-            defaultFileName="AGENT.md"
-            fileName={fileName}
-            setFileName={setFileName}
-            fileCount={fileCount}
-            maxFiles={maxFiles}
-            isSaving={isSaving}
-            isLoggedIn={isLoggedIn}
-            isAuthLoading={isAuthLoading}
-            preview={preview}
-            onSave={() => save(preview)}
-            feedback={feedback}
-            textareaRef={previewScrollRef}
-          />
+          <PreviewSavePanel fileNameInputId="agent-filename" defaultFileName="AGENT.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} textareaRef={previewScrollRef} />
         </div>
       </main>
     </>

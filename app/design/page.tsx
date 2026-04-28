@@ -659,7 +659,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      <main className="w-full max-w-7xl mx-auto px-6 pt-10 pb-12">
+      <main className="w-full max-w-7xl mx-auto px-6 pt-16 pb-20">
         <div className={isCustom ? "grid gap-6 lg:grid-cols-[160px_1fr_1fr]" : "grid gap-12 lg:grid-cols-2"}>
           {/* Wizard TOC — カスタム時のみ表示 */}
           {isCustom && (
@@ -1585,14 +1585,16 @@ export default function DashboardPage() {
                             updateField("components", "shadcnTokenMapping", serialize([...base, ...newRows]));
                           };
                           const cp = config.colorPalette ?? {};
-                          const additionalSets = ((cp.additionalKeyColorSets as unknown as Array<{ primaryColor: string; secondaryColor: string; tertiaryColor: string; bgColor: string }>) || []);
+                          const additionalSets = (cp.additionalKeyColorSets as unknown as Array<{ primaryColor: string; secondaryColor: string; tertiaryColor: string; bgColor: string }>) || [];
                           const paletteSwatches: { label: string; hex: string }[] = [];
                           for (const c of [
                             { label: "Primary 01", hex: (cp.primaryCtaColor as string) ?? "" },
                             { label: "Secondary 01", hex: (cp.secondaryCtaColor as string) ?? "" },
                             { label: "Tertiary 01", hex: (cp.tertiaryCtaColor as string) ?? "" },
                             { label: "Surface 01", hex: (cp.primarySurfaceColor as string) ?? "" },
-                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                          ]) {
+                            if (c.hex.startsWith("#")) paletteSwatches.push(c);
+                          }
                           additionalSets.forEach((set, i) => {
                             const n = String(i + 2).padStart(2, "0");
                             for (const c of [
@@ -1600,18 +1602,20 @@ export default function DashboardPage() {
                               { label: `Secondary ${n}`, hex: set.secondaryColor ?? "" },
                               { label: `Tertiary ${n}`, hex: set.tertiaryColor ?? "" },
                               { label: `Surface ${n}`, hex: set.bgColor ?? "" },
-                            ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                            ]) {
+                              if (c.hex.startsWith("#")) paletteSwatches.push(c);
+                            }
                           });
                           for (const c of [
                             { label: "Success", hex: (cp.successColor as string) ?? "" },
                             { label: "Error", hex: (cp.errorColor as string) ?? "" },
                             { label: "Warning", hex: (cp.warningColor as string) ?? "" },
-                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
-                          for (const c of [
-                            { label: "White", hex: (cp.white as string) ?? "" },
-                            ...Array.from({ length: 12 }, (_, i) => ({ label: `Gray ${String(i + 1).padStart(2, "0")}`, hex: (cp[`gray${i + 1}` as keyof typeof cp] as string) ?? "" })),
-                            { label: "Black", hex: (cp.black as string) ?? "" },
-                          ]) { if (c.hex.startsWith("#")) paletteSwatches.push(c); }
+                          ]) {
+                            if (c.hex.startsWith("#")) paletteSwatches.push(c);
+                          }
+                          for (const c of [{ label: "White", hex: (cp.white as string) ?? "" }, ...Array.from({ length: 12 }, (_, i) => ({ label: `Gray ${String(i + 1).padStart(2, "0")}`, hex: (cp[`gray${i + 1}` as keyof typeof cp] as string) ?? "" })), { label: "Black", hex: (cp.black as string) ?? "" }]) {
+                            if (c.hex.startsWith("#")) paletteSwatches.push(c);
+                          }
                           return (
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
@@ -1625,7 +1629,16 @@ export default function DashboardPage() {
                                   <p className="text-2xs text-muted-foreground">{focusedTokenRow !== null ? "フォーカス中の行に挿入:" : "値の入力欄をフォーカスしてカラーを挿入:"}</p>
                                   <div className="flex flex-wrap gap-2">
                                     {paletteSwatches.map(({ label, hex }) => (
-                                      <button key={label} type="button" title={hex} onClick={() => { if (focusedTokenRow !== null) updateRow(focusedTokenRow, "value", hex); }} disabled={focusedTokenRow === null} className="flex items-center gap-2 px-2 py-1 rounded-md border border-input hover:border-primary hover:bg-muted transition-colors text-2xs text-muted-foreground disabled:opacity-40 disabled:pointer-events-none">
+                                      <button
+                                        key={label}
+                                        type="button"
+                                        title={hex}
+                                        onClick={() => {
+                                          if (focusedTokenRow !== null) updateRow(focusedTokenRow, "value", hex);
+                                        }}
+                                        disabled={focusedTokenRow === null}
+                                        className="flex items-center gap-2 px-2 py-1 rounded-md border border-input hover:border-primary hover:bg-muted transition-colors text-2xs text-muted-foreground disabled:opacity-40 disabled:pointer-events-none"
+                                      >
                                         <span className="size-3 rounded-sm shrink-0 border border-border" style={{ backgroundColor: hex }} />
                                         {label}
                                       </button>
