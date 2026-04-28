@@ -22,7 +22,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
       <div className="max-w-7xl mx-auto px-6 h-full pt-1 pb-2 flex justify-between items-center">
         <div>
           <h1 className="flex items-center gap-3 mb-0.5">
-            <NavLink href="/" noActive className="flex items-center gap-1 font-bold text-foreground hover:text-muted-foreground text-base tracking-normal">
+            <NavLink href="/" noActive className="flex items-center gap-1 font-bold text-foreground hover:text-muted-foreground text-base tracking-normal leading-none">
               <AppIcon />
               {title}
             </NavLink>
