@@ -1,3 +1,5 @@
+import { hasValue, toLines, renderList } from './string-utils'
+
 export interface McpTool {
   name: string
   trigger: string
@@ -125,23 +127,6 @@ export const MCP_PRESETS: { label: string; tool: McpTool }[] = [
     },
   },
 ]
-
-function hasValue(s: string): boolean {
-  return s.trim().length > 0
-}
-
-function toLines(raw: string): string[] {
-  return raw
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean)
-}
-
-function renderList(raw: string): string {
-  return toLines(raw)
-    .map((l) => (l.startsWith('-') ? l : `- ${l}`))
-    .join('\n')
-}
 
 export function generateClaudeMarkdown(config: ClaudeConfig): string {
   const parts: string[] = []

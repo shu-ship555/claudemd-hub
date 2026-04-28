@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Download } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { deleteConfigFile } from "@/app/actions";
-import type { ConfigFile } from "@/app/actions";
+import type { ConfigFile } from "@/lib/types";
 
 export default function ConfigList({ configs }: { configs: ConfigFile[] }) {
   const [deletingId, setDeletingId] = useState<string | null>(null);

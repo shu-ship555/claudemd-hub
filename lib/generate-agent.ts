@@ -1,5 +1,7 @@
-export type TechRow3 = { role: string; tech: string; note: string }
-export type TechRow2 = { role: string; tech: string }
+import { hasValue, renderList } from './string-utils'
+import { TechRow3, TechRow2 } from './types'
+
+export type { TechRow3, TechRow2 }
 
 export interface AgentConfig {
   projectName: string
@@ -110,15 +112,6 @@ export const DEFAULT_AGENT_CONFIG: AgentConfig = {
   lastUpdated: '',
 }
 
-function hasValue(s: string): boolean {
-  return s.trim().length > 0
-}
-
-function toLines(raw: string): string[] {
-  return raw.split('\n').map((l) => l.trim()).filter(Boolean)
-}
-
-
 function renderTable(headers: string[], rows: string[][]): string {
   const validRows = rows.filter((r) => r.some((c) => c))
   if (validRows.length === 0) return ''
@@ -129,12 +122,6 @@ function renderTable(headers: string[], rows: string[][]): string {
     return `| ${cells.join(' | ')} |`
   })
   return [headerLine, separator, ...dataLines].join('\n')
-}
-
-function renderList(raw: string): string {
-  return toLines(raw)
-    .map((l) => (l.startsWith('-') ? l : `- ${l}`))
-    .join('\n')
 }
 
 export function generateAgentMarkdown(config: AgentConfig): string {

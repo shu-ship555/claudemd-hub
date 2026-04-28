@@ -1,5 +1,6 @@
 import { DesignConfig, designTemplate } from './design-template'
 import { SPACING_SCALES, CATEGORY_LABELS, DEFAULT_TEXT_STYLES, TEXT_STYLE_WEIGHTS, ERGONOMICS_DEFAULT_TEXT } from './constants'
+import { hasValue, toLines } from './string-utils'
 
 type SectionCfg = Record<string, unknown>
 
@@ -80,18 +81,6 @@ function generateSectionContent(sectionId: string, cfg: SectionCfg): string {
     default:
       return ''
   }
-}
-
-function hasValue(value: unknown): boolean {
-  return typeof value === 'string' && value.trim() !== ''
-}
-
-function toLines(raw: unknown): string[] {
-  if (typeof raw !== 'string') return []
-  return raw
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
 }
 
 function parseNameValue(raw: unknown): { name: string; value: string } {

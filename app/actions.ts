@@ -3,15 +3,8 @@
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { fetchSupabaseUser, getSupabaseAuthHeaders } from '@/lib/supabase-auth'
+import { ConfigFile } from '@/lib/types'
 
-export interface ConfigFile {
-  id: string
-  user_id: string
-  name: string
-  content: string
-  created_at: string
-  updated_at: string
-}
 
 const CONFIG_FILES_URL = () =>
   `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/config_files`
