@@ -129,7 +129,7 @@ function ComponentCard({ item, isOpen, onToggle, onChange, onRemove }: { item: C
             onChange("name", e.target.value);
           }}
           onClick={(e) => e.stopPropagation()}
-          placeholder="Button"
+          placeholder="コンポーネント名"
           className="h-auto flex-1 text-xs border-none bg-transparent px-0 py-0 font-medium focus-visible:ring-0"
         />
         <button
