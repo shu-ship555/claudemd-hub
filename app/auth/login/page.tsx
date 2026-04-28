@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { AuthCard } from '@/components/auth/auth-card'
 import { AuthField } from '@/components/auth/auth-field'
 import { AuthError } from '@/components/auth/auth-error'
@@ -64,14 +65,21 @@ export default function LoginPage() {
           onChange={setEmail}
           disabled={isLoading}
         />
-        <AuthField
-          id="password"
-          label="パスワード"
-          type="password"
-          value={password}
-          onChange={setPassword}
-          disabled={isLoading}
-        />
+        <div className="space-y-1">
+          <AuthField
+            id="password"
+            label="パスワード"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            disabled={isLoading}
+          />
+          <div className="text-right">
+            <Link href="/auth/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
+              パスワードをお忘れの方
+            </Link>
+          </div>
+        </div>
         <LoadingButton type="submit" isLoading={isLoading} loadingText="ログイン中..." className="w-full">
           ログイン
         </LoadingButton>

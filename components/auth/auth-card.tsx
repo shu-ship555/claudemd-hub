@@ -9,6 +9,9 @@ interface AuthCardProps {
   footerPrompt: string
   footerLinkLabel: string
   footerLinkHref: string
+  cardClassName?: string
+  headerClassName?: string
+  contentClassName?: string
 }
 
 export function AuthCard({
@@ -18,14 +21,17 @@ export function AuthCard({
   footerPrompt,
   footerLinkLabel,
   footerLinkHref,
+  cardClassName = "pt-6 px-6 pb-6",
+  headerClassName = "px-0 pt-0",
+  contentClassName = "px-0",
 }: AuthCardProps) {
   return (
     <CenteredCard
       title={title}
       description={description}
-      cardClassName="pt-6 px-6 pb-6"
-      headerClassName="px-0 pt-0"
-      contentClassName="px-0"
+      cardClassName={cardClassName}
+      headerClassName={headerClassName}
+      contentClassName={contentClassName}
       footer={
         <p className="mt-4 text-sm text-muted-foreground">
           {footerPrompt}{' '}

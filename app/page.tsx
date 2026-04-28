@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Palette, Bot, FileCode2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -23,9 +24,12 @@ const TOOLS = [
   },
 ] as const;
 
-export default function Home() {
+export default async function Home() {
+  const cookieStore = await cookies();
+  const isLoggedIn = !!cookieStore.get("sb-access-token")?.value;
+
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-4 pt-4 pb-12">
+    <main className="flex flex-1 flex-col items-center justify-center px-6 pt-8 pb-20">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold tracking-tight text-foreground">Claude Config Manager</h2>
@@ -50,16 +54,18 @@ export default function Home() {
           ))}
         </div>
 
-        <p className="text-center text-sm text-muted-foreground">
-          アカウントをお持ちの方は{" "}
-          <Link href="/auth/login" className="font-medium text-primary hover:underline">
-            ログイン
-          </Link>{" "}
-          または{" "}
-          <Link href="/auth/signup" className="font-medium text-primary hover:underline">
-            新規登録
-          </Link>
-        </p>
+        {!isLoggedIn && (
+          <p className="text-center text-sm text-muted-foreground">
+            アカウントをお持ちの方は{" "}
+            <Link href="/auth/login" className="font-medium text-primary hover:underline">
+              ログイン
+            </Link>{" "}
+            または{" "}
+            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
+              新規登録
+            </Link>
+          </p>
+        )}
       </div>
     </main>
   );

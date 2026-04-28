@@ -25,10 +25,28 @@ export function useSupabaseAuth() {
     return client.auth.signOut()
   }, [supabase])
 
+  const resetPasswordForEmail = useCallback(
+    async (email: string, redirectTo: string) => {
+      const client = supabase()
+      return client.auth.resetPasswordForEmail(email, { redirectTo })
+    },
+    [supabase]
+  )
+
+  const updateUser = useCallback(
+    async (password: string) => {
+      const client = supabase()
+      return client.auth.updateUser({ password })
+    },
+    [supabase]
+  )
+
   return {
     supabase,
     signInWithPassword,
     signUp,
     signOut,
+    resetPasswordForEmail,
+    updateUser,
   }
 }
