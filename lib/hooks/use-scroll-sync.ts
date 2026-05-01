@@ -1,27 +1,33 @@
 'use client'
 
-import { useRef } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
-export function useScrollSync<A extends HTMLElement, B extends HTMLElement>() {
-  const refA = useRef<A>(null)
-  const refB = useRef<B>(null)
-  const isSyncingRef = useRef(false)
+export function useScrollSync(
+  sourceRef: RefObject<HTMLElement | null>,
+  targetRef: RefObject<HTMLElement | null>,
+  enabled: boolean
+) {
+  const isSyncing = useRef(false)
 
-  const syncScroll = (source: HTMLElement, target: HTMLElement) => {
-    if (isSyncingRef.current) return
-    const percent = source.scrollTop / (source.scrollHeight - source.clientHeight)
-    isSyncingRef.current = true
-    target.scrollTop = percent * (target.scrollHeight - target.clientHeight)
-    isSyncingRef.current = false
-  }
+  useEffect(() => {
+    if (!enabled) return
+    const source = sourceRef.current
+    const target = targetRef.current
+    if (!source || !target) return
 
-  const handleAScroll = (e: React.UIEvent<A>) => {
-    if (refB.current) syncScroll(e.currentTarget, refB.current)
-  }
+    const handleScroll = () => {
+      if (isSyncing.current) return
+      isSyncing.current = true
+      const ratio = source.scrollTop / (source.scrollHeight - source.clientHeight)
+      if (isFinite(ratio)) {
+        target.scrollTop = ratio * (target.scrollHeight - target.clientHeight)
+      }
+      requestAnimationFrame(() => {
+        isSyncing.current = false
+      })
+    }
 
-  const handleBScroll = (e: React.UIEvent<B>) => {
-    if (refA.current) syncScroll(e.currentTarget, refA.current)
-  }
-
-  return { refA, refB, handleAScroll, handleBScroll }
+    source.addEventListener('scroll', handleScroll)
+    return () => source.removeEventListener('scroll', handleScroll)
+  }, [enabled, sourceRef, targetRef])
 }

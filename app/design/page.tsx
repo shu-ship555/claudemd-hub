@@ -22,6 +22,8 @@ import { THEME_PRESETS } from "@/lib/theme-presets";
 import { hexToHsl, hslToHex, getContrastRatio } from "@/lib/color-utils";
 import { useState, useRef, useEffect } from "react";
 import type { Colors } from "@/components/theme-preview";
+import { ScrollSyncToggle } from "@/components/patterns/scroll-sync-toggle";
+import { useScrollSync } from "@/lib/hooks/use-scroll-sync";
 
 type ComponentItem = {
   id: string;
@@ -490,6 +492,7 @@ export default function DashboardPage() {
   const [activeSection, setActiveSection] = useState<string>("visualTheme");
   const [shadcnCustomInput, setShadcnCustomInput] = useState("");
   const [focusedTokenRow, setFocusedTokenRow] = useState<number | null>(null);
+  const [syncScroll, setSyncScroll] = useState(false);
   const formScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -497,6 +500,7 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const previewScrollRef = useRef<HTMLTextAreaElement>(null);
+  useScrollSync(formScrollRef, previewScrollRef, syncScroll);
 
   const addComponentItem = () => {
     const id = Date.now().toString();
@@ -1945,6 +1949,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
+      <ScrollSyncToggle enabled={syncScroll} onChange={setSyncScroll} />
     </>
   );
 }

@@ -14,6 +14,8 @@ import { generateClaudeMarkdown, DEFAULT_CLAUDE_CONFIG, MCP_PRESETS, type Claude
 import { MobileGuard } from "@/components/custom/mobile-guard";
 import { WizardSidebar } from "@/components/patterns/wizard-sidebar";
 import { PreviewSavePanel } from "@/components/patterns/preview-save-panel";
+import { ScrollSyncToggle } from "@/components/patterns/scroll-sync-toggle";
+import { useScrollSync } from "@/lib/hooks/use-scroll-sync";
 
 const CLAUDE_MODE_OPTIONS = ["デフォルト", "カスタム"] as const;
 
@@ -67,7 +69,10 @@ export default function ClaudePage() {
   const [config, setConfig] = useState<ClaudeConfig>(DEFAULT_CLAUDE_CONFIG);
   const [activeSection, setActiveSection] = useState<string>("language");
   const [claudeMode, setClaudeMode] = useState("");
+  const [syncScroll, setSyncScroll] = useState(false);
   const formScrollRef = useRef<HTMLDivElement>(null);
+  const previewScrollRef = useRef<HTMLTextAreaElement>(null);
+  useScrollSync(formScrollRef, previewScrollRef, syncScroll);
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("CLAUDE.md");
 
@@ -239,9 +244,10 @@ export default function ClaudePage() {
           </div>
 
           {/* Preview & Save */}
-          <PreviewSavePanel fileNameInputId="claude-filename" defaultFileName="CLAUDE.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} />
+          <PreviewSavePanel fileNameInputId="claude-filename" defaultFileName="CLAUDE.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} textareaRef={previewScrollRef} />
         </div>
       </main>
+      <ScrollSyncToggle enabled={syncScroll} onChange={setSyncScroll} />
     </>
   );
 }

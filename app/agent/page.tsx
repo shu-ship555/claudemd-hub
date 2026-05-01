@@ -16,6 +16,8 @@ import { useDragAndDrop } from "@/lib/hooks/use-drag-and-drop";
 import { MobileGuard } from "@/components/custom/mobile-guard";
 import { WizardSidebar } from "@/components/patterns/wizard-sidebar";
 import { PreviewSavePanel } from "@/components/patterns/preview-save-panel";
+import { ScrollSyncToggle } from "@/components/patterns/scroll-sync-toggle";
+import { useScrollSync } from "@/lib/hooks/use-scroll-sync";
 
 type TechField3 = "frontendStack" | "backendStack" | "infraStack" | "devTools" | "namingRules" | "branchNaming" | "commitTypes" | "envVars" | "externalServices";
 
@@ -730,8 +732,10 @@ export default function AgentPage() {
   const [config, setConfig] = useState<AgentConfig>(DEFAULT_AGENT_CONFIG);
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [agentMode, setAgentMode] = useState("");
+  const [syncScroll, setSyncScroll] = useState(false);
   const formScrollRef = useRef<HTMLDivElement>(null);
   const previewScrollRef = useRef<HTMLTextAreaElement>(null);
+  useScrollSync(formScrollRef, previewScrollRef, syncScroll);
   const focusedTechRow = useRef<Partial<Record<string, number | null>>>({});
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("AGENT.md");
@@ -1239,6 +1243,7 @@ export default function AgentPage() {
           <PreviewSavePanel fileNameInputId="agent-filename" defaultFileName="AGENT.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} textareaRef={previewScrollRef} />
         </div>
       </main>
+      <ScrollSyncToggle enabled={syncScroll} onChange={setSyncScroll} />
     </>
   );
 }
