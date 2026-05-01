@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { MessageSquare, Plug2, Sliders, Plus, Trash2, Link2, Wrench } from "lucide-react";
 import { SectionCard } from "@/components/custom/section-card";
 import { FieldLabel } from "@/components/custom/field-label";
@@ -67,6 +67,7 @@ export default function ClaudePage() {
   const [config, setConfig] = useState<ClaudeConfig>(DEFAULT_CLAUDE_CONFIG);
   const [activeSection, setActiveSection] = useState<string>("language");
   const [claudeMode, setClaudeMode] = useState("");
+  const formScrollRef = useRef<HTMLDivElement>(null);
   const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("CLAUDE.md");
 
@@ -97,10 +98,30 @@ export default function ClaudePage() {
     }));
   };
 
+  useEffect(() => {
+    const formEl = formScrollRef.current;
+    if (!formEl) return;
+    const sectionIds = WIZARD_STEPS.map((s) => s.id);
+    const handleScroll = () => {
+      const containerTop = formEl.getBoundingClientRect().top;
+      let found = sectionIds[0];
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top - containerTop <= 60) found = id;
+      }
+      setActiveSection(found);
+    };
+    formEl.addEventListener("scroll", handleScroll);
+    return () => formEl.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const scrollToSection = (id: string) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    const formEl = formScrollRef.current;
+    const sectionEl = document.getElementById(id);
+    if (!formEl || !sectionEl) return;
+    const top = sectionEl.getBoundingClientRect().top - formEl.getBoundingClientRect().top + formEl.scrollTop;
+    formEl.scrollTo({ top: top - 16, behavior: "smooth" });
     setActiveSection(id);
   };
 
@@ -114,7 +135,7 @@ export default function ClaudePage() {
           {isCustom && <WizardSidebar steps={WIZARD_STEPS} activeSection={activeSection} onNavigate={scrollToSection} />}
 
           {/* Form */}
-          <div className="space-y-6">
+          <div ref={formScrollRef} className="space-y-6 max-h-[calc(100vh-160px)] overflow-y-auto px-4 -mx-4">
             {/* モード選択 */}
             <div className="space-y-2">
               <FieldLabel requirement="required">CLAUDE.mdの種類</FieldLabel>
