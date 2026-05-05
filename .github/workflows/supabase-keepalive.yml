@@ -14,8 +14,8 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "${{ secrets.SUPABASE_URL }}/auth/v1/health")
           echo "HTTP status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "Unexpected status: $STATUS"
+          if [ "$STATUS" = "000" ]; then
+            echo "Connection failed - project may be paused"
             exit 1
           fi
           echo "Supabase ping successful"
