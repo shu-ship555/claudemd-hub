@@ -3,10 +3,8 @@
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 import { downloadTextFile } from '@/lib/download'
-import type { SaveFeedback } from '@/lib/hooks/use-save-config-file'
 
 interface PreviewSavePanelProps {
   fileNameInputId: string
@@ -15,12 +13,8 @@ interface PreviewSavePanelProps {
   setFileName: (name: string) => void
   fileCount: number | null
   maxFiles: number
-  isSaving: boolean
-  isLoggedIn: boolean
-  isAuthLoading: boolean
   preview: string
-  onSave: () => void
-  feedback: SaveFeedback
+  disabled?: boolean
   textareaRef?: React.Ref<HTMLTextAreaElement>
 }
 
@@ -31,12 +25,8 @@ export function PreviewSavePanel({
   setFileName,
   fileCount,
   maxFiles,
-  isSaving,
-  isLoggedIn,
-  isAuthLoading,
   preview,
-  onSave,
-  feedback,
+  disabled,
   textareaRef,
 }: PreviewSavePanelProps) {
   return (
@@ -56,32 +46,14 @@ export function PreviewSavePanel({
             placeholder={defaultFileName}
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
-            disabled={isSaving}
           />
         </div>
 
         <Textarea ref={textareaRef} value={preview} readOnly className="h-[calc(100vh-400px)] min-h-64 font-mono text-xs" />
 
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => downloadTextFile(fileName || defaultFileName, preview)} className="flex-1">
-            ダウンロード
-          </Button>
-          {!isAuthLoading &&
-            (isLoggedIn ? (
-              <Button onClick={onSave} disabled={isSaving} className="flex-1">
-                {isSaving ? '保存中...' : '保存'}
-              </Button>
-            ) : (
-              <a href="/auth/login" className={cn(buttonVariants({ variant: 'default' }), 'flex-1 justify-center')}>
-                ログインして保存
-              </a>
-            ))}
-        </div>
-        {feedback && (
-          <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === 'success' ? 'text-success' : 'text-destructive'}`}>
-            {feedback.message}
-          </p>
-        )}
+        <Button variant="outline" onClick={() => downloadTextFile(fileName || defaultFileName, preview)} disabled={disabled} className="w-full">
+          ダウンロード
+        </Button>
       </div>
     </div>
   )

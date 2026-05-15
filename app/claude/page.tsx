@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/lib/hooks/use-auth";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
 import { generateClaudeMarkdown, DEFAULT_CLAUDE_CONFIG, MCP_PRESETS, type ClaudeConfig, type McpTool } from "@/lib/generate-claude";
 import { MobileGuard } from "@/components/custom/mobile-guard";
@@ -73,8 +72,7 @@ export default function ClaudePage() {
   const formScrollRef = useRef<HTMLDivElement>(null);
   const previewScrollRef = useRef<HTMLTextAreaElement>(null);
   useScrollSync(formScrollRef, previewScrollRef, syncScroll);
-  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
-  const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("CLAUDE.md");
+  const { fileName, setFileName, fileCount, maxFiles } = useSaveConfigFile("CLAUDE.md");
 
   const isCustom = claudeMode === "カスタム";
   const generatedPreview = useMemo(() => generateClaudeMarkdown(config), [config]);
@@ -244,7 +242,7 @@ export default function ClaudePage() {
           </div>
 
           {/* Preview & Save */}
-          <PreviewSavePanel fileNameInputId="claude-filename" defaultFileName="CLAUDE.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} textareaRef={previewScrollRef} />
+          <PreviewSavePanel fileNameInputId="claude-filename" defaultFileName="CLAUDE.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} preview={preview} disabled={!claudeMode} textareaRef={previewScrollRef} />
         </div>
       </main>
       <ScrollSyncToggle enabled={syncScroll} onChange={setSyncScroll} />

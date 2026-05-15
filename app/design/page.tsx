@@ -6,7 +6,6 @@ import { useDesignConfig } from "@/lib/hooks/use-design-config";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
 import { LATIN_FONTS, JAPANESE_FONTS, SPACING_BASE_OPTIONS, SPACING_SCALES, LIGHT_COLORS, TEXT_STYLE_CATEGORIES, TEXT_STYLE_WEIGHTS, DEFAULT_TEXT_STYLES, CATEGORY_LABELS, ERGONOMICS_DEFAULT_TEXT, DEFAULT_COMPONENT_ITEMS } from "@/lib/constants";
 import { downloadTextFile } from "@/lib/download";
-import { useAuth } from "@/lib/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,6 @@ import { SectionCard } from "@/components/custom/section-card";
 import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { THEME_PRESETS } from "@/lib/theme-presets";
 import { hexToHsl, hslToHex, getContrastRatio } from "@/lib/color-utils";
@@ -482,8 +480,7 @@ function colorsToConfigPatch(colors: Colors, useSemanticColors: boolean = true) 
 
 export default function DashboardPage() {
   const { config, preview, updateField, batchUpdate } = useDesignConfig();
-  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
-  const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("DESIGN.md");
+  const { fileName, setFileName, fileCount, maxFiles } = useSaveConfigFile("DESIGN.md");
   const [themeSelect, setThemeSelect] = useState("");
   const [customColors, setCustomColors] = useState<Colors>(LIGHT_COLORS);
   const [keyColorStandard, setKeyColorStandard] = useState<"A" | "AA" | "AAA" | "none">("AA");
@@ -1915,7 +1912,7 @@ export default function DashboardPage() {
                     </span>
                   )}
                 </div>
-                <Input id="filename" placeholder="DESIGN.md" value={fileName} onChange={(e) => setFileName(e.target.value)} disabled={isSaving} />
+                <Input id="filename" placeholder="DESIGN.md" value={fileName} onChange={(e) => setFileName(e.target.value)} />
               </div>
 
               <Textarea
@@ -1929,22 +1926,9 @@ export default function DashboardPage() {
                 className="h-[calc(100vh-400px)] min-h-64 font-mono text-xs"
               />
 
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => downloadTextFile(fileName, !themeSelect ? "# Design System Guidelines" : themeSelect === "デフォルト" ? DEFAULT_PREVIEW : preview)} disabled={isSaving || !themeSelect} className="flex-1">
-                  ダウンロード
-                </Button>
-                {!isAuthLoading &&
-                  (isLoggedIn ? (
-                    <Button onClick={() => save(!themeSelect ? "# Design System Guidelines" : themeSelect === "デフォルト" ? DEFAULT_PREVIEW : preview)} disabled={isSaving || !themeSelect} className="flex-1">
-                      {isSaving ? "保存中..." : "保存"}
-                    </Button>
-                  ) : (
-                    <a href="/auth/login" className={cn(buttonVariants({ variant: "default" }), "flex-1 justify-center", !themeSelect && "pointer-events-none opacity-50")}>
-                      ログインして保存
-                    </a>
-                  ))}
-              </div>
-              {feedback && <p className={`text-xs leading-[160%] tracking-[0.04em] ${feedback.type === "success" ? "text-success" : "text-destructive"}`}>{feedback.message}</p>}
+              <Button variant="outline" onClick={() => downloadTextFile(fileName, !themeSelect ? "# Design System Guidelines" : themeSelect === "デフォルト" ? DEFAULT_PREVIEW : preview)} disabled={!themeSelect} className="w-full">
+                ダウンロード
+              </Button>
             </div>
           </div>
         </div>

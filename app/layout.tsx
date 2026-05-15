@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Claude Config Manager",
+  title: "Claude Config Generator",
   description: "Claude Code の設定ファイルを管理・整理します",
 };
 
@@ -44,7 +44,7 @@ export default function RootLayout({
             <p className="text-xs leading-[170%] tracking-[0.06em] text-muted-foreground">このページはデスクトップ（1024px 以上）向けに最適化されています。</p>
           </div>
           <div className="hidden lg:block">
-            <DashboardHeader title="Claude Config Manager" />
+            <DashboardHeader title="Claude Config Generator" />
           </div>
           {children}
         </Providers>

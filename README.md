@@ -1,4 +1,4 @@
-# Claude Config Manager
+# Claude Config Generator
 
 A modern Next.js application for managing Claude Code configuration files. Store, version, and sync your configuration across multiple machines with Supabase and Vercel.
 
@@ -149,12 +149,12 @@ CREATE POLICY "Users access own configs"
 
 ## 🔄 Available Routes
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Landing page |
-| `/auth/login` | Login |
-| `/auth/signup` | Sign up |
-| `/dashboard` | Protected dashboard (TODO: add auth guard) |
+| Route          | Purpose                                    |
+| -------------- | ------------------------------------------ |
+| `/`            | Landing page                               |
+| `/auth/login`  | Login                                      |
+| `/auth/signup` | Sign up                                    |
+| `/dashboard`   | Protected dashboard (TODO: add auth guard) |
 
 ## 📝 Next Steps
 

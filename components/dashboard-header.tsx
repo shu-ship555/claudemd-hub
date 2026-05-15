@@ -3,11 +3,9 @@
 import { ExternalLink } from "lucide-react";
 import DashboardClient from "@/components/dashboard-client";
 import { useAuth } from "@/lib/hooks/use-auth";
-import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { NavLink } from "@/components/custom/nav-link";
 import { AppIcon } from "@/components/ui/app-icon";
-import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
   title: string;
@@ -15,7 +13,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
-  const { isLoggedIn, isLoading, userEmail } = useAuth();
+  const { isLoggedIn, userEmail } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 h-14 bg-card/95 backdrop-blur-xl backdrop-saturate-150 border-b border-border">
@@ -40,17 +38,7 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
             お問い合わせ
             <ExternalLink className="size-3" />
           </NavLink>
-          {!isLoading &&
-            (isLoggedIn ? (
-              <DashboardClient />
-            ) : (
-              <div className="flex items-center gap-2">
-                <NavLink href="/auth/login">ログイン</NavLink>
-                <a href="/auth/signup" className={cn(buttonVariants({ size: "xs" }))}>
-                  新規登録
-                </a>
-              </div>
-            ))}
+          {isLoggedIn && <DashboardClient />}
         </nav>
       </div>
     </header>

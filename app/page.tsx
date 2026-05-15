@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { Palette, Bot, FileCode2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -24,16 +23,13 @@ const TOOLS = [
   },
 ] as const;
 
-export default async function Home() {
-  const cookieStore = await cookies();
-  const isLoggedIn = !!cookieStore.get("sb-access-token")?.value;
-
+export default function Home() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 pt-8 pb-20">
       <div className="w-full max-w-2xl space-y-6">
         <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight text-foreground leading-none">Claude Config Manager</h2>
-          <p className="text-sm text-muted-foreground">Claude Code の設定ファイルを生成・管理します</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground leading-none">Claude Config Generator</h2>
+          <p className="text-sm text-muted-foreground">Claude Code の設定ファイルを生成します</p>
         </div>
 
         <div className="grid gap-4">
@@ -54,18 +50,6 @@ export default async function Home() {
           ))}
         </div>
 
-        {!isLoggedIn && (
-          <p className="text-center text-sm text-muted-foreground">
-            アカウントをお持ちの方は{" "}
-            <Link href="/auth/login" className="font-medium text-primary hover:underline">
-              ログイン
-            </Link>{" "}
-            または{" "}
-            <Link href="/auth/signup" className="font-medium text-primary hover:underline">
-              新規登録
-            </Link>
-          </p>
-        )}
       </div>
     </main>
   );

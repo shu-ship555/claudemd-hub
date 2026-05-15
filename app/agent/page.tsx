@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/lib/hooks/use-auth";
 import { useSaveConfigFile } from "@/lib/hooks/use-save-config-file";
 import { generateAgentMarkdown, DEFAULT_AGENT_CONFIG, type AgentConfig, type TechRow3 } from "@/lib/generate-agent";
 import { useDragAndDrop } from "@/lib/hooks/use-drag-and-drop";
@@ -737,8 +736,7 @@ export default function AgentPage() {
   const previewScrollRef = useRef<HTMLTextAreaElement>(null);
   useScrollSync(formScrollRef, previewScrollRef, syncScroll);
   const focusedTechRow = useRef<Partial<Record<string, number | null>>>({});
-  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
-  const { fileName, setFileName, isSaving, save, fileCount, maxFiles, feedback } = useSaveConfigFile("AGENT.md");
+  const { fileName, setFileName, fileCount, maxFiles } = useSaveConfigFile("AGENT.md");
 
   const isCustom = agentMode === "カスタム";
   const generatedPreview = useMemo(() => generateAgentMarkdown(config), [config]);
@@ -1240,7 +1238,7 @@ export default function AgentPage() {
           </div>
 
           {/* Preview & Save */}
-          <PreviewSavePanel fileNameInputId="agent-filename" defaultFileName="AGENT.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} isSaving={isSaving} isLoggedIn={isLoggedIn} isAuthLoading={isAuthLoading} preview={preview} onSave={() => save(preview)} feedback={feedback} textareaRef={previewScrollRef} />
+          <PreviewSavePanel fileNameInputId="agent-filename" defaultFileName="AGENT.md" fileName={fileName} setFileName={setFileName} fileCount={fileCount} maxFiles={maxFiles} preview={preview} disabled={!agentMode} textareaRef={previewScrollRef} />
         </div>
       </main>
       <ScrollSyncToggle enabled={syncScroll} onChange={setSyncScroll} />
